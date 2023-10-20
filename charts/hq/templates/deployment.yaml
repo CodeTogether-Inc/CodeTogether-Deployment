@@ -1,0 +1,92 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "codetogether.fullname" . }}
+  labels:
+    {{- include "codetogether.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "codetogether.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+      annotations:
+        checksum/properties: {{ include (print $.Template.BasePath "/secret-properties.yaml") . | sha256sum }}
+      {{- with .Values.podAnnotations }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      labels:
+        {{- include "codetogether.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- if eq .Values.imageCredentials.enabled true }}
+      imagePullSecrets:
+        - name: {{ include "codetogether.fullname" . }}-pull-secret
+      {{- else if .Values.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.imageCredentials.pullSecret }}
+      {{- end }}
+      serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+
+          env:
+          #
+          # Set CodeTogether runtime configuration
+          #         
+          - name: CT_HQ_BASE_URL
+            value: {{ .Values.codetogether.url | quote }}
+          volumeMounts:
+            - name: properties-volume
+              mountPath: /opt/codetogether/runtime/cthq.properties
+              subPath: cthq.properties
+          # 
+          # Set container configuration
+          #
+          ports:
+            - name: http
+              containerPort: 1080
+              protocol: TCP
+          
+          livenessProbe:
+            initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.livenessProbe.successThreshold }}
+            failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+            httpGet:
+              path: /
+              port: http
+          
+          readinessProbe:
+            initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
+            periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
+            timeoutSeconds: {{ .Values.readinessProbe.timeoutSeconds }}
+            successThreshold: {{ .Values.readinessProbe.successThreshold }}
+            failureThreshold: {{ .Values.readinessProbe.failureThreshold }}
+            httpGet:
+              path: /
+              port: http
+
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      volumes:
+        - name: properties-volume
+          secret:
+            secretName: hqproperties
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
