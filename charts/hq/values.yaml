@@ -1,9 +1,9 @@
-# Default values for CodeTogether.
+# Default values for CodeTogether HQ.
 # This is a YAML-formatted file.
 #
 # Kubernetes required version: v1.18+
 #
-# Example 'values.yaml' file for running CodeTogether On-Premises.
+# Example 'values.yaml' file for running CodeTogether HQ On-Premises.
 # Use this file as a template to create your own 'codetogether-values.yaml' file.
 # For full detail on the chart's prerequisites, settings and configuration, please refer to our official Helm repository at:
 #   https://artifacthub.io/packages/helm/codetogether/codetogether

@@ -3,7 +3,7 @@ name: codetogether-hq
 description: CodeTogether HQ provides advanced project insights for developers
 
 type: application
-version: 1.4.12
+version: 1.4.13
 appVersion: "2023.3.0"
 kubeVersion: ">= 1.18.0"
 
