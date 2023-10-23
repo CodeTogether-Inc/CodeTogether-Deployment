@@ -23,7 +23,7 @@ image:
 imageCredentials:
   # pullSecret: "my-customer-pull-secret"
   # Configure credentials if using private Docker registry.
-  enabled: false
+  enabled: true
   registry: hub.edge.codetogether.com
   username: "my-customer-username"
   password: "my-customer-password"
@@ -35,7 +35,7 @@ imageCredentials:
 # guidance on the best deployment option based on your needs.
 #
 codetogether:
-  url: https://codetogether.local
+  url: https://<server-fqdn>
 
 hqproperties:
   hq.sso.client.id: CLIENTID.apps.googleusercontent.com
@@ -45,11 +45,11 @@ hqproperties:
   hq.db.type: CASSANDRA
   hq.secret: SECRET1
   hq.encryption.secret: SECRET2
-  hq.base.url: https://codetogether.local
+  hq.base.url: https://<server-fqdn>
   hq.cassandra.db.name: insights
   hq.cassandra.db.port: 9042
-  hq.cassandra.db.host: cthq-cassandra
-  hq.sso.redirect.uri: https://codetogether.local/api/v1/auth/sso/success/insights
+  hq.cassandra.db.host: codetogether-cassandra.default.svc.cluster.local
+  hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/insights
   hq.cassandra.db.password: cassandra
   hq.cassandra.db.username: cassandra
 
@@ -62,7 +62,7 @@ ingress:
   annotations:
     # For reference: This is required for k8 version < 1.18
     # kubernetes.io/ingress.class: nginx
-    # external-dns.alpha.kubernetes.io/hostname: codetogether.local
+    # external-dns.alpha.kubernetes.io/hostname: <server-fqdn>
   # There are 3 ways to handle ingressClassName for the CodeTogether Ingress object:
   # (1) set className to 'codetogether-nginx' to use the predefined IngressClass
   # (2) set className to a custom value to use your own IngressClass
@@ -78,7 +78,7 @@ ingress:
 #
 service:
   # annotations:
-    # external-dns.alpha.kubernetes.io/hostname: codetogether.local
+    # external-dns.alpha.kubernetes.io/hostname: <server-fqdn>
   type: ClusterIP
   port: 1080
 
