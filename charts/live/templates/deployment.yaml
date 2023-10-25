@@ -22,7 +22,10 @@ spec:
       labels:
         {{- include "codetogether.selectorLabels" . | nindent 8 }}
     spec:
-      {{- if eq .Values.imageCredentials.enabled true }}
+      {{- if .Values.imageCredentials.pullSecret }}
+      imagePullSecrets:
+        - name: {{ .Values.imageCredentials.pullSecret }}
+      {{- else if eq .Values.imageCredentials.enabled true }}
       imagePullSecrets:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}

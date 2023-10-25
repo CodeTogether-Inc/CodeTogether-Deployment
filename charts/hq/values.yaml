@@ -22,7 +22,7 @@ image:
 #
 imageCredentials:
   # pullSecret: "my-customer-pull-secret"
-  # Configure credentials if using private Docker registry.
+  # Use pullSecret or configure credentials if using private Docker registry.
   enabled: true
   registry: hub.edge.codetogether.com
   username: "my-customer-username"

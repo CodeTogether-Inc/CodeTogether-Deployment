@@ -24,7 +24,8 @@ image:
 # credentials provided by your Genuitec Sales Representative.
 #
 imageCredentials:
-  # Configure credentials if using private Docker registry.
+  # pullSecret: "my-customer-pull-secret"
+  # Use pullSecret or configure credentials if using private Docker registry.
   enabled: false
   registry: hub.edge.codetogether.com
   username: "my-customer-username"
