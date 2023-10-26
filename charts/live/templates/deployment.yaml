@@ -118,6 +118,11 @@ spec:
                 key: secret
           {{- end }}
 
+          {{- if .Values.av.jitsiUrl }}
+          - name: CT_JITSI_URL
+            value: {{ .Values.av.jitsiUrl | quote }}
+          {{- end }}
+
           {{- if .Values.codetogether.timeZone.enabled }}
           - name: CT_TIME_ZONE
             value: {{ .Values.codetogether.timeZone.region | quote }}
