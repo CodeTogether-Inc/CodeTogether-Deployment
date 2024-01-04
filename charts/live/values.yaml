@@ -87,6 +87,8 @@ direct:
 # Configure if CodeTogether is running in 'locator-central' mode.
 #
 locatorCentral:
+  # maxmindLicenseKey: "my-maxmind-license-key"
+  # maxmindAccountId: "my-maxmind-account-id"
   # A database is required for the central locator.
   database:
     host: "10.10.0.2"
