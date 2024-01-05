@@ -61,6 +61,11 @@ spec:
           {{- end }}
           {{- end }}
 
+          {{- if eq .Values.codetogether.noclients "true" }}
+          - name: CT_NOCLIENTS
+            value: "true"
+          {{- end }}
+
           {{- if eq .Values.codetogether.mode "locator-central" }}
           - name: CT_LOCATOR
             value: {{ .Values.codetogether.url | quote }}
