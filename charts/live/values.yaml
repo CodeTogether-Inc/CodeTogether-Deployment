@@ -63,6 +63,8 @@ codetogether:
   # HTTPS is required. If your cert is not a fully-rooted (trusted cert), set
   # to true to allow more tolerance from clients
   trustAllCerts: "true"
+  # Optionally do not expose /clients endpoint by setting to 'true'
+  noclients: "false"
   # Set a customized TZ for CodeTogether container (default is UTC)
   # https://nodatime.org/TimeZones
   timeZone:
