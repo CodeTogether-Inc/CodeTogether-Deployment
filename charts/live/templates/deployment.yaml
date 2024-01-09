@@ -123,7 +123,7 @@ spec:
                 key: secret
           {{- end }}
 
-          {{- if .Values.av.jitsiUrl }}
+          {{- if and .Values.av.jitsiUrl (ne .Values.av.jitsiUrl \"\") }}
           - name: CT_JITSI_URL
             value: {{ .Values.av.jitsiUrl | quote }}
           {{- end }}

@@ -169,6 +169,8 @@ av:
     enabled: false
     server: "coturn.example.com"
     secret: "my-secret"
+  # Optional - Jitsi Settings for locator edge servers with locator or extenral jitsi meet server
+  # jitsiUrl: "https://your.jtsi.server"
 
 #
 # Optionally enable integration with your SSO Provider. If using SSO, this
