@@ -3,6 +3,28 @@ entries:
   codetogether:
   - apiVersion: v2
     appVersion: 2023.2.0
+    created: "2024-01-09T19:29:24.005966051Z"
+    description: CodeTogether Live provides pair programming and collaborative coding
+    digest: 3956f36a4208e7575de27b3f313f2369bc912f7a64111aa2ac474916a911f4c6
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-1.4.16/codetogether-1.4.16.tgz
+    version: 1.4.16
+  - apiVersion: v2
+    appVersion: 2023.2.0
     created: "2023-10-26T18:05:48.084091822Z"
     description: CodeTogether Live provides pair programming and collaborative coding
     digest: 9643b5c277514a4efa124ee05087d6f069c43a09b12bd01a045c3303ed0a3f9c
@@ -505,4 +527,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/helm-charts/releases/download/codetogether-hq-1.4.12/codetogether-hq-1.4.12.tgz
     version: 1.4.12
-generated: "2023-10-26T18:05:48.084427829Z"
+generated: "2024-01-09T19:29:24.006151696Z"
