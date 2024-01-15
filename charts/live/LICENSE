@@ -102,12 +102,22 @@ importance of protecting any information collected about you. Solely for the pur
 Services to you, you hereby authorize and consent to the collection, storage and use of aggregate
 information and data related to or derived from your use of the Software and any information or data
 (including personally identifiable information) that you elect to provide to Licensor in connection with
-your use of the Software. By installing, accessing or using the Software, you consent to these information
-collection and usage terms, including (where applicable) the transfer of data into a country outside of the
-European Union and/or the European Economic Area or the United States of America. Licensor assumes no
-obligation to protect confidential or proprietary information that you elect to provide to Licensor (other
-than personally identifiable information) from disclosure, and Licensor will be free to reproduce, use, and
-distribute the Information (other than personally identifiable information) to others without restriction.
+your use of the Software. Information collected include system registered user identification (ID), email
+address, session start/stop times, version of software being used, number  of participants, IP addresses,
+and information related to purchases such as license terms, orders, payment methods, as well as team members
+(if using premium version of the Software or service). By installing, accessing or using the Software, you
+consent to these information collection and usage terms, including (where applicable) the transfer of data
+into a country outside of the European Union and/or the European Economic Area or the United States of
+America. For EU countries, data collection and use is limited to transfer of data between the USA and the EU
+in accordance to the Standard Contractual Clauses (SCC) for the transfer of personal data to processors
+established in third countries under Directive 95/46/EC of the European Parliament and of the Council.
+Licensor assumes no obligation to protect confidential or proprietary information that you elect to provide
+to Licensor (other than personally identifiable information) from disclosure, and Licensor will be free to
+reproduce, use, and distribute the Information (other than personally identifiable information) to others
+without restriction. All end-to-end encrypted information sent through CodeTogether servers is not
+persistently stored and is excluded from the information that may be collected under this agreement.
+End-to-end encrypted information that may never be collected includes source files and code, file names and
+paths, as well as code intelligence information.
 
 10.0 Changes and Notices. Licensor reserves the right to make changes to the Agreement at any time through
 software releases and updates or through licensor's website where the Software is made available.
@@ -116,24 +126,24 @@ software releases and updates or through licensor's website where the Software i
 all prior agreements and understandings, oral and written, express or implied, by and between any of the
 parties with respect to the subject matter of the Agreement. No amendment or modification of the Agreement
 shall be binding unless in writing and signed by a duly authorized representative of both parties. The
-Agreement shall be governed by and construed in accordance with the laws of the State of Texas and federal
-laws of the United States. Any actions at law or in equity arising out of or in relation to the Agreement
-may be filed only in the state or federal courts of Dallas, Texas, U.S.A. and Licensee hereby consents and
-submits to the personal and exclusive jurisdiction of such courts. Failure to enforce any legal right or
-remedy which is contained in this Agreement will not be taken to be a formal waiver of Licensor's rights.
-If any one or more of the provisions contained in the Agreement should be invalid, illegal or unenforceable
-in any respect in any jurisdiction, the validity, legality and enforceability of such provision or
-provisions shall not in any way be affected or impaired as a result of such event in any other jurisdiction
-and the validity, legality and enforceability of the remaining provisions contained in the Agreement shall
-not in any way be affected or impaired as a result of such event, unless in either case as a result of such
-determination the Agreement would fail in its essential purpose.
+Agreement shall be governed by and construed in accordance with the laws of the State of Delaware and federal
+laws of the United States. Any actions at law or in equity arising out of or in relation to the Agreement may
+be filed only in the state or federal courts of Delaware, U.S.A. and Licensee hereby consents and submits to
+the personal and exclusive jurisdiction of such courts. Failure to enforce any legal right or remedy which is
+contained in this Agreement will not be taken to be a formal waiver of Licensor's rights. If any one or more
+of the provisions contained in the Agreement should be invalid, illegal or unenforceable in any respect in
+any jurisdiction, the validity, legality and enforceability of such provision or provisions shall not in any
+way be affected or impaired as a result of such event in any other jurisdiction and the validity, legality
+and enforceability of the remaining provisions contained in the Agreement shall not in any way be affected or
+impaired as a result of such event, unless in either case as a result of such determination the Agreement
+would fail in its essential purpose.
 
-12.0 Copyright and Trademark Notices. The Software is trademarked and Copyright * 2023 CodeTogether Inc.
-2810 N Church St PMB 77141, Wilmington, Delaware 19802. Any rights not expressly granted herein are reserved 
-to the Licensor.
+12.0 Copyright and Trademark Notices. The Software is trademarked and Copyright © 2020 CodeTogether Inc.,
+2810 N Church St PMB 77141, Wilmington, Delaware 19802-4447 USA. Any rights not expressly granted herein are
+reserved to the Licensor.
 
 By acknowledging your acceptance of this license, you agree that you have reviewed this Agreement, the
-CodeTogether website Terms of use (https://www.codetogether.com/legal/) and that you will comply with
-all of the terms and conditions.
+CodeTogether website Terms of use (https://www.codetogether.com/terms/) and that you will comply with all of
+the terms and conditions.
 
-CodeTogther EULA, 2022
+CodeTogether EULA, 2024
