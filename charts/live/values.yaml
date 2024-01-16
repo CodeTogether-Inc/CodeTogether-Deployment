@@ -21,7 +21,7 @@ image:
 
 #
 # Configure the source location for the Docker image, using the
-# credentials provided by your Genuitec Sales Representative.
+# credentials provided by your CodeTogether Sales Representative.
 #
 imageCredentials:
   # pullSecret: "my-customer-pull-secret"
@@ -39,7 +39,7 @@ openshift:
   enabled: false
 
 #
-# CodeTogether license provided by your Genuitec Sales Representative.
+# CodeTogether license provided by your CodeTogether Sales Representative.
 #
 license:
   licensee: "Example"
@@ -49,7 +49,7 @@ license:
 
 #
 # Set CodeTogether runing mode and server's FQDN (HTTPS is mandatory for CodeTogether)
-# Use 'direct' for simple evaluations and small deployments. Genuitec can provide
+# Use 'direct' for simple evaluations and small deployments. CodeTogether can provide
 # guidance on the best deployment option based on your needs.
 #
 codetogether:
