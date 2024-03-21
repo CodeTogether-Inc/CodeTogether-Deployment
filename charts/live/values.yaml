@@ -252,3 +252,9 @@ restart:
   enabled: true
   # by default restart is scheduled on every Sunday 11 AM
   cronPattern: "* 11 * * 0"
+
+#
+# Configures the CodeTogether server to use a custom favicon.
+favicon:
+  enabled: false
+  filePath: files/new-favicon.ico

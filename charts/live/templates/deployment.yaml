@@ -213,7 +213,17 @@ spec:
               name: codetogether-runtime
             - mountPath: /tmp
               name: codetogether-tmp
-          {{- end}}
+            {{- if .Values.favicon.enabled }}
+            - mountPath: /run/volatile/nginx/favicon.ico
+              name: favicon-volume
+              subPath: favicon.ico
+            {{- end }}
+          {{- else if .Values.favicon.enabled }}
+          volumeMounts:
+            - mountPath: /run/volatile/nginx/favicon.ico
+              name: favicon-volume
+              subPath: favicon.ico
+          {{- end }}
 
           # 
           # Set container configuration
@@ -259,6 +269,11 @@ spec:
           emptyDir: {}
         - name: codetogether-tmp
           emptyDir: {}
+      {{- else if .Values.favicon.enabled }}
+      volumes:
+        - name: favicon-volume
+          configMap:
+            name: {{ .Release.Name }}-favicon
       {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
