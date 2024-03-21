@@ -1,0 +1,9 @@
+{{- if .Values.favicon.enabled }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-favicon
+data:
+  favicon.ico: |-
+    {{ .Files.Get .Values.favicon.filePath | b64enc | quote }}
+{{- end }}
