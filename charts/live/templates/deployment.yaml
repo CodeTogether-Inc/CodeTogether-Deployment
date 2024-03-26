@@ -214,13 +214,13 @@ spec:
             - mountPath: /tmp
               name: codetogether-tmp
             {{- if .Values.favicon.enabled }}
-            - mountPath: /run/volatile/nginx/favicon.ico
+            - mountPath: /opt/volatile-template/nginx/favicon.ico
               name: favicon-volume
               subPath: favicon.ico
             {{- end }}
           {{- else if .Values.favicon.enabled }}
           volumeMounts:
-            - mountPath: /run/volatile/nginx/favicon.ico
+            - mountPath: /opt/volatile-template/nginx/favicon.ico
               name: favicon-volume
               subPath: favicon.ico
           {{- end }}
