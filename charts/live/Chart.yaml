@@ -3,8 +3,8 @@ name: codetogether
 description: CodeTogether Live provides pair programming and collaborative coding
 
 type: application
-version: 1.4.19
-appVersion: "2024.1.0"
+version: 1.4.20
+appVersion: "2024.2.0"
 kubeVersion: ">= 1.18.0"
 
 icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
