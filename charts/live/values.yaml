@@ -186,7 +186,7 @@ sso:
   clientSecret: "my-id-secret"
   # Set this value to 'true' if you are using Oracle IDCS OpenID Connect.
   jwksEndPointEnabled: false
-
+  offlineAccessScope: true
 #
 # The following sections provide default configurations for the
 # container and normally do not need to be modified.
