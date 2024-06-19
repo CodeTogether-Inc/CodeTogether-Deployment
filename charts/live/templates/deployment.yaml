@@ -205,6 +205,8 @@ spec:
                 key: systemBaseUrl
           - name: CT_SSO_SECURE_JWKS_ENDPT_ENABLE
             value: {{ .Values.sso.jwksEndPointEnabled | quote }}
+          - name: CT_REQUEST_OFFLINE_ACCESS
+            value: {{ .Values.sso.offlineAccessScope | default "true" | quote }}
           {{- end }}
 
           {{- if .Values.securityContext.readOnlyRootFilesystem}}
