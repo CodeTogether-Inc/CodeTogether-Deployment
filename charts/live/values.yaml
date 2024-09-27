@@ -129,16 +129,25 @@ locatorEdge:
 ingress:
   enabled: true
   annotations:
-    # For reference: This is required for k8 version < 1.18
-    # kubernetes.io/ingress.class: nginx
-  # There are 3 ways to handle ingressClassName for the CodeTogether Ingress object:
-  # (1) set className to 'codetogether-nginx' to use the predefined IngressClass
-  # (2) set className to a custom value to use your own IngressClass
-  # (3) do not specify className to rely on the default IngressClass for the cluster (default)
-  # className: codetogether-nginx
+    kubernetes.io/ingress.class: nginx
+    external-dns.alpha.kubernetes.io/hostname: dev-live-onprem.codetogether.io
+  config:
+    max_ranges: "1"
+    ssl_protocols: "TLSv1.2 TLSv1.3"
+    ssl_ciphers: "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
+    ssl_prefer_server_ciphers: "on"
+    ssl_session_cache: "shared:SSL:10m"
+    ssl_session_timeout: "10m"
+    gzip: "off"
+    add-headers: |
+      add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
+      add_header X-Content-Type-Options "nosniff" always;
+      add_header X-Frame-Options "DENY" always;
+      add_header X-Powered-By "";
+      add_header X-Frame-Options "SAMEORIGIN" always;
+      add_header X-XSS-Protection "1; mode=block" always;  # Enable XSS protection
   tls:
-    - secretName: codetogether-tls
-
+    - secretName: codetogether-io-tls
 #
 # CodeTogether has a dashboard to view metrics, and for the locator, update
 # configuration on the fly. If a custom username and password is not enabled,
