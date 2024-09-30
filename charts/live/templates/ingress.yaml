@@ -16,10 +16,13 @@ metadata:
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
+  {{- with .Values.ingress.config }}
+  {{- toYaml . | nindent 4 }}  # This line injects the config settings
+  {{- end }}
 spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18" .Capabilities.KubeVersion.GitVersion) }}
   ingressClassName: {{ .Values.ingress.className }}
-  {{- end}}
+  {{- end }}
   {{- if .Values.ingress.externalTrafficPolicy }}
   externalTrafficPolicy: {{ .Values.ingress.externalTrafficPolicy }}
   {{- end }}
