@@ -153,7 +153,7 @@ ingress:
       add_header X-Frame-Options "SAMEORIGIN" always;  # Allows framing only from the same origin to enhance protection.
       add_header X-XSS-Protection "1; mode=block" always;  # Enables XSS protection and blocks malicious scripts.
   tls:
-    - secretName: codetogether-io-tls
+    - secretName: codetogether-tls
 #
 # CodeTogether has a dashboard to view metrics, and for the locator, update
 # configuration on the fly. If a custom username and password is not enabled,
