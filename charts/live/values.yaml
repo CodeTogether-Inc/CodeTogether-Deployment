@@ -129,6 +129,7 @@ locatorEdge:
 ingress:
   enabled: true
   annotations:
+    kubernetes.io/ingress.class: nginx
     # For reference: This is required for k8 version < 1.18
     # kubernetes.io/ingress.class: nginx
   # There are 3 ways to handle ingressClassName for the CodeTogether Ingress object:
@@ -137,20 +138,20 @@ ingress:
   # (3) do not specify className to rely on the default IngressClass for the cluster (default)
   # className: codetogether-nginx
   config:
-    max_ranges: "1"
-    ssl_protocols: "TLSv1.2 TLSv1.3"
-    ssl_ciphers: "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"
-    ssl_prefer_server_ciphers: "on"
-    ssl_session_cache: "shared:SSL:10m"
-    ssl_session_timeout: "10m"
-    gzip: "off"
+    max_ranges: "1"  # Limits the number of byte ranges allowed in a request, mitigating excessive range attacks.
+    ssl_protocols: "TLSv1.2 TLSv1.3"  # Defines the allowed SSL/TLS protocols, restricting to secure versions (TLS 1.2 and 1.3).
+    ssl_ciphers: "ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384"  # Specifies the allowed ciphers for secure connections.
+    ssl_prefer_server_ciphers: "on"  # Ensures the server prefers its own ciphers over the client’s.
+    ssl_session_cache: "shared:SSL:10m"  # Enables SSL session caching, improving TLS performance.
+    ssl_session_timeout: "10m"  # Specifies the timeout duration for SSL sessions.
+    gzip: "off"  # Disables gzip compression, which can prevent certain vulnerabilities like the BREACH attack.
     add-headers: |
-      add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;
-      add_header X-Content-Type-Options "nosniff" always;
-      add_header X-Frame-Options "DENY" always;
-      add_header X-Powered-By "";
-      add_header X-Frame-Options "SAMEORIGIN" always;
-      add_header X-XSS-Protection "1; mode=block" always;  # Enable XSS protection
+      add_header Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" always;  # Enforces strict HTTPS for a long duration.
+      add_header X-Content-Type-Options "nosniff" always;  # Prevents browsers from MIME-type sniffing to enhance security.
+      add_header X-Frame-Options "DENY" always;  # Disallows the site from being framed, preventing clickjacking attacks.
+      add_header X-Powered-By "";  # Removes the "X-Powered-By" header to obfuscate the server technology.
+      add_header X-Frame-Options "SAMEORIGIN" always;  # Allows framing only from the same origin to enhance protection.
+      add_header X-XSS-Protection "1; mode=block" always;  # Enables XSS protection and blocks malicious scripts.
   tls:
     - secretName: codetogether-io-tls
 #
