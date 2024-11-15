@@ -37,6 +37,9 @@ imageCredentials:
 codetogether:
   url: https://<server-fqdn>
 
+# Optionally install license at startup
+# hqlicense: ""
+
 hqproperties:
   hq.sso.client.id: CLIENTID.apps.googleusercontent.com
   hq.sso.client.secret: CLIENTSECRET
@@ -54,6 +57,8 @@ hqproperties:
   hq.cassandra.db.username: cassandra
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
+  ## If hqlicense is set on values uncomment the following line
+  # hq.license.path: /opt/codetogether/runtime/hqlicense
 
 #
 # Enables and configures Ingress (default = Nginx). The className value can be used

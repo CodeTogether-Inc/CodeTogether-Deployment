@@ -42,10 +42,8 @@ openshift:
 # CodeTogether license provided by your CodeTogether Sales Representative.
 #
 license:
-  licensee: "Example"
-  maxConnections: "0"
-  expiration: "1970/01/01"
-  signature: "123456789abcdef"
+  url: "https://your-hq-server/api/v1/live/license"
+  token: "my-hq-token"
 
 #
 # Set CodeTogether runing mode and server's FQDN (HTTPS is mandatory for CodeTogether)

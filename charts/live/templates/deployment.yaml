@@ -133,26 +133,16 @@ spec:
             value: {{ .Values.codetogether.timeZone.region | quote }}
           {{- end }}
 
-          - name: CT_LICENSEE
+          - name: CT_LICENSE_URL
             valueFrom:
               secretKeyRef:
                 name: {{ include "codetogether.fullname" . }}-license
-                key: licensee
-          - name: CT_MAXCONNECTIONS
+                key: url
+          - name: CT_LICENSE_TOKEN
             valueFrom:
               secretKeyRef:
                 name: {{ include "codetogether.fullname" . }}-license
-                key: max_connections
-          - name: CT_EXPIRATION
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-license
-                key: expiration
-          - name: CT_SIGNATURE
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-license
-                key: signature
+                key: token
           {{- if .Values.dashboard.enabled }}
           - name: CT_DASHBOARD_USER
             valueFrom:
