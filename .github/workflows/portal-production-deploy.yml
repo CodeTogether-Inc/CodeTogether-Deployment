@@ -1,0 +1,31 @@
+name: Deploy to Production
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+env:
+  KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+  DOCKER_REGISTRY: your-registry
+  DOCKER_IMAGE: your-app
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up kubectl
+        uses: azure/k8s-set-context@v1
+        with:
+          kubeconfig: ${{ secrets.PRODUCTION_KUBE_CONFIG }}
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: 'v3.12.0'
+
+      - name: Deploy to production
+        run: |
+          helm upgrade portal portal -n portal -f portal/values.yaml -f portal/environments/production.yaml
