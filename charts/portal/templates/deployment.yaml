@@ -24,3 +24,6 @@ spec:
             - containerPort: 80
           resources:
             {{- toYaml .Values.resources | nindent 12 }} 
+          envFrom:
+            - secretRef:
+                name: portal-secrets

@@ -1,0 +1,17 @@
+environment: production
+replicaCount: 3
+
+ingress:
+  hosts:
+    - host: app.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi 
