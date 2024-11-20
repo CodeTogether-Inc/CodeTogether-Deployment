@@ -1,0 +1,33 @@
+# Default values for the application
+replicaCount: 2
+
+image:
+  repository: registry.digitalocean.com/codetogether-registry/portal
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: digitalocean-registry
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  hosts:
+    - host: portal.dev.codetogether.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+
