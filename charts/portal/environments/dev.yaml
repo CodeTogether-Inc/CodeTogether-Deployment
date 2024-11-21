@@ -6,7 +6,7 @@ replicaCount: 1
 
 ingress:
   hosts:
-    - host: staging.app.example.com
+    - host: portal.dev.codetogether.com
       paths:
         - path: /
           pathType: Prefix

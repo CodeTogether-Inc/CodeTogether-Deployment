@@ -1,9 +1,11 @@
 environment: production
-replicaCount: 3
+replicaCount: 2
+image:
+  tag: c819a2996f8d96cfcadc73cba625d01d70f8df2b
 
 ingress:
   hosts:
-    - host: app.example.com
+    - host: app.codetogether.com
       paths:
         - path: /
           pathType: Prefix
