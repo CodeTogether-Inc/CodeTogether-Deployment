@@ -44,10 +44,10 @@ spec:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
               subPath: cthq.properties
-            {{ - if .Values.hqlicense - }}
+            {{ - if .Values.license - }}
             - name: license-volume
-              mountPath: /opt/codetogether/runtime/hqlicense
-              subPath: hqlicense
+              mountPath: /opt/codetogether/runtime/license
+              subPath: license
             {{ - end }}
           # 
           # Set container configuration
@@ -83,10 +83,10 @@ spec:
         - name: properties-volume
           secret:
             secretName: hqproperties
-        {{ - if .Values.hqlicense - }}
+        {{ - if .Values.license - }}
         - name: license-volume
           secret:
-            secretName: hqlicense
+            secretName: license
         {{ - end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
