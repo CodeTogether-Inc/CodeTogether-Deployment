@@ -42,7 +42,7 @@ openshift:
 # CodeTogether license provided by your CodeTogether Sales Representative.
 #
 license:
-  url: "https://your-hq-server/api/v1/live/license"
+  url: "https://your-hq-server"
   token: "my-hq-token"
 
 #
