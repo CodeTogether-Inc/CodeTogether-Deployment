@@ -1,7 +1,7 @@
 environment: production
 replicaCount: 2
 image:
-  tag: dev-6a0ed36693d3b7ce4fd1b1141a160a24e9ec8ba6
+  tag: prod-1c73b5aa304002a7412eadd86f063350ec78db8d
 
 ingress:
   enabled: false
