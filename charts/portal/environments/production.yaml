@@ -1,9 +1,10 @@
 environment: production
 replicaCount: 2
 image:
-  tag: c819a2996f8d96cfcadc73cba625d01d70f8df2b
+  tag: dev-6a0ed36693d3b7ce4fd1b1141a160a24e9ec8ba6
 
 ingress:
+  enabled: false
   hosts:
     - host: app.codetogether.com
       paths:
