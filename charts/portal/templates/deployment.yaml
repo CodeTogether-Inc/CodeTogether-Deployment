@@ -53,3 +53,12 @@ spec:
             periodSeconds: 5
             failureThreshold: 20
             successThreshold: 1
+          volumeMounts:
+            - name: kubeconfig
+              mountPath: /root/.kube/config
+              subPath: kube-config
+      volumes:
+      - name: kubeconfig
+        configMap:
+          name: portal-kubeconfig
+          
