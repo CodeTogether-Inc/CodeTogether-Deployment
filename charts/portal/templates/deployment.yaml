@@ -61,4 +61,5 @@ spec:
       - name: kubeconfig
         configMap:
           name: portal-kubeconfig
+          defaultMode: 0600
           
