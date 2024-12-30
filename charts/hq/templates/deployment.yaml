@@ -82,7 +82,7 @@ spec:
       volumes:
         - name: properties-volume
           secret:
-            secretName: hqproperties
+            secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}-hqproperties{{ else }}hqproperties{{ end }}
         {{ - if .Values.license - }}
         - name: license-volume
           secret:
