@@ -52,6 +52,8 @@ hqproperties:
   hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/insights
   hq.cassandra.db.password: cassandra
   hq.cassandra.db.username: cassandra
+  # default datacenter name is 'datacenter1'
+  # hq.cassandra.db.localdatacenter: datacenter1
 
 #
 # Enables and configures Ingress (default = Nginx). The className value can be used
