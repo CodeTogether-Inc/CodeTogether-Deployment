@@ -559,6 +559,26 @@ entries:
   codetogether-hq:
   - apiVersion: v2
     appVersion: 2023.3.0
+    created: "2025-01-02T22:36:36.167271648Z"
+    description: CodeTogether HQ provides advanced project insights for developers
+    digest: ad438298565ab958b1091744032b6c5a5d56357eac527af2bc5b5c339a3df177
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - hq
+    - insights
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-hq
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-hq-1.4.17/codetogether-hq-1.4.17.tgz
+    version: 1.4.17
+  - apiVersion: v2
+    appVersion: 2023.3.0
     created: "2025-01-02T22:04:41.358127868Z"
     description: CodeTogether HQ provides advanced project insights for developers
     digest: 9ac720657d85db6153379bab061b223a7ece6b4f5c218f42b43994a06a0df298
@@ -657,4 +677,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/helm-charts/releases/download/codetogether-hq-1.4.12/codetogether-hq-1.4.12.tgz
     version: 1.4.12
-generated: "2025-01-02T22:04:41.358394754Z"
+generated: "2025-01-02T22:36:36.167397102Z"
