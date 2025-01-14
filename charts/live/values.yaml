@@ -39,14 +39,11 @@ openshift:
   enabled: false
 
 #
-# Values required for establishing connection with the Intel server.
+# CodeTogether license provided by your CodeTogether Sales Representative.
 #
-intel:
-  # URL of the Intel server
-  url: "https://your-intel-server"
-  # Same secret value as the hq.collab.secret property in the cthq.properties file
-  # configured for the Intel server.
-  secret: "SECRET"
+license:
+  url: "https://your-hq-server"
+  token: "my-hq-token"
 
 #
 # Set CodeTogether runing mode and server's FQDN (HTTPS is mandatory for CodeTogether)
