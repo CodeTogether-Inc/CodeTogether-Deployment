@@ -1,10 +1,10 @@
 apiVersion: v2
-name: codetogether
-description: CodeTogether Live provides pair programming and collaborative coding
+name: codetogether-collab
+description: CodeTogether Collab
 
 type: application
-version: 1.4.22
-appVersion: "2024.2.0"
+version: 1.0.0
+appVersion: "2025.1.0"
 kubeVersion: ">= 1.18.0"
 
 icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
