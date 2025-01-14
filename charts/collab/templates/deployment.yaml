@@ -13,7 +13,7 @@ spec:
       annotations:
         checksum/coturn: {{ include (print $.Template.BasePath "/secret-coturn.yaml") . | sha256sum }}
         checksum/dashboard: {{ include (print $.Template.BasePath "/secret-dashboard.yaml") . | sha256sum }}
-        checksum/license: {{ include (print $.Template.BasePath "/secret-license.yaml") . | sha256sum }}
+        checksum/intel: {{ include (print $.Template.BasePath "/secret-intel.yaml") . | sha256sum }}
         checksum/sso: {{ include (print $.Template.BasePath "/secret-sso.yaml") . | sha256sum }}
         checksum/ssl: {{ include (print $.Template.BasePath "/secret-ssl.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
@@ -133,26 +133,16 @@ spec:
             value: {{ .Values.codetogether.timeZone.region | quote }}
           {{- end }}
 
-         - name: CT_LICENSEE
+          - name: CT_INTEL_URL
             valueFrom:
               secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-license
-                key: licensee
-          - name: CT_MAXCONNECTIONS
+                name: {{ include "codetogether.fullname" . }}-intel
+                key: url
+          - name: CT_INTEL_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-license
-                key: max_connections
-          - name: CT_EXPIRATION
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-license
-                key: expiration
-          - name: CT_SIGNATURE
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-license
-                key: signature
+                name: {{ include "codetogether.fullname" . }}-intel
+                key: secret
           {{- if .Values.dashboard.enabled }}
           - name: CT_DASHBOARD_USER
             valueFrom:

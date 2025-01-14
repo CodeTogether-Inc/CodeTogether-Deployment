@@ -1,0 +1,55 @@
+{{- if .Values.ingress.enabled -}}
+{{- $fullName := include "codetogether.fullname" . -}}
+{{- $svcPort := .Values.service.port -}}
+{{- $host := (urlParse .Values.codetogether.url).host }}
+{{- if semverCompare ">=1.19" .Capabilities.KubeVersion.GitVersion -}}
+apiVersion: networking.k8s.io/v1
+{{- else -}}
+apiVersion: networking.k8s.io/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "codetogether.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- with .Values.ingress.config }}
+  {{- toYaml . | nindent 4 }}  # This line injects the config settings
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.className (semverCompare ">=1.18" .Capabilities.KubeVersion.GitVersion) }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.externalTrafficPolicy }}
+  externalTrafficPolicy: {{ .Values.ingress.externalTrafficPolicy }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    {{- range .Values.ingress.tls }}
+    - hosts:
+        - {{ $host | quote }}
+      secretName: {{ .secretName }}
+    {{- end }}
+  {{- end }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: /
+            {{- if (semverCompare ">=1.18" $.Capabilities.KubeVersion.GitVersion) }}
+            pathType: "Prefix"
+            {{- end }}
+            backend:
+              {{- if semverCompare ">=1.19" $.Capabilities.KubeVersion.GitVersion }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+              {{- end }}
+{{- end }}
