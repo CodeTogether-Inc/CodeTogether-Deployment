@@ -3,6 +3,28 @@ entries:
   codetogether:
   - apiVersion: v2
     appVersion: 2024.2.0
+    created: "2025-01-14T21:56:50.714478136Z"
+    description: CodeTogether Live provides pair programming and collaborative coding
+    digest: 6a4901c61aef39db33ff7c21d2a356ef8dca5e0367a7169dc2ebd5e5b0a9df1b
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-1.4.23/codetogether-1.4.23.tgz
+    version: 1.4.23
+  - apiVersion: v2
+    appVersion: 2024.2.0
     created: "2025-01-02T22:04:41.231114791Z"
     description: CodeTogether Live provides pair programming and collaborative coding
     digest: 18f317af3a12d30985b6d2752e6e495d9cba43c502d29599a3d249861f15faa0
@@ -556,6 +578,29 @@ entries:
     urls:
     - legacy/codetogether-1.0.1.tgz
     version: 1.0.1
+  codetogether-collab:
+  - apiVersion: v2
+    appVersion: 2025.1.0
+    created: "2025-01-14T21:56:50.888215082Z"
+    description: CodeTogether Collab
+    digest: bf48e71a42dccf8f428c0cb1f77b032ecf4faa02b3a27400f42d886dad981989
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-collab
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-collab-1.0.0/codetogether-collab-1.0.0.tgz
+    version: 1.0.0
   codetogether-hq:
   - apiVersion: v2
     appVersion: 2023.3.0
@@ -677,4 +722,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/helm-charts/releases/download/codetogether-hq-1.4.12/codetogether-hq-1.4.12.tgz
     version: 1.4.12
-generated: "2025-01-02T22:36:36.167397102Z"
+generated: "2025-01-14T21:56:50.888560909Z"
