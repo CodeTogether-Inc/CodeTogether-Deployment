@@ -1,4 +1,9 @@
 # README.md Helm Chart for CodeTogether HQ
+# CodeTogether HQ Chart (Legacy)
+
+> **⚠️ Legacy Chart**  
+> This chart is now considered legacy and is not recommended for new deployments. Please use the `codetogether-intel` chart for configurations requiring `hqproperties.hq.collab.*`.
+
 
 ## Summary
 
@@ -43,9 +48,6 @@ The following table lists configurable parameters of the CodeTogether HQ chart a
 | `hqproperties.hq.sso.redirect.uri`             | Redirect URI for SSO                                                                        | `https://<server-fqdn>/api/v1/auth/sso/success/hq`  |
 | `hqproperties.hq.cassandra.db.password`        | Password for Cassandra database                                                             | `cassandra`                                               |
 | `hqproperties.hq.cassandra.db.username`        | Username for Cassandra database                                                             | `cassandra`                                               |
-| `hqproperties.hq.collab.url`               | URL of the collaboration server integrated with HQ                                              | `https://your-collab-server`                               |
-| `hqproperties.hq.collab.secret`            | Secret key for secure communication with the collaboration server                               | `your-collab-secret`                                       |
-
 | `ingress.enabled`                              | Enables ingress controller resource                                                         | `true`                                                    |
 | `ingress.annotations`                          | Annotations for ingress                                                                      | `{}`                                                      |
 | `ingress.tls.secretName`                       | TLS secret name for ingress                                                                 | `codetogether-hq-tls`                                     |
