@@ -1,0 +1,20 @@
+apiVersion: v2
+name: codetogether-intel
+description: CodeTogether Intel provides advanced project insights for developers
+
+type: application
+version: 1.4.15
+appVersion: "2023.3.0"
+kubeVersion: ">= 1.18.0"
+
+icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+home: https://www.codetogether.com
+
+maintainers:
+- email: info@codetogether.com
+  name: CodeTogether Inc.
+
+keywords:
+- codetogether
+- intel
+- insights

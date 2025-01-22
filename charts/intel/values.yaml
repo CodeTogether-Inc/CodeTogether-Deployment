@@ -1,0 +1,124 @@
+# Default values for CodeTogether Intel.
+# This is a YAML-formatted file.
+#
+# Kubernetes required version: v1.18+
+#
+# Example 'values.yaml' file for running CodeTogether Intel On-Premises.
+# Use this file as a template to create your own 'codetogether-values.yaml' file.
+# For full detail on the chart's prerequisites, settings and configuration, please refer to our official Helm repository at:
+#   https://artifacthub.io/packages/helm/codetogether/codetogether
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: hub.edge.codetogether.com/releases/codetogether-intel
+  pullPolicy: Always
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+#
+# Configure the source location for the Docker image, using the
+# credentials provided by your CodeTogether Sales Representative.
+#
+imageCredentials:
+  # pullSecret: "my-customer-pull-secret"
+  # Use pullSecret or configure credentials if using private Docker registry.
+  enabled: true
+  registry: hub.edge.codetogether.com
+  username: "my-customer-username"
+  password: "my-customer-password"
+  email: unused
+
+#
+# Set CodeTogether runing mode and server's FQDN (HTTPS is mandatory for CodeTogether)
+# Use 'direct' for simple evaluations and small deployments. CodeTogether can provide
+# guidance on the best deployment option based on your needs.
+#
+codetogether:
+  url: https://<server-fqdn>
+
+hqproperties:
+  hq.sso.client.id: CLIENTID.apps.googleusercontent.com
+  hq.sso.client.secret: CLIENTSECRET
+  hq.sso.client.issuer.url: https://accounts.google.com
+  name.attr: name
+  hq.db.type: CASSANDRA
+  hq.secret: SECRET1
+  hq.encryption.secret: SECRET2
+  hq.base.url: https://<server-fqdn>
+  hq.cassandra.db.name: insights
+  hq.cassandra.db.port: 9042
+  hq.cassandra.db.host: codetogether-cassandra.default.svc.cluster.local
+  hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/insights
+  hq.cassandra.db.password: cassandra
+  hq.cassandra.db.username: cassandra
+  hq.collab.url: https://<server-fqdn>
+  hq.collab.secret: SECRET3
+  # default datacenter name is 'datacenter1'
+  # hq.cassandra.db.localdatacenter: datacenter1
+
+#
+# Enables and configures Ingress (default = Nginx). The className value can be used
+# to change the default behavior. Please read the comments below to see details.
+#
+ingress:
+  enabled: true
+  annotations:
+    # For reference: This is required for k8 version < 1.18
+    # kubernetes.io/ingress.class: nginx
+    # external-dns.alpha.kubernetes.io/hostname: <server-fqdn>
+  # There are 3 ways to handle ingressClassName for the CodeTogether Ingress object:
+  # (1) set className to 'codetogether-nginx' to use the predefined IngressClass
+  # (2) set className to a custom value to use your own IngressClass
+  # (3) do not specify className to rely on the default IngressClass for the cluster (default)
+  # className: codetogether-nginx
+  tls:
+    secretName: codetogether-intel-tls
+
+#
+# The following sections provide default configurations for the
+# container and normally do not need to be modified.
+# -------------------------------------------------------------------------
+#
+service:
+  # annotations:
+    # external-dns.alpha.kubernetes.io/hostname: <server-fqdn>
+  type: ClusterIP
+  port: 1080
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "codetogether-intel"
+
+podAnnotations: {}
+
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1000
+
+readinessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 60
+  timeoutSeconds: 15
+  successThreshold: 1
+  failureThreshold: 1
+
+livenessProbe:
+  initialDelaySeconds: 60
+  periodSeconds: 60
+  timeoutSeconds: 15
+  successThreshold: 1
+  failureThreshold: 1
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+replicaCount: 1
