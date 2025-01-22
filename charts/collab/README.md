@@ -60,12 +60,7 @@ The following table lists configurable parameters of the CodeTogether Collab cha
 | `av.stunServers.enabled`                    | Enables private STUN servers                                                                  | `false`                                                   |
 | `av.stunServers.server`                     | STUN server address                                                                           | `coturn.example.com`                                      |
 | `av.stunServers.secret`                     | STUN server secret                                                                            | `my-secret`                                               |
-| `sso.enabled`                               | Enables Single Sign-On (SSO) integration                                                      | `false`                                                   |
-| `sso.provider`                              | SSO provider name (e.g., OKTA, MICROSOFT, KEYCLOAK)                                           | `OKTA`                                                    |
-| `sso.systemBaseUrl`                         | Base URL for the identity provider                                                            | `https://OKTA_DOMAIN/oauth2/default`                      |
-| `sso.clientID`                              | Client ID for the SSO provider                                                                | `my-oidc-id`                                              |
-| `sso.clientSecret`                          | Client secret for the SSO provider                                                            | `my-id-secret`                                            |
-| `service.type`                              | Kubernetes service type                                                                       | `ClusterIP`                                               |
+| `sso.enabled`                               | **Deprecated:** SSO integration is now handled by the Intel server, and no configuration is needed in this chart.                  | `false`                                                   |
 | `service.port`                              | Port for CodeTogether Collab service                                                         | `443`                                                     |
 | `restart.enabled`                           | Enables periodic restarts for the server                                                     | `true`                                                    |
 | `restart.cronPattern`                       | Cron pattern for scheduling restarts                                                         | `* 11 * * 0`                                              |
@@ -79,6 +74,14 @@ To create a namespace for CodeTogether Collab objects:
 ```bash
 $ kubectl create namespace codetogether-collab
 $ kubectl config set-context --current --namespace=codetogether-collab
+```
+
+## TLS
+
+To secure CodeTogether, you can add a `secret` that contains your TLS (Transport Layer Security) private key and certificate:
+
+```bash
+$ kubectl create secret tls codetogether-tls --key <your-private-key-filename> --cert <your-certificate-filename>
 ```
 
 ## Installing the Chart

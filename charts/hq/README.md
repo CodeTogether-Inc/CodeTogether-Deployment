@@ -37,10 +37,10 @@ The following table lists configurable parameters of the CodeTogether HQ chart a
 | `hqproperties.hq.secret`                       | Secret key for CodeTogether HQ                                                              | `SECRET1`                                                 |
 | `hqproperties.hq.encryption.secret`            | Encryption secret key for CodeTogether HQ                                                   | `SECRET2`                                                 |
 | `hqproperties.hq.base.url`                     | Base URL for CodeTogether HQ                                                                | `https://<server-fqdn>`                                   |
-| `hqproperties.hq.cassandra.db.name`            | Cassandra database name                                                                     | `insights`                                                |
+| `hqproperties.hq.cassandra.db.name`            | Cassandra database name                                                                     | `hq`                                                |
 | `hqproperties.hq.cassandra.db.port`            | Cassandra database port                                                                     | `9042`                                                    |
 | `hqproperties.hq.cassandra.db.host`            | Cassandra database host                                                                     | `codetogether-cassandra.default.svc.cluster.local`        |
-| `hqproperties.hq.sso.redirect.uri`             | Redirect URI for SSO                                                                        | `https://<server-fqdn>/api/v1/auth/sso/success/insights`  |
+| `hqproperties.hq.sso.redirect.uri`             | Redirect URI for SSO                                                                        | `https://<server-fqdn>/api/v1/auth/sso/success/hq`  |
 | `hqproperties.hq.cassandra.db.password`        | Password for Cassandra database                                                             | `cassandra`                                               |
 | `hqproperties.hq.cassandra.db.username`        | Username for Cassandra database                                                             | `cassandra`                                               |
 | `ingress.enabled`                              | Enables ingress controller resource                                                         | `true`                                                    |
@@ -65,6 +65,14 @@ It is a best practice to create a dedicated namespace for CodeTogether HQ object
 ```bash
 $ kubectl create namespace codetogether-hq
 $ kubectl config set-context --current --namespace=codetogether-hq
+```
+
+## TLS
+
+To secure CodeTogether, you can add a `secret` that contains your TLS (Transport Layer Security) private key and certificate:
+
+```bash
+$ kubectl create secret tls codetogether-hq-tls --key <your-private-key-filename> --cert <your-certificate-filename>
 ```
 
 ## Installing the Chart

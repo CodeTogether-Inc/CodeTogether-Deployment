@@ -81,6 +81,14 @@ $ kubectl create namespace codetogether-live
 $ kubectl config set-context --current --namespace=codetogether-live
 ```
 
+## TLS
+
+To secure CodeTogether, you can add a `secret` that contains your TLS (Transport Layer Security) private key and certificate:
+
+```bash
+$ kubectl create secret tls codetogether-tls --key <your-private-key-filename> --cert <your-certificate-filename>
+```
+
 ## Installing the Chart
 
 To install the chart with the release name `codetogether-live`:
