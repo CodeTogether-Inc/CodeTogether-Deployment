@@ -189,21 +189,6 @@ av:
   # jitsiUrl: "https://your.jtsi.server"
 
 #
-# Optionally enable integration with your SSO Provider. If using SSO, this
-# should be enabled on every CodeTogether server.
-#
-sso:
-  # Set this to 'true' if you are using an SSO provider.
-  enabled: false
-  # Replace below values with your actual SSO provider configuration.
-  provider: OKTA
-  systemBaseUrl: https://OKTA_DOMAIN/oauth2/default
-  clientID: "my-oidc-id"
-  clientSecret: "my-id-secret"
-  # Set this value to 'true' if you are using Oracle IDCS OpenID Connect.
-  jwksEndPointEnabled: false
-  offlineAccessScope: true
-#
 # The following sections provide default configurations for the
 # container and normally do not need to be modified.
 # -------------------------------------------------------------------------

@@ -60,7 +60,6 @@ The following table lists configurable parameters of the CodeTogether Collab cha
 | `av.stunServers.enabled`                    | Enables private STUN servers                                                                  | `false`                                                   |
 | `av.stunServers.server`                     | STUN server address                                                                           | `coturn.example.com`                                      |
 | `av.stunServers.secret`                     | STUN server secret                                                                            | `my-secret`                                               |
-| `sso.enabled`                               | **Deprecated:** SSO integration is now handled by the Intel server, and no configuration is needed in this chart.                  | `false`                                                   |
 | `service.port`                              | Port for CodeTogether Collab service                                                         | `443`                                                     |
 | `restart.enabled`                           | Enables periodic restarts for the server                                                     | `true`                                                    |
 | `restart.cronPattern`                       | Cron pattern for scheduling restarts                                                         | `* 11 * * 0`                                              |
