@@ -52,6 +52,8 @@ hqproperties:
   hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/insights
   hq.cassandra.db.password: cassandra
   hq.cassandra.db.username: cassandra
+  hq.collab.url: https://<server-fqdn>
+  hq.collab.secret: SECRET3
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 

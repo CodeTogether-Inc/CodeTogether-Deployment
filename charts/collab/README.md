@@ -29,7 +29,7 @@ The following table lists configurable parameters of the CodeTogether Collab cha
 | `imageCredentials.email`                    | Docker registry email                                                                          | `unused`                                                  |
 | `openshift.enabled`                         | Enables deployment in OpenShift                                                                | `false`                                                   |
 | `intel.url`                                 | URL of the Intel server                                                                        | `https://your-intel-server`                               |
-| `intel.secret`                              | Secret key for connecting to the Intel server                                                  | `SECRET`                                                  |
+| `intel.secret`                             | Secret key used to authenticate with the Intel server for secure communication                | `SECRET`                                                  |
 | `codetogether.mode`                         | CodeTogether running mode (`direct`, `locator-central`, or `locator-edge`)                     | `direct`                                                  |
 | `codetogether.url`                          | Fully Qualified Domain Name (FQDN) for the server                                              | `https://codetogether.local`                              |
 | `codetogether.trustAllCerts`                | Allows untrusted certificates if set to `true`                                                | `true`                                                    |
