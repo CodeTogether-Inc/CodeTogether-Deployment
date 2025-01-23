@@ -53,7 +53,7 @@ hqproperties:
   hq.cassandra.db.password: cassandra
   hq.cassandra.db.username: cassandra
   hq.sso.role.mapping.claim: roles
-  hq.sso.role.mappings: cthq_user,project-manager[pm],system-admin[sa]
+  hq.sso.role.mappings: cthq_user,project-manager[pm],sys-admin[sa]
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 
