@@ -48,6 +48,8 @@ The following table lists configurable parameters of the CodeTogether HQ chart a
 | `hqproperties.hq.sso.redirect.uri`             | Redirect URI for SSO                                                                        | `https://<server-fqdn>/api/v1/auth/sso/success/hq`  |
 | `hqproperties.hq.cassandra.db.password`        | Password for Cassandra database                                                             | `cassandra`                                               |
 | `hqproperties.hq.cassandra.db.username`        | Username for Cassandra database                                                             | `cassandra`                                               |
+| `hqproperties.hq.sso.role.mapping.claim`       | Specifies the claim in the SSO token containing user roles                                 | `roles`                                                   |
+| `hqproperties.hq.sso.role.mappings`           | Defines the role mappings for CodeTogether HQ                                              | `cthq_user,project-manager[pm],system-admin[sa]`          |
 | `ingress.enabled`                              | Enables ingress controller resource                                                         | `true`                                                    |
 | `ingress.annotations`                          | Annotations for ingress                                                                      | `{}`                                                      |
 | `ingress.tls.secretName`                       | TLS secret name for ingress                                                                 | `codetogether-hq-tls`                                     |
@@ -62,6 +64,20 @@ The following table lists configurable parameters of the CodeTogether HQ chart a
 | `livenessProbe.initialDelaySeconds`            | Initial delay before liveness probe is initiated                                            | `60`                                                      |
 | `livenessProbe.periodSeconds`                  | Period between liveness probes                                                              | `60`                                                      |
 | `livenessProbe.timeoutSeconds`                 | Timeout for liveness probes                                                                 | `15`                                                      |
+
+## Role Mappings Configuration
+
+The following parameters are used to configure role mappings for the application:
+
+- `hq.sso.role.mapping.claim`: Specifies the claim name in the SSO (Single Sign-On) token that contains the user's roles. In this case, it is set to `roles`.
+
+- `hq.sso.role.mappings`: Defines the mappings for user roles in the system. The mappings are configured as follows:
+  - `cthq_user`: Represents regular users with standard access to the system.
+  - `project-manager[pm]`: Represents project managers, identified with the `[pm]` suffix, who have elevated permissions to manage project-specific operations.
+  - `system-admin[sa]`: Represents system administrators, identified with the `[sa]` suffix, who have the highest level of access, including administrative privileges across the system.
+
+These role mappings ensure that users are assigned appropriate permissions based on their roles, as provided by the SSO service. Proper configuration of these parameters is crucial for maintaining secure and role-based access control within the application.
+
 
 ## Creating your Kubernetes Namespace for CodeTogether HQ
 

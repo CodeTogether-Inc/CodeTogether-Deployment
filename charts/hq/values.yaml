@@ -49,9 +49,11 @@ hqproperties:
   hq.cassandra.db.name: insights
   hq.cassandra.db.port: 9042
   hq.cassandra.db.host: codetogether-cassandra.default.svc.cluster.local
-  hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/insights
+  hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/hq
   hq.cassandra.db.password: cassandra
   hq.cassandra.db.username: cassandra
+  hq.sso.role.mapping.claim: roles
+  hq.sso.role.mappings: cthq_user,project-manager[pm],system-admin[sa]
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 
