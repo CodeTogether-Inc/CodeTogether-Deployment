@@ -1,9 +1,9 @@
-# Default values for CodeTogether HQ.
+# Default values for CodeTogether Intel.
 # This is a YAML-formatted file.
 #
 # Kubernetes required version: v1.18+
 #
-# Example 'values.yaml' file for running CodeTogether HQ On-Premises.
+# Example 'values.yaml' file for running CodeTogether Intel On-Premises.
 # Use this file as a template to create your own 'codetogether-values.yaml' file.
 # For full detail on the chart's prerequisites, settings and configuration, please refer to our official Helm repository at:
 #   https://artifacthub.io/packages/helm/codetogether/codetogether
@@ -11,7 +11,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  repository: hub.edge.codetogether.com/releases/codetogether-hq
+  repository: hub.edge.codetogether.com/releases/codetogether-intel
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
@@ -49,11 +49,11 @@ hqproperties:
   hq.cassandra.db.name: insights
   hq.cassandra.db.port: 9042
   hq.cassandra.db.host: codetogether-cassandra.default.svc.cluster.local
-  hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/hq
+  hq.sso.redirect.uri: https://<server-fqdn>/api/v1/auth/sso/success/insights
   hq.cassandra.db.password: cassandra
   hq.cassandra.db.username: cassandra
-  hq.sso.role.mapping.claim: roles
-  hq.sso.role.mappings: cthq_user,project-manager[pm],sys-admin[sa]
+  hq.collab.url: https://<server-fqdn>
+  hq.collab.secret: SECRET3
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 
@@ -73,7 +73,7 @@ ingress:
   # (3) do not specify className to rely on the default IngressClass for the cluster (default)
   # className: codetogether-nginx
   tls:
-    secretName: codetogether-hq-tls
+    secretName: codetogether-intel-tls
 
 #
 # The following sections provide default configurations for the
@@ -89,7 +89,7 @@ service:
 serviceAccount:
   create: true
   annotations: {}
-  name: "codetogether-hq"
+  name: "codetogether-intel"
 
 podAnnotations: {}
 

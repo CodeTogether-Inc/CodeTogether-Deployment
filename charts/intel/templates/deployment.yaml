@@ -44,11 +44,11 @@ spec:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
               subPath: cthq.properties
-            {{- if .Values.license }}
+            {{ - if .Values.license - }}
             - name: license-volume
               mountPath: /opt/codetogether/runtime/license
               subPath: license
-            {{- end }}
+            {{ - end }}
           # 
           # Set container configuration
           #
@@ -83,11 +83,11 @@ spec:
         - name: properties-volume
           secret:
             secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}-hqproperties{{ else }}hqproperties{{ end }}
-        {{- if .Values.license }}
+        {{ - if .Values.license - }}
         - name: license-volume
           secret:
             secretName: license
-        {{- end }}
+        {{ - end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
