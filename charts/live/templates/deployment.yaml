@@ -133,7 +133,7 @@ spec:
             value: {{ .Values.codetogether.timeZone.region | quote }}
           {{- end }}
 
-         - name: CT_LICENSEE
+          - name: CT_LICENSEE
             valueFrom:
               secretKeyRef:
                 name: {{ include "codetogether.fullname" . }}-license
