@@ -3,6 +3,28 @@ entries:
   codetogether:
   - apiVersion: v2
     appVersion: 2024.2.0
+    created: "2025-01-30T16:47:57.982462728Z"
+    description: CodeTogether Live provides pair programming and collaborative coding
+    digest: 5f08d3883f7bb8e73b89018b729fe8b71fadc5aed4e83a963546e7015d0c42d2
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-1.4.24/codetogether-1.4.24.tgz
+    version: 1.4.24
+  - apiVersion: v2
+    appVersion: 2024.2.0
     created: "2025-01-14T21:56:50.714478136Z"
     description: CodeTogether Live provides pair programming and collaborative coding
     digest: 6a4901c61aef39db33ff7c21d2a356ef8dca5e0367a7169dc2ebd5e5b0a9df1b
@@ -581,6 +603,28 @@ entries:
   codetogether-collab:
   - apiVersion: v2
     appVersion: 2025.1.0
+    created: "2025-01-30T16:47:58.083089579Z"
+    description: CodeTogether Collab
+    digest: 0e68a63bc0972d9d1b741c3d4ffe814b3f65a70b81beb98353ecf37f53c4102e
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-collab
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-collab-1.1.0/codetogether-collab-1.1.0.tgz
+    version: 1.1.0
+  - apiVersion: v2
+    appVersion: 2025.1.0
     created: "2025-01-14T21:56:50.888215082Z"
     description: CodeTogether Collab
     digest: bf48e71a42dccf8f428c0cb1f77b032ecf4faa02b3a27400f42d886dad981989
@@ -602,6 +646,26 @@ entries:
     - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-collab-1.0.0/codetogether-collab-1.0.0.tgz
     version: 1.0.0
   codetogether-hq:
+  - apiVersion: v2
+    appVersion: 2024.1.0
+    created: "2025-01-30T16:47:58.178880845Z"
+    description: CodeTogether HQ provides advanced project insights for developers
+    digest: b1cf729806e6d71aeae7d02a2ea806519ec130b49d6a2f5626b070cbe00ed976
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - hq
+    - insights
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-hq
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-hq-1.4.19/codetogether-hq-1.4.19.tgz
+    version: 1.4.19
   - apiVersion: v2
     appVersion: 2023.3.0
     created: "2025-01-02T22:36:36.167271648Z"
@@ -722,4 +786,25 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/helm-charts/releases/download/codetogether-hq-1.4.12/codetogether-hq-1.4.12.tgz
     version: 1.4.12
-generated: "2025-01-14T21:56:50.888560909Z"
+  codetogether-intel:
+  - apiVersion: v2
+    appVersion: 2025.1.0
+    created: "2025-01-30T16:47:58.267943171Z"
+    description: CodeTogether Intel provides advanced project insights for developers
+    digest: 2036a8487c7b9d6d093a4e0579cced7afead33cb4c8f051486c76695efbccfd3
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - intel
+    - insights
+    kubeVersion: '>= 1.18.0'
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-intel
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-intel-1.1.0/codetogether-intel-1.1.0.tgz
+    version: 1.1.0
+generated: "2025-01-30T16:47:58.268205912Z"
