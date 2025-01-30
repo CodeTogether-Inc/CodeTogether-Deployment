@@ -44,7 +44,6 @@ spec:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
               subPath: cthq.properties
-
           # 
           # Set container configuration
           #
@@ -79,7 +78,6 @@ spec:
         - name: properties-volume
           secret:
             secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}-hqproperties{{ else }}hqproperties{{ end }}
-
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

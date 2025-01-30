@@ -1,7 +1,7 @@
-services: 
-  codetogether-hq:
-    image: hub.edge.codetogether.com/releases/codetogether-hq:latest
-    container_name: codetogether-hq
+services:
+  codetogether-intel:
+    image: hub.edge.codetogether.com/releases/codetogether-intel:latest
+    container_name: codetogether-intel
     environment:
       - CT_HQ_BASE_URL=https://your-hq-server-fqdn
     networks:
