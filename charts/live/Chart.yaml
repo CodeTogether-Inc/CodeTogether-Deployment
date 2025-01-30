@@ -3,7 +3,7 @@ name: codetogether
 description: CodeTogether Live provides pair programming and collaborative coding
 
 type: application
-version: 1.4.23
+version: 1.4.24
 appVersion: "2024.2.0"
 kubeVersion: ">= 1.18.0"
 
