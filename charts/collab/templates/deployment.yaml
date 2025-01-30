@@ -14,7 +14,6 @@ spec:
         checksum/coturn: {{ include (print $.Template.BasePath "/secret-coturn.yaml") . | sha256sum }}
         checksum/dashboard: {{ include (print $.Template.BasePath "/secret-dashboard.yaml") . | sha256sum }}
         checksum/intel: {{ include (print $.Template.BasePath "/secret-intel.yaml") . | sha256sum }}
-        checksum/sso: {{ include (print $.Template.BasePath "/secret-sso.yaml") . | sha256sum }}
         checksum/ssl: {{ include (print $.Template.BasePath "/secret-ssl.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
@@ -168,35 +167,6 @@ spec:
           {{- else }}
           - name: CT_AUTO_RESTART_DISABLED
             value: "true"
-          {{- end }}
-          #
-          # Set SSO configuration
-          #
-          {{- if .Values.sso.enabled }}
-          - name: CT_SSO_PROVIDER
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-sso
-                key: provider
-          - name: CT_SSO_CLIENT_ID
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-sso
-                key: clientID
-          - name: CT_SSO_CLIENT_SECRET
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-sso
-                key: clientSecret
-          - name: CT_SSO_SYSTEM_BASE_URL
-            valueFrom:
-              secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-sso
-                key: systemBaseUrl
-          - name: CT_SSO_SECURE_JWKS_ENDPT_ENABLE
-            value: {{ .Values.sso.jwksEndPointEnabled | quote }}
-          - name: CT_REQUEST_OFFLINE_ACCESS
-            value: {{ .Values.sso.offlineAccessScope | default "true" | quote }}
           {{- end }}
 
           {{- if .Values.securityContext.readOnlyRootFilesystem}}
