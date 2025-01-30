@@ -200,7 +200,7 @@ service:
 serviceAccount:
   create: true
   annotations: {}
-  name: "codetogether"
+  name: "codetogether-collab"
 
 podAnnotations: {}
 
