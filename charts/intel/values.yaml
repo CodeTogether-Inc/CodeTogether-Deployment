@@ -15,6 +15,8 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
+  # Optional: specify a digest to use a specific image version, if provided will override the
+  digest: ""
 
 #
 # Configure the source location for the Docker image, using the
@@ -56,6 +58,12 @@ hqproperties:
   hq.collab.secret: SECRET3
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
+
+# Optional property, if provided the value from the secret will be used as the cassandra DB password
+# This will overwrite the value in the hqproperties hq.cassandra.db.password
+# The secret must have a key named 'cassandra.password'
+cassandra:
+  passwordSecret: ""
 
 #
 # Enables and configures Ingress (default = Nginx). The className value can be used
