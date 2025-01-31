@@ -13,15 +13,6 @@ service:
   type: ClusterIP
   port: 3000
 
-ingress:
-  enabled: true
-  className: nginx
-  hosts:
-    - host: portal.dev.codetogether.com
-      paths:
-        - path: /
-          pathType: Prefix
-
 resources:
   limits:
     cpu: 500m
