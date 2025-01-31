@@ -1,0 +1,44 @@
+name: Move Issues to QA Ready
+
+on:
+  pull_request:
+    types:
+      - closed  # Triggers when a PR is merged
+
+jobs:
+  move-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Install Required Dependencies
+        run: |
+          apt-get update && apt-get install -y jq
+          type -p curl >/dev/null || (apt update && apt install -y curl)
+          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg
+          chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
+          echo "deb [signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | tee /etc/apt/sources.list.d/github-cli.list > /dev/null
+          apt update && apt install -y gh
+
+      - name: Authenticate GitHub CLI
+        run: |
+          echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+
+      - name: Move issue to QA Ready
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
+          echo "PR Number: $PR_NUMBER"
+          
+          ISSUE_NUMBER=$(gh pr view $PR_NUMBER --json body -q '.body' | grep -oE '#[0-9]+' | tr -d '#')
+          echo "Extracted Issue Number: $ISSUE_NUMBER"
+
+          if [[ -n "$ISSUE_NUMBER" ]]; then
+            echo "Moving issue #$ISSUE_NUMBER to QA Ready..."
+            gh issue edit $ISSUE_NUMBER --add-label "QA Ready"
+          else
+            echo "❌ No issue found linked to PR. Make sure the PR body contains a linked issue like 'Fixes #42'"
+          fi
+
