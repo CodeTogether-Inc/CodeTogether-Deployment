@@ -1,31 +1,34 @@
-This is a Helm Chart repository for CodeTogether's Live, HQ, Collab, and Intel products.
+# CodeTogether Helm Chart Repository
 
-## Helm Charts Directory
+This repository contains Helm charts for deploying CodeTogether software, including:
 
-### CodeTogether Live
+Intelligence Suite – Engineering intelligence for data-driven insights
+Live Module – Real-time collaboration within the IDE
 
-The `codetogether/codetogether` Helm chart can be used to deploy the CodeTogether Live
-backend. Live provides teams the ability to code together real-time right from within 
-their IDE.
-
-### CodeTogether HQ
-
-The `codetogether/codetogether-hq` Helm chart can be used to deploy the CodeTogether HQ
-backend. HQ provides teams unique insights into project hotspots and areas of opportunity
-to foster collaboration and on-time delivery of software.
-
-### CodeTogether Collab
-
-The `codetogether/codetogether-collab` Helm chart can be used to deploy CodeTogether Collab, a collaboration-focused service that helps teams work together efficiently, improving team synergy and communication across projects.
+## Latest Helm Charts
 
 ### CodeTogether Intel
 
-The `codetogether/codetogether-intel` Helm chart can be used to deploy CodeTogether Intel. CodeTogether Intel is built to function even without connectivity to the server. During upgrade flows, CodeTogether Intel clients continue to track project activity locally and synchronize the appropriate activity when the server is available.
+The `codetogether/codetogether-intel` Helm chart deploys the latest version of the CodeTogether Intelligence Suite backend. The Intelligence Suite leverages DevEx Workflow AI to drive goal-oriented success. It operates independently of server connectivity, allowing clients to continue tracking project activity locally and synchronize once the server is available.
+
+### CodeTogether Collab
+
+The `codetogether/codetogether-collab` Helm chart deploys the latest version of the CodeTogether Live module backend. Live enables real-time collaborative coding within the IDE, enhancing team synergy and communication across projects.
+
+## Deprecated Helm Charts
+
+### CodeTogether HQ
+
+The `codetogether/codetogether-hq` Helm chart supports legacy users needing to deploy a previous version of the CodeTogether HQ Intelligence Suite backend.
+
+### CodeTogether Live
+
+The `codetogether/codetogether` Helm chart supports legacy users needing to deploy a previous version of the CodeTogether Live backend.
 
 ## Getting Started
 
-To begin using the repository, first add it to your Helm configuration:
+Add the CodeTogether repository to your Helm configuration:
 `helm repo add codetogether https://helm.codetogether.io`
 
-Then you can provision services using a command such as:
+Install a Helm chart using:
 `helm install codetogether codetogether/codetogether -f codetogether-values.yaml`
