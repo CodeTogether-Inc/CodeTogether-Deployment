@@ -42,12 +42,20 @@ spec:
           #         
           - name: CT_HQ_BASE_URL
             value: {{ .Values.codetogether.url | quote }}
+
           - name: CT_JAVA_OPTIONS
-            value: {{ .Values.hq.java_options | quote }}
+            value: "{{ if .Values.hq.javaOptions.enabled }} -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword={{ .Values.javaOptions.trustStorePassword }} {{ end }}"
+
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
               subPath: cthq.properties
+            {{- if .Values.enableCustomCACerts }}
+            - name: java-cacerts
+              mountPath: /etc/ssl/certs/java/cacerts
+              subPath: cacerts
+            {{- end }}
+
           # 
           # Set container configuration
           #
@@ -79,9 +87,11 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
-        - name: properties-volume
+        {{- if .Values.enableCustomCACerts }}
+        - name: java-cacerts
           secret:
-            secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}-hqproperties{{ else }}hqproperties{{ end }}
+            secretName: {{ .Values.cacertsSecretName }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

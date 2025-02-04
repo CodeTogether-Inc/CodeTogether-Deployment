@@ -80,6 +80,17 @@ To secure CodeTogether, you can add a `secret` that contains your TLS (Transport
 $ kubectl create secret tls codetogether-intel-tls --key <your-private-key-filename> --cert <your-certificate-filename>
 ```
 
+## CACERTS
+
+CodeTogether Intel now supports overriding the Java cacerts file using a Kubernetes Secret.
+
+```bash
+kubectl create secret generic custom-cacerts \
+  --from-file=cacerts=./cacerts \
+  -n codetogether-intel
+  ```
+
+
 ## Installing the Chart
 
 To install the chart with the release name `codetogether-intel`:
@@ -110,3 +121,4 @@ To uninstall the `codetogether-intel` release:
 
 ```bash
 $ helm uninstall codetogether-intel
+```

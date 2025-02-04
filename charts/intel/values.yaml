@@ -59,9 +59,34 @@ hqproperties:
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 
-# Optional property, allows setting java options for the hq container, e.g. "-Xmx1024m -Xms1024m"
+
+# Java configuration
+
+#
+# Enable optional Java CACerts replacement.
+# If set to `true`, a custom `cacerts` file will be mounted as a Kubernetes secret.
+#
+enableCustomCACerts: false
+
+#
+# Name of the secret containing the custom cacerts file.
+# Ensure the secret is created before deployment:
+# kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts
+#
+cacertsSecretName: "custom-java-cacerts"
+
+#
+# Java options for SSL configuration.
+# If `enableCustomCACerts` is true, these options will be set automatically.
+#
 hq:
-  java_options: ""
+  javaOptions: "-Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword=changeit"
+
+# Secrets for mounting certificates
+secrets:
+  cacerts:
+    name: "codetogether-intel-cacerts"
+    key: "cacerts"
 
 # Optional property, if provided the value from the secret will be used as the cassandra DB password
 # This will overwrite the value in the hqproperties hq.cassandra.db.password
