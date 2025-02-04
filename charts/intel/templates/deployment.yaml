@@ -42,6 +42,8 @@ spec:
           #         
           - name: CT_HQ_BASE_URL
             value: {{ .Values.codetogether.url | quote }}
+          - name: CT_JAVA_OPTIONS
+            value: {{ .Values.hq.java_options | quote }}
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties

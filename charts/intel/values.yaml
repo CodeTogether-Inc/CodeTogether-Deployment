@@ -59,6 +59,10 @@ hqproperties:
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 
+# Optional property, allows setting java options for the hq container, e.g. "-Xmx1024m -Xms1024m"
+hq:
+  java_options: ""
+
 # Optional property, if provided the value from the secret will be used as the cassandra DB password
 # This will overwrite the value in the hqproperties hq.cassandra.db.password
 # The secret must have a key named 'cassandra.password'
