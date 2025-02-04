@@ -109,6 +109,18 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+volumes:
+  - name: cacerts-volume
+    secret:
+      secretName: custom-cacerts
+
+volumeMounts:
+  - name: cacerts-volume
+    mountPath: /etc/ssl/certs/java/cacerts
+    subPath: cacerts
+    readOnly: true
+
+
 readinessProbe:
   initialDelaySeconds: 60
   periodSeconds: 60
