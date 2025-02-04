@@ -50,9 +50,11 @@ spec:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
               subPath: cthq.properties
+            {{- if .Values.enableCustomCACerts }}
             - name: java-cacerts
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
+            {{- end }}
 
           # 
           # Set container configuration
@@ -85,10 +87,11 @@ spec:
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       volumes:
+        {{- if .Values.enableCustomCACerts }}
         - name: java-cacerts
           secret:
-            secretName: java-cacerts
-            optional: true  # Ensures deployment works even if the secret isn't provided
+            secretName: {{ .Values.cacertsSecretName }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
