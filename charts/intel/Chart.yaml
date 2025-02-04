@@ -5,7 +5,6 @@ description: CodeTogether Intel provides advanced project insights for developer
 type: application
 version: 1.1.0
 appVersion: "2025.1.0"
-kubeVersion: ">= 1.18.0"
 
 icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
 home: https://www.codetogether.com
