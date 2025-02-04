@@ -59,6 +59,19 @@ hqproperties:
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 
+  # Java configuration
+
+javaOptions:
+  enabled: true
+  trustStorePath: "/etc/ssl/certs/java/cacerts"
+  trustStorePassword: "changeit"  # This should be configurable by the user
+
+# Secrets for mounting certificates
+secrets:
+  cacerts:
+    name: "codetogether-intel-cacerts"
+    key: "cacerts"
+
 # Optional property, if provided the value from the secret will be used as the cassandra DB password
 # This will overwrite the value in the hqproperties hq.cassandra.db.password
 # The secret must have a key named 'cassandra.password'
@@ -108,18 +121,6 @@ securityContext: {}
   # readOnlyRootFilesystem: true
   # runAsNonRoot: true
   # runAsUser: 1000
-
-volumes:
-  - name: cacerts-volume
-    secret:
-      secretName: custom-cacerts
-
-volumeMounts:
-  - name: cacerts-volume
-    mountPath: /etc/ssl/certs/java/cacerts
-    subPath: cacerts
-    readOnly: true
-
 
 readinessProbe:
   initialDelaySeconds: 60
