@@ -47,7 +47,11 @@ The following table lists configurable parameters of the CodeTogether Intel char
 | `hqproperties.hq.cassandra.db.username`        | Username for Cassandra database                                                             | `cassandra`                                               |
 | `hqproperties.hq.collab.url`               | URL of the collaboration server integrated with Intel                                              | `https://your-collab-server`                               |
 | `hqproperties.hq.collab.secret`            | Secret key for secure communication with the collaboration server                               | `SECRET`                                                  |
-
+| `java.customJavaOptions`                       | Additional Java options to be passed to the application                                      | `""`                                                     |
+| `java.customCacerts.enabled`                   | Enables mounting a custom Java trust store (cacerts)                                         | `false`                                                  |
+| `java.customCacerts.cacertsSecretName`         | Name of the Kubernetes secret containing the `cacerts` file                                  | `custom-java-cacerts`                                    |
+| `java.customCacerts.trustStorePasswordKey`     | (Optional) Key inside the Kubernetes secret containing the trust store password             | `trustStorePassword`                                     |
+| `cassandra.passwordSecret`                     | (Optional) Name of a Kubernetes secret containing the Cassandra database password.          |                                                           |
 | `ingress.enabled`                              | Enables ingress controller resource                                                         | `true`                                                    |
 | `ingress.annotations`                          | Annotations for ingress                                                                      | `{}`                                                      |
 | `ingress.tls.secretName`                       | TLS secret name for ingress                                                                 | `codetogether-intel-tls`                                     |
@@ -79,6 +83,27 @@ To secure CodeTogether, you can add a `secret` that contains your TLS (Transport
 ```bash
 $ kubectl create secret tls codetogether-intel-tls --key <your-private-key-filename> --cert <your-certificate-filename>
 ```
+
+## Custom Java Trust Store
+
+If your environment requires a custom CA certificate bundle, you can configure a custom Java trust store by creating a secret that stores the file and (optionally) the password:
+```bash
+$ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts
+```
+
+If password is required to access the trust store, store it in the same secret:
+```bash
+$ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts --from-literal=trustStorePassword='your-secure-password'
+```
+
+## Using Secret for Cassandra Password
+
+If you prefer not to store the Cassandra password in values.yaml, you can store it securely in a Kubernetes secret.
+
+```bash
+kubectl create secret generic cassandra-password-secret --from-literal=cassandra.password='your-secure-cassandra-password'
+```
+
 
 ## Installing the Chart
 
