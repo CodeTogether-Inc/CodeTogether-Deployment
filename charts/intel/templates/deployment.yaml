@@ -44,8 +44,8 @@ spec:
             value: {{ .Values.codetogether.url | quote }}
 
           - name: CT_JAVA_OPTIONS
-            value: "{{ if .Values.hq.javaOptions.enabled }} -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword={{ .Values.javaOptions.trustStorePassword }} {{ end }}"
-
+            value: "{{ if .Values.hq.javaOptions.enabled }} -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts -Djavax.net.ssl.trustStorePassword={{ .Values.javaOptions.trustStorePassword }} {{ end }} {{ .Values.hq.javaOptions }} {{ .Values.hq.customJavaOptions }}"         
+         
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
