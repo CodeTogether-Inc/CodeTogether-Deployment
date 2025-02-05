@@ -43,14 +43,10 @@ spec:
           - name: CT_HQ_BASE_URL
             value: {{ .Values.codetogether.url | quote }}
 
-          - name: CT_TRUSTSTORE_OPTIONS
-            value: >-
-              {{- if .Values.java.customCacerts.enabled }} 
-              -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
-              {{- end }} 
-              {{- if and .Values.java.customCacerts.enabled .Values.java.customCacerts.trustStorePasswordKey }}
-              -Djavax.net.ssl.trustStorePassword=$(TRUST_STORE_PASSWORD)
-              {{- end }}
+          {{- if .Values.java.customCacerts.enabled }} 
+          - name: CT_TRUST_STORE
+            value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
+          {{- end }}
 
           # Custom Java options (excluding trust store related settings)
           {{- if .Values.java.customJavaOptions }} 
@@ -60,7 +56,7 @@ spec:
 
           # Set trust store password only if trustStorePasswordKey is provided
           {{- if and .Values.java.customCacerts.enabled .Values.java.customCacerts.trustStorePasswordKey }}
-          - name: TRUST_STORE_PASSWORD
+          - name: CT_TRUST_STORE_PASSWD
             valueFrom:
               secretKeyRef:
                 name: {{ .Values.java.customCacerts.cacertsSecretName }}
