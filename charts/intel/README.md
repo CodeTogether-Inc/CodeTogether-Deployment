@@ -25,6 +25,7 @@ The following table lists configurable parameters of the CodeTogether Intel char
 | `image.repository`                             | Docker image repository for CodeTogether Intel                                                  | `hub.edge.codetogether.com/releases/codetogether-intel`      |
 | `image.pullPolicy`                             | Container image pull policy                                                                  | `Always`                                                  |
 | `image.tag`                                    | Tag for the CodeTogether Intel image                                                            | `latest`                                                  |
+| `image.digest`                                 | (Optional) Set to override the image tag, e.g. `sha256:1234567890`                           |                                                           | 
 | `imageCredentials.enabled`                     | Enables authentication for private Docker registry                                           | `true`                                                    |
 | `imageCredentials.registry`                    | Docker registry URL                                                                          | `hub.edge.codetogether.com`                               |
 | `imageCredentials.username`                    | Docker registry username                                                                     | `my-customer-username`                                    |

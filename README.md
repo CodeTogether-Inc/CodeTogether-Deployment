@@ -2,8 +2,8 @@
 
 This repository contains Helm charts for deploying CodeTogether software, including:
 
-Intelligence Suite – Engineering intelligence for data-driven insights
-Collabolation Module – Real-time collaboration within the IDE
+- Intelligence Suite – Engineering intelligence for data-driven insights
+- Collabolation Module – Real-time collaboration within the IDE
 
 ## Latest Helm Charts
 
