@@ -86,7 +86,9 @@ $ kubectl create secret tls codetogether-intel-tls --key <your-private-key-filen
 
 ## Custom Java Trust Store
 
-If your environment requires a custom CA certificate bundle, you can configure a custom Java trust store by creating a secret that stores the file and (optionally) the password:
+If your environment requires a custom CA certificate bundle, you can configure a custom Java trust store by creating a secret.
+
+If trust store is not protected by the password, use the following command to create the secret:
 ```bash
 $ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts --namespace=codetogether-intel
 ```
