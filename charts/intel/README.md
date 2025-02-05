@@ -10,7 +10,6 @@ This chart creates a CodeTogether Intel server deployment on a Kubernetes cluste
 
 This chart has been created with Helm v3 and tested with:
 
-- Kubernetes v1.18+
 - Helm v3.5+
 - Cassandra v3.11+
 
