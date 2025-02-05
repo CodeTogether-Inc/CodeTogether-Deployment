@@ -3,7 +3,7 @@ name: codetogether
 description: CodeTogether Live provides pair programming and collaborative coding
 
 type: application
-version: 1.4.24
+version: 1.4.25
 appVersion: "2024.2.0"
 
 icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
