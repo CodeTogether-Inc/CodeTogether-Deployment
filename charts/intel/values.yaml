@@ -61,7 +61,7 @@ hqproperties:
 
 # Optional property, if provided the value from the secret will be used as the cassandra DB password
 # This will overwrite the value in the hqproperties hq.cassandra.db.password
-# The secret must have a key named 'cassandra.password'
+# The secret must have a key named 'cassandraPassword'
 cassandra:
   passwordSecret: ""
 

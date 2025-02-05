@@ -103,7 +103,7 @@ $ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to
 If you prefer not to store the Cassandra password in values.yaml, you can store it securely in a Kubernetes secret.
 
 ```bash
-kubectl create secret generic cassandra-password-secret --from-literal=cassandra.password='your-secure-cassandra-password' --namespace=codetogether-intel
+kubectl create secret generic cassandra-password-secret --from-literal=cassandraPassword='your-secure-cassandra-password' --namespace=codetogether-intel
 ```
 
 
