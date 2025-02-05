@@ -3,7 +3,7 @@
 This repository contains Helm charts for deploying CodeTogether software, including:
 
 Intelligence Suite – Engineering intelligence for data-driven insights
-Live Module – Real-time collaboration within the IDE
+Collabolation Module – Real-time collaboration within the IDE
 
 ## Latest Helm Charts
 
@@ -13,7 +13,7 @@ The `codetogether/codetogether-intel` Helm chart deploys the latest version of t
 
 ### CodeTogether Collab
 
-The `codetogether/codetogether-collab` Helm chart deploys the latest version of the CodeTogether Live module backend. Live enables real-time collaborative coding within the IDE, enhancing team synergy and communication across projects.
+The `codetogether/codetogether-collab` Helm chart deploys the latest version of the CodeTogether Collabolation module backend. It enables real-time collaborative coding within the IDE, enhancing team synergy and communication across projects.
 
 ## Deprecated Helm Charts
 
