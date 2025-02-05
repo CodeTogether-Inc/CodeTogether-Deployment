@@ -88,12 +88,12 @@ $ kubectl create secret tls codetogether-intel-tls --key <your-private-key-filen
 
 If your environment requires a custom CA certificate bundle, you can configure a custom Java trust store by creating a secret that stores the file and (optionally) the password:
 ```bash
-$ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts
+$ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts --namespace=codetogether-intel
 ```
 
 If password is required to access the trust store, store it in the same secret:
 ```bash
-$ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts --from-literal=trustStorePassword='your-secure-password'
+$ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to/custom/cacerts --from-literal=trustStorePassword='your-secure-password' --namespace=codetogether-intel
 ```
 
 ## Using Secret for Cassandra Password
@@ -101,7 +101,7 @@ $ kubectl create secret generic custom-java-cacerts --from-file=cacerts=/path/to
 If you prefer not to store the Cassandra password in values.yaml, you can store it securely in a Kubernetes secret.
 
 ```bash
-kubectl create secret generic cassandra-password-secret --from-literal=cassandra.password='your-secure-cassandra-password'
+kubectl create secret generic cassandra-password-secret --from-literal=cassandra.password='your-secure-cassandra-password' --namespace=codetogether-intel
 ```
 
 
