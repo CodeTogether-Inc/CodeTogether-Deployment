@@ -49,7 +49,7 @@ spec:
               -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
               {{- end }} 
               {{- if and .Values.java.customCacerts.enabled .Values.java.customCacerts.trustStorePasswordKey }}
-              -Djavax.net.ssl.trustStorePassword=${TRUST_STORE_PASSWORD}
+              -Djavax.net.ssl.trustStorePassword=$(TRUST_STORE_PASSWORD)
               {{- end }}
 
           # Custom Java options (excluding trust store related settings)
