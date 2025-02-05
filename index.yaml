@@ -648,6 +648,25 @@ entries:
   codetogether-hq:
   - apiVersion: v2
     appVersion: 2024.1.0
+    created: "2025-02-05T20:10:34.113108741Z"
+    description: CodeTogether HQ provides advanced project insights for developers
+    digest: 651bbf32cd12f89000662f8e6e8d2753dd371625fc37d23c8eb217ac3caf0eab
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - hq
+    - insights
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-hq
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-hq-1.4.20/codetogether-hq-1.4.20.tgz
+    version: 1.4.20
+  - apiVersion: v2
+    appVersion: 2024.1.0
     created: "2025-01-30T16:47:58.178880845Z"
     description: CodeTogether HQ provides advanced project insights for developers
     digest: b1cf729806e6d71aeae7d02a2ea806519ec130b49d6a2f5626b070cbe00ed976
@@ -807,4 +826,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-intel-1.1.0/codetogether-intel-1.1.0.tgz
     version: 1.1.0
-generated: "2025-01-30T16:47:58.268205912Z"
+generated: "2025-02-05T20:10:34.113201475Z"
