@@ -31,19 +31,49 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          image: >-
+            {{ .Values.image.repository }}
+            {{- if .Values.image.digest }}@{{ .Values.image.digest }}
+            {{- else }}:{{ .Values.image.tag | default .Chart.AppVersion }}{{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-
           env:
           #
           # Set CodeTogether runtime configuration
           #         
           - name: CT_HQ_BASE_URL
             value: {{ .Values.codetogether.url | quote }}
+
+          {{- if .Values.java.customCacerts.enabled }} 
+          - name: CT_TRUST_STORE
+            value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
+          {{- end }}
+
+          # Custom Java options (excluding trust store related settings)
+          {{- if .Values.java.customJavaOptions }} 
+          - name: CT_JAVA_OPTIONS
+            value: "{{ .Values.java.customJavaOptions | default "" }}"
+          {{- end }}
+
+          # Set trust store password only if trustStorePasswordKey is provided
+          {{- if and .Values.java.customCacerts.enabled .Values.java.customCacerts.trustStorePasswordKey }}
+          - name: CT_TRUST_STORE_PASSWD
+            valueFrom:
+              secretKeyRef:
+                name: {{ .Values.java.customCacerts.cacertsSecretName }}
+                key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
+                optional: true  # Ensures the key is optional
+          {{- end }}
+
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
               subPath: cthq.properties
+            {{- if .Values.java.customCacerts.enabled }}
+            - name: java-cacerts
+              mountPath: /etc/ssl/certs/java/cacerts
+              subPath: cacerts
+            {{- end }}
+
           # 
           # Set container configuration
           #
@@ -78,6 +108,11 @@ spec:
         - name: properties-volume
           secret:
             secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}-hqproperties{{ else }}hqproperties{{ end }}
+        {{- if .Values.java.customCacerts.enabled }}
+        - name: java-cacerts
+          secret:
+            secretName: {{ .Values.java.customCacerts.cacertsSecretName }}
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

@@ -15,6 +15,8 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
+  # Optional: specify a digest to use a specific image version, if provided will override the
+  digest: ""
 
 #
 # Configure the source location for the Docker image, using the
@@ -56,6 +58,42 @@ hqproperties:
   hq.collab.secret: SECRET3
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
+
+# Optional property, if provided the value from the secret will be used as the cassandra DB password
+# This will overwrite the value in the hqproperties hq.cassandra.db.password
+# The secret must have a key named 'cassandraPassword'
+cassandra:
+  passwordSecret: ""
+
+java:
+  customCacerts:
+    enabled: false  # Set to 'true' to enable custom Java trust store (cacerts) support.
+
+    # Name of the Kubernetes secret that contains the custom Java trust store (cacerts) file.
+    # This secret should be created before deploying the application using:
+    #   kubectl create secret generic custom-java-cacerts \
+    #     --from-file=cacerts=/path/to/custom/cacerts
+    #
+    # If a password is required for the trust store, it can optionally be added to the same secret (see below).
+    #
+    # The 'cacerts' file is mounted to the container at '/etc/ssl/certs/java/cacerts'.
+    cacertsSecretName: "custom-java-cacerts"
+
+    # (Optional) The key inside the Kubernetes secret that holds the trust store password.
+    # If a password is required for the custom trust store, store it in the same secret as a key-value pair:
+    #   kubectl create secret generic custom-java-cacerts \
+    #     --from-file=cacerts=/path/to/custom/cacerts \
+    #     --from-literal=trustStorePassword='your-secure-password'
+    #
+    # If this key is not present in the secret, no trust store password will be set.
+    # trustStorePasswordKey: "trustStorePassword"
+
+  # Additional custom Java options to be passed to the application.
+  # These options will be appended to the CT_JAVA_OPTIONS environment variable.
+  #
+  # Example:
+  # customJavaOptions: "-Xms512m -Xmx2g -XX:+UseG1GC"
+  customJavaOptions: ""
 
 #
 # Enables and configures Ingress (default = Nginx). The className value can be used

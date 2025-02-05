@@ -1,0 +1,37 @@
+name: Helm Template Validation
+
+on:
+  pull_request:
+    branches: [main, dev]
+
+jobs:
+  helm-lint:
+    name: Validate Helm Charts
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Install Required Dependencies
+        run: |
+          apt-get update && apt-get install -y unzip
+
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+
+      - name: Validate Collab Chart
+        run: |
+          helm template collab ./charts/collab --values ./charts/collab/values.yaml
+
+      - name: Validate HQ Chart
+        run: |
+          helm template hq ./charts/hq --values ./charts/hq/values.yaml
+
+      - name: Validate Intel Chart
+        run: |
+          helm template intel ./charts/intel --values ./charts/intel/values.yaml
+
+      - name: Validate Live Chart
+        run: |
+          helm template live ./charts/live --values ./charts/live/values.yaml
