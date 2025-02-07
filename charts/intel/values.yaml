@@ -40,6 +40,8 @@ codetogether:
   url: https://<server-fqdn>
 
 hqproperties:
+  # Optional property, if provided the value from the secret will be used as the hqproperties secret
+  secretRef: ""
   hq.sso.client.id: CLIENTID.apps.googleusercontent.com
   hq.sso.client.secret: CLIENTSECRET
   hq.sso.client.issuer.url: https://accounts.google.com
@@ -58,12 +60,6 @@ hqproperties:
   hq.collab.secret: SECRET3
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
-
-# Optional property, if provided the value from the secret will be used as the cassandra DB password
-# This will overwrite the value in the hqproperties hq.cassandra.db.password
-# The secret must have a key named 'cassandraPassword'
-cassandra:
-  passwordSecret: ""
 
 java:
   customCacerts:
