@@ -1,9 +1,37 @@
-services:
-  codetogether-intel:
-    image: hub.edge.codetogether.com/releases/codetogether-intel:latest
+services: 
+  codetogether-collab:
+    image: registry.digitalocean.com/codetogether-registry/codetogether-collab:latest
+    container_name: codetogether-collab
+    environment:
+      - CT_LICENSE_URL=http://codetogether-intel:1080
+      - CT_SERVER_URL=https://your-collab-server-fqdn
+      - CT_INTEL_SECRET=your-collab-intel-secret
+      - CT_AV_ENABLED=false
+      - CT_AV_LAN_IP=auto
+    networks:
+      - hqnet
+    depends_on:
+       codetogether-hq:
+        condition: service_healthy
+  nginx:
+    image: nginx:latest
+    container_name: codetogether-nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/log:/var/log/nginx
+    networks:
+      - hqnet
+    depends_on:
+       codetogether-hq:
+        condition: service_healthy
+  codetogether-hq:
+    image: registry.digitalocean.com/codetogether-registry/codetogether-intel:latest
     container_name: codetogether-intel
     environment:
-      - CT_HQ_BASE_URL=https://your-hq-server-fqdn
+      - CT_HQ_BASE_URL=https://your-intel-server-fqdn
     networks:
       - hqnet
     volumes:
@@ -18,10 +46,12 @@ services:
       start_period: 20s
       interval: 10s
       timeout: 10s
-      retries: 30
+      retries: 50
   cassandra:
     image: cassandra:latest
     container_name: codetogether-cassandra
+    ports: 
+      - 9042:9042
     networks:
       - hqnet
     environment:
@@ -38,7 +68,7 @@ services:
       start_period: 30s
       interval: 10s
       timeout: 10s
-      retries: 20
+      retries: 70
 networks:
   hqnet:
     driver: bridge
