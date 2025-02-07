@@ -11,10 +11,7 @@ nameOverride: ""
 fullnameOverride: ""
 
 image:
-  # By default use DockerHub repository.
-  repository: codetogether/codetogether-collab
-  # Uncomment to use CodeTogether private Docker registry.
-  # repository: hub.edge.codetogether.com/releases/codetogether
+  repository: hub.edge.codetogether.com/releases/codetogether-collab
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
