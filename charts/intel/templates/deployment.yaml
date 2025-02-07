@@ -107,8 +107,8 @@ spec:
       volumes:
         - name: properties-volume
           secret:
-            secretName: {{- if .Values.hqproperties.secretRef }}
-              {{- .Values.hqproperties.secretRef }}
+            secretName: {{- if .Values.hqpropertiessecret.enabled }}
+              {{- .Values.hqpropertiessecret.ref }}
             {{- else if .Values.fullnameOverride }}
               {{- printf "%s-hqproperties" .Values.fullnameOverride }}
             {{- else }}

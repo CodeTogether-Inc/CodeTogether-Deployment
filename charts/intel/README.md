@@ -31,7 +31,8 @@ The following table lists configurable parameters of the CodeTogether Intel char
 | `imageCredentials.password`                    | Docker registry password                                                                     | `my-customer-password`                                    |
 | `imageCredentials.email`                       | Docker registry email                                                                        | `unused`                                                  |
 | `codetogether.url`                             | Full URL for the CodeTogether Intel server                                                     | `https://<server-fqdn>`                                   |
-| `hqproperties.secretRef`                     | (Optional) Name of a Kubernetes secret containing the hqproperties secret. If provided, will override the other values in the hqproperties section     | `kubernetes-secret-name` |
+| `hqpropertiessecret.enabled`                     | (Optional) If true, the value in hqpropertiessecret.ref will be used in place of the hqproperties values     | `false` |
+| `hqpropertiessecret.ref`                     | (Optional) Name of a Kubernetes secret containing the hqproperties secret. If provided, will override the other values in the hqproperties section     | `kubernetes-secret-name` |
 | `hqproperties.hq.sso.client.id`                | Client ID for Single Sign-On (SSO)                                                          | `CLIENTID.apps.googleusercontent.com`                     |
 | `hqproperties.hq.sso.client.secret`            | Client Secret for Single Sign-On (SSO)                                                      | `CLIENTSECRET`                                            |
 | `hqproperties.hq.sso.client.issuer.url`        | Issuer URL for Single Sign-On (SSO)                                                         | `https://accounts.google.com`                             |
