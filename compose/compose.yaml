@@ -9,9 +9,9 @@ services:
       - CT_AV_ENABLED=false
       - CT_AV_LAN_IP=auto
     networks:
-      - hqnet
+      - codetogethernet
     depends_on:
-       codetogether-hq:
+       codetogether-intel:
         condition: service_healthy
   nginx:
     image: nginx:latest
@@ -23,17 +23,17 @@ services:
       - ./nginx/ssl:/etc/nginx/ssl
       - ./nginx/log:/var/log/nginx
     networks:
-      - hqnet
+      - codetogethernet
     depends_on:
-       codetogether-hq:
+       codetogether-intel:
         condition: service_healthy
-  codetogether-hq:
+  codetogether-intel:
     image: registry.digitalocean.com/codetogether-registry/codetogether-intel:latest
     container_name: codetogether-intel
     environment:
       - CT_HQ_BASE_URL=https://your-intel-server-fqdn
     networks:
-      - hqnet
+      - codetogethernet
     volumes:
       - ./cthq.properties:/opt/codetogether/runtime/cthq.properties:ro
     ports:
@@ -42,7 +42,7 @@ services:
       cassandra:
         condition: service_healthy
     healthcheck:
-      test: ["CMD", "grep", "-q", "CodeTogether HQ backend started", "/var/log/codetogether-runtime/server.log"]
+      test: ["CMD", "grep", "-q", "CodeTogether Intel backend started", "/var/log/codetogether-runtime/server.log"]
       start_period: 20s
       interval: 10s
       timeout: 10s
@@ -53,7 +53,7 @@ services:
     ports: 
       - 9042:9042
     networks:
-      - hqnet
+      - codetogethernet
     environment:
       - HEAP_NEWSIZE=96M
       - MAX_HEAP_SIZE=512M
@@ -70,5 +70,5 @@ services:
       timeout: 10s
       retries: 70
 networks:
-  hqnet:
+  codetogethernet:
     driver: bridge
