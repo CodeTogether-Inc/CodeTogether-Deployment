@@ -107,7 +107,13 @@ spec:
       volumes:
         - name: properties-volume
           secret:
-            secretName: {{ if .Values.fullnameOverride }}{{ .Values.fullnameOverride }}-hqproperties{{ else }}hqproperties{{ end }}
+            secretName: {{- if .Values.hqpropertiessecret.enabled }}
+              {{- .Values.hqpropertiessecret.ref }}
+            {{- else if .Values.fullnameOverride }}
+              {{- printf "%s-hqproperties" .Values.fullnameOverride }}
+            {{- else }}
+              {{- "hqproperties" }}
+            {{- end }}
         {{- if .Values.java.customCacerts.enabled }}
         - name: java-cacerts
           secret:
