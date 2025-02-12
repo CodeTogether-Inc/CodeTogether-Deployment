@@ -59,11 +59,10 @@ hqproperties:
   # default datacenter name is 'datacenter1'
   # hq.cassandra.db.localdatacenter: datacenter1
 
-# Optional property, if provided the value from the secret will be used as the cassandra DB password
-# This will overwrite the value in the hqproperties hq.cassandra.db.password
-# The secret must have a key named 'cassandraPassword'
-cassandra:
-  passwordSecret: ""
+# Optional properties, if enabled is true, the values in the secret will be used as the hqproperties secret
+hqpropertiessecret:
+  enabled: false
+  ref: "intel-test-hqproperties-arbitrary"
 
 java:
   customCacerts:
