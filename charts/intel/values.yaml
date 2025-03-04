@@ -138,6 +138,16 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+ai:
+  mode: "bundled"  # Options: bundled | external
+  provider: "openai"  # Can be "openai" or "custom"
+  openai:
+    api_key: "YOUR_OPENAI_API_KEY"
+    model: "gpt-4-turbo"  # Available models: gpt-4-turbo, gpt-3.5-turbo
+  external:
+    url: ""  # External AI service URL
+    api_key: ""  # API key for authentication
+
 readinessProbe:
   initialDelaySeconds: 60
   periodSeconds: 60
