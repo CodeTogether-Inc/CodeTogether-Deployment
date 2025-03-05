@@ -144,9 +144,15 @@ ai:
   openai:
     api_key: "YOUR_OPENAI_API_KEY"
     model: "gpt-4-turbo"  # Available models: gpt-4-turbo, gpt-3.5-turbo
+  resources:
+    cpu: "2"
+    memory: "4Gi"
+    gpu: false
   external:
     url: ""  # External AI service URL
-    api_key: ""  # API key for authentication
+    apiKeySecret:
+      name: "ai-secrets"
+      key: "external-ai-key"
 
 readinessProbe:
   initialDelaySeconds: 60

@@ -64,8 +64,8 @@ spec:
           - name: AI_EXTERNAL_API_KEY
             valueFrom:
               secretKeyRef:
-                name: ai-secrets
-                key: external-ai-key
+                name: {{ .Values.ai.external.apiKeySecret.name }}
+                key: {{ .Values.ai.external.apiKeySecret.key }}
           {{- end }}
           #
           # Set CodeTogether runtime configuration
