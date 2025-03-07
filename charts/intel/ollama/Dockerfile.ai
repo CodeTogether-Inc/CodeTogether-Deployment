@@ -1,0 +1,19 @@
+# Use Ollama as the base image
+FROM ollama/ollama
+
+# Define the models to be included
+#ARG MODELS="qwen2.5-coder:3b"
+ARG MODELS
+
+ENV OLLAMA_KEEP_ALIVE=24h
+
+# Pre-load the models at build time **directly in /root/.ollama**
+RUN mkdir -p /root/.ollama && \
+    ollama serve & server=$! ; \
+    sleep 5 ; \
+    for m in $MODELS ; do ollama pull $m ; done ; \
+    kill $server
+
+CMD [ "serve" ]
+
+

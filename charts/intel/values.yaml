@@ -140,19 +140,20 @@ securityContext: {}
 
 ai:
   mode: "bundled"  # Options: bundled | external
-  provider: "openai"  # Can be "openai" or "custom"
-  openai:
-    api_key: "YOUR_OPENAI_API_KEY"
-    model: "gpt-4-turbo"  # Available models: gpt-4-turbo, gpt-3.5-turbo
+  provider: "ollama"  # No OpenAI dependency
   resources:
-    cpu: "2"
-    memory: "4Gi"
-    gpu: false
-  external:
-    url: ""  # External AI service URL
-    apiKeySecret:
-      name: "ai-secrets"
-      key: "external-ai-key"
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+      gpu: false
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+      gpu: false
+  image:
+    repository: registry.digitalocean.com/codetogether-registry/ai-summarization
+    tag: latest
+
 
 readinessProbe:
   initialDelaySeconds: 60

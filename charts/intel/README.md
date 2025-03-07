@@ -144,9 +144,9 @@ ai:
 To securely store API keys for AI integration, you can create a `secret` that contains the necessary authentication credentials:
 
 ```bash
-$ kubectl create secret generic ai-secrets \
-  --from-literal=external-ai-key="<your-external-ai-key>" \
-  -n codetogether-intel
+kubectl create secret generic ai-external-secret \
+  --from-literal=api-key='your-external-ai-key' \
+  --namespace=<your-namespace>
 ```
 
 ## Installing the Chart
