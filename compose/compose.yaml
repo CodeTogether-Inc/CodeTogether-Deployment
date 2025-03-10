@@ -1,10 +1,11 @@
 services: 
   codetogether-collab:
-    image: registry.digitalocean.com/codetogether-registry/codetogether-collab:latest
+    image: hub.edge.codetogether.com/releases/codetogether-collab:latest
     container_name: codetogether-collab
     environment:
-      - CT_LICENSE_URL=http://codetogether-intel:1080
+      # your collab/pair programming server URL
       - CT_SERVER_URL=https://your-collab-server-fqdn
+      - CT_INTEL_URL=http://codetogether-intel:1080
       - CT_INTEL_SECRET=your-collab-intel-secret
       - CT_AV_ENABLED=false
       - CT_AV_LAN_IP=auto
@@ -28,7 +29,7 @@ services:
        codetogether-intel:
         condition: service_healthy
   codetogether-intel:
-    image: registry.digitalocean.com/codetogether-registry/codetogether-intel:latest
+    image: hub.edge.codetogether.com/releases/codetogether-intel:latest
     container_name: codetogether-intel
     environment:
       - CT_HQ_BASE_URL=https://your-intel-server-fqdn
