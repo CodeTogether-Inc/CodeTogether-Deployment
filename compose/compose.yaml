@@ -3,7 +3,7 @@ services:
     image: registry.digitalocean.com/codetogether-registry/codetogether-collab:latest
     container_name: codetogether-collab
     environment:
-      - CT_LICENSE_URL=http://codetogether-intel:1080
+      - CT_INTEL_URL=http://codetogether-intel:1080
       - CT_SERVER_URL=https://your-collab-server-fqdn
       - CT_INTEL_SECRET=your-collab-intel-secret
       - CT_AV_ENABLED=false
