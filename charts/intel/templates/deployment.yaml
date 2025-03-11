@@ -28,22 +28,57 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       containers:
+        {{- if eq .Values.ai.mode "bundled" }}
+        - name: codetogether-llm
+          image: "{{ .Values.ai.image.repository }}:{{ .Values.ai.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - name: ai
+              containerPort: 8000
+              protocol: TCP
+          resources:
+            requests:
+              cpu: {{ .Values.ai.resources.requests.cpu | quote }}
+              memory: {{ .Values.ai.resources.requests.memory | quote }}
+            limits:
+              cpu: {{ .Values.ai.resources.limits.cpu | quote }}
+              memory: {{ .Values.ai.resources.limits.memory | quote }}
+        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: >-
-            {{ .Values.image.repository }}
-            {{- if .Values.image.digest }}@{{ .Values.image.digest }}
-            {{- else }}:{{ .Values.image.tag | default .Chart.AppVersion }}{{- end }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
+          - name: AI_MODE
+            value: {{ .Values.ai.mode | quote }}
+          {{- if eq .Values.ai.mode "bundled" }}
+          - name: AI_BUNDLED_URL
+            value: "http://codetogether-llm:8000"
+          {{- end }}
+          {{- if eq .Values.ai.mode "external" }}
+          - name: AI_PROVIDER
+            valueFrom:
+              configMapKeyRef:
+                name: ai-config
+                key: ai_provider
+          - name: AI_EXTERNAL_URL
+            valueFrom:
+              configMapKeyRef:
+                name: ai-config
+                key: ai_url
+          - name: AI_EXTERNAL_API_KEY
+            valueFrom:
+              secretKeyRef:
+                name: ai-external-secret
+                key: api-key
+          {{- end }}
           #
           # Set CodeTogether runtime configuration
           #         
           - name: CT_HQ_BASE_URL
             value: {{ .Values.codetogether.url | quote }}
-
-          {{- if .Values.java.customCacerts.enabled }} 
+          {{- if .Values.java.customCacerts.enabled }}
           - name: CT_TRUST_STORE
             value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
           {{- end }}
@@ -61,7 +96,7 @@ spec:
               secretKeyRef:
                 name: {{ .Values.java.customCacerts.cacertsSecretName }}
                 key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
-                optional: true  # Ensures the key is optional
+                optional: true
           {{- end }}
 
           volumeMounts:
@@ -83,11 +118,15 @@ spec:
               protocol: TCP
           
           livenessProbe:
+            httpGet:
+              path: /
+              port: http
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.livenessProbe.successThreshold }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
+          readinessProbe:
             httpGet:
               path: /
               port: http

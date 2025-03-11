@@ -53,6 +53,15 @@ The following table lists configurable parameters of the CodeTogether Intel char
 | `java.customCacerts.enabled`                   | Enables mounting a custom Java trust store (cacerts)                                         | `false`                                                  |
 | `java.customCacerts.cacertsSecretName`         | Name of the Kubernetes secret containing the `cacerts` file                                  | `custom-java-cacerts`                                    |
 | `java.customCacerts.trustStorePasswordKey`     | (Optional) Key inside the Kubernetes secret containing the trust store password             | `trustStorePassword`                                     |
+| `ai.mode`                                      | AI integration mode: `bundled` (deploy AI container) or `external` (use external AI service) | `"bundled"` |
+| `ai.provider`                                  | AI provider (`openai` or custom)                                                             | `"openai"` |
+| `ai.model`                                     | AI model to use (`gpt-4-turbo`, `gpt-3.5-turbo`, etc.)                                       | `"gpt-4-turbo"` |
+| `ai.resources.cpu`                             | CPU allocation for AI container                                                             | `"2"` |
+| `ai.resources.memory`                          | Memory allocation for AI container                                                          | `"4Gi"` |
+| `ai.resources.gpu`                             | GPU support (future feature)                                                                | `false` |
+| `ai.external.url`                              | URL for external AI service (if `mode: external`)                                          | `""` |
+| `ai.external.apiKeySecret.name`                | Name of the Kubernetes secret containing the external AI API key                           | `"ai-secrets"` |
+| `ai.external.apiKeySecret.key`                 | Key name in the Kubernetes secret containing the API key                                   | `"external-ai-key"` |
 | `ingress.enabled`                              | Enables ingress controller resource                                                         | `true`                                                    |
 | `ingress.annotations`                          | Annotations for ingress                                                                      | `{}`                                                      |
 | `ingress.tls.secretName`                       | TLS secret name for ingress                                                                 | `codetogether-intel-tls`                                     |
@@ -107,6 +116,38 @@ If you prefer not to store the Cassandra password in values.yaml, you can store 
 kubectl create secret generic cassandra-password-secret --from-literal=cassandraPassword='your-secure-cassandra-password' --namespace=codetogether-intel
 ```
 
+## AI Integration and API Key Security
+
+This chart supports an AI container for generating summaries. Users can choose between deploying an AI model inside the cluster (`bundled` mode) or connecting to an external AI service (`external` mode).
+
+### **Configuring AI Integration**
+Modify the `values.yaml` file to set AI mode, provider, and resources:
+
+```bash
+ai:
+  mode: "bundled"  # Options: bundled | external
+  provider: "openai"  # Can be "openai" or a custom provider
+  model: "gpt-4-turbo"
+  resources:
+    cpu: "2"
+    memory: "4Gi"
+    gpu: false
+  external:
+    url: ""  # External AI service URL
+    apiKeySecret:
+      name: "ai-secrets"
+      key: "external-ai-key"
+```
+
+## AI Secrets
+
+To securely store API keys for AI integration, you can create a `secret` that contains the necessary authentication credentials:
+
+```bash
+kubectl create secret generic ai-external-secret \
+  --from-literal=api-key='your-external-ai-key' \
+  --namespace=<your-namespace>
+```
 
 ## Installing the Chart
 
