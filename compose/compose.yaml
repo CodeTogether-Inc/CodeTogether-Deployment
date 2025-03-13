@@ -63,7 +63,7 @@ services:
       - ./cassandra-init.cql:/scripts/init.sql
       - ./cassandra-startup.sh:/scripts/startup.sh
       - ./data:/var/lib/cassandra
-    entrypoint: /scripts/startup.sh
+    entrypoint: ["/bin/sh", "-c", "chmod +x /scripts/startup.sh && /scripts/startup.sh"]
     healthcheck:
       test: ["CMD", "test", "-f", "/tmp/cassandra-ready"]
       start_period: 30s

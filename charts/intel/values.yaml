@@ -138,6 +138,23 @@ securityContext: {}
   # runAsNonRoot: true
   # runAsUser: 1000
 
+ai:
+  mode: "bundled"  # Options: bundled | external
+  provider: "ollama"  # No OpenAI dependency
+  resources:
+    requests:
+      cpu: "2"
+      memory: "4Gi"
+      gpu: false
+    limits:
+      cpu: "4"
+      memory: "8Gi"
+      gpu: false
+  image:
+    repository: registry.digitalocean.com/codetogether-registry/ai-summarization
+    tag: latest
+
+
 readinessProbe:
   initialDelaySeconds: 60
   periodSeconds: 60
