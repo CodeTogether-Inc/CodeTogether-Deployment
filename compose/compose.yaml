@@ -1,6 +1,6 @@
 services: 
   codetogether-collab:
-    image: registry.digitalocean.com/codetogether-registry/codetogether-collab:latest
+    image: hub.edge.codetogether.com/releases/codetogether-collab:latest
     container_name: codetogether-collab
     environment:
       # your collab/pair programming server URL
@@ -29,7 +29,7 @@ services:
        codetogether-intel:
         condition: service_healthy
   codetogether-intel:
-    image: registry.digitalocean.com/codetogether-registry/codetogether-intel:latest
+    image: hub.edge.codetogether.com/releases/codetogether-intel:latest
     container_name: codetogether-intel
     environment:
       - CT_HQ_BASE_URL=https://your-intel-server-fqdn
