@@ -32,6 +32,8 @@ services:
   codetogether-intel:
     image: hub.edge.codetogether.com/releases/codetogether-intel:latest
     container_name: codetogether-intel
+    env_file:
+      - .env
     networks:
       - codetogethernet
     volumes:
