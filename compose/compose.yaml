@@ -34,6 +34,8 @@ services:
     container_name: codetogether-intel
     env_file:
       - .env
+    environment:
+      - CT_HQ_BASE_URL=https://${INTEL_FQDN}
     networks:
       - codetogethernet
     volumes:
