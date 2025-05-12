@@ -1,6 +1,7 @@
 events {
     worker_connections  1024;
 }
+
 http {
     include       mime.types;
     default_type  application/octet-stream;
@@ -8,12 +9,12 @@ http {
     keepalive_timeout  65;
     server {
         listen       443 ssl http2;
-        server_name  <collab-server-fqdn>;
+        server_name  ${COLLAB_FQDN};
         proxy_buffer_size 128k;
         proxy_buffers 4 256k;
-        ssl_certificate      <path-to-ssl-bundle.crt>;
-        ssl_certificate_key  <path-to-ssl.key>;
-        ssl_dhparam          <path-to-dhparam.pem>;
+        ssl_certificate /etc/nginx/ssl/${SSL_COLLAB_CERT};
+        ssl_certificate_key /etc/nginx/ssl/${SSL_COLLAB_KEY};
+        ssl_dhparam /etc/nginx/ssl/${DHPARAM_PEM};
         ssl_prefer_server_ciphers on;
         ssl_protocols TLSv1.2;
         ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
@@ -22,7 +23,6 @@ http {
             set $realIP $remote_addr;
             set $forwardTo $proxy_add_x_forwarded_for;
             set $reqHost $http_host;
-            client_max_body_size 32M;
             if ($http_x_real_ip != '') {
                 set $realIP $http_x_real_ip;
             }
@@ -47,7 +47,7 @@ http {
         }
     }
     server {
-        server_name          <server-fqdn>;
+        server_name          ${INTEL_FQDN};
         listen               443 ssl http2;
 
         # configure proxy buffer sizes
@@ -55,9 +55,9 @@ http {
         proxy_buffers        4 256k;
 
         # setup the SSL certificate
-        ssl_certificate      <path-to-ssl-bundle.crt>;
-        ssl_certificate_key  <path-to-ssl.key>;
-        ssl_dhparam          <path-to-dhparam.pem>;
+        ssl_certificate /etc/nginx/ssl/${SSL_INTEL_CERT};
+        ssl_certificate_key /etc/nginx/ssl/${SSL_INTEL_KEY};
+        ssl_dhparam /etc/nginx/ssl/${DHPARAM_PEM};
         ssl_prefer_server_ciphers on;
         ssl_protocols        TLSv1.2;
         ssl_ciphers ECDHE-ECDSA-AES128-GCM-SHA256:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-ECDSA-AES256-GCM-SHA384:ECDHE-RSA-AES256-GCM-SHA384:ECDHE-ECDSA-CHACHA20-POLY1305:ECDHE-RSA-CHACHA20-POLY1305:DHE-RSA-AES128-GCM-SHA256:DHE-RSA-AES256-GCM-SHA384;
@@ -69,6 +69,7 @@ http {
             set $realIP      $remote_addr;
             set $forwardTo   $proxy_add_x_forwarded_for;
             set $reqHost     $http_host;
+            client_max_body_size 32M;
             if ($http_x_real_ip != '') {
                 set $realIP  $http_x_real_ip;
             }
