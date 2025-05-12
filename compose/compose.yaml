@@ -4,6 +4,8 @@ services:
   codetogether-collab:
     image: hub.edge.codetogether.com/releases/codetogether-collab:latest
     container_name: codetogether-collab
+    env_file:
+      - .env
     environment:
       - CT_SERVER_URL=https://${COLLAB_FQDN}
       - CT_INTEL_URL=http://codetogether-intel:1080
