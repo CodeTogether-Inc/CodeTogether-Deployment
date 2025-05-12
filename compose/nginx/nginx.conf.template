@@ -23,7 +23,6 @@ http {
             set $realIP $remote_addr;
             set $forwardTo $proxy_add_x_forwarded_for;
             set $reqHost $http_host;
-            client_max_body_size 32M;
             if ($http_x_real_ip != '') {
                 set $realIP $http_x_real_ip;
             }
@@ -70,6 +69,7 @@ http {
             set $realIP      $remote_addr;
             set $forwardTo   $proxy_add_x_forwarded_for;
             set $reqHost     $http_host;
+            client_max_body_size 32M;
             if ($http_x_real_ip != '') {
                 set $realIP  $http_x_real_ip;
             }
