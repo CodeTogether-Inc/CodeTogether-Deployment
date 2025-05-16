@@ -28,21 +28,23 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       containers:
-        {{- if eq .Values.ai.mode "bundled" }}
-        - name: codetogether-llm
-          image: "{{ .Values.ai.image.repository }}:{{ .Values.ai.image.tag }}"
-          imagePullPolicy: Always
-          ports:
-            - name: ai
-              containerPort: 8000
-              protocol: TCP
-          resources:
-            requests:
-              cpu: {{ .Values.ai.resources.requests.cpu | quote }}
-              memory: {{ .Values.ai.resources.requests.memory | quote }}
-            limits:
-              cpu: {{ .Values.ai.resources.limits.cpu | quote }}
-              memory: {{ .Values.ai.resources.limits.memory | quote }}
+        {{- if .Values.ai.enabled }}
+          {{- if eq .Values.ai.mode "bundled" }}
+          - name: codetogether-llm
+            image: "{{ .Values.ai.image.repository }}:{{ .Values.ai.image.tag }}"
+            imagePullPolicy: Always
+            ports:
+              - name: ai
+                containerPort: 8000
+                protocol: TCP
+            resources:
+              requests:
+                cpu: {{ .Values.ai.resources.requests.cpu | quote }}
+                memory: {{ .Values.ai.resources.requests.memory | quote }}
+              limits:
+                cpu: {{ .Values.ai.resources.limits.cpu | quote }}
+                memory: {{ .Values.ai.resources.limits.memory | quote }}
+          {{- end }}
         {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
@@ -56,22 +58,24 @@ spec:
           - name: AI_BUNDLED_URL
             value: "http://codetogether-llm:8000"
           {{- end }}
-          {{- if eq .Values.ai.mode "external" }}
-          - name: AI_PROVIDER
-            valueFrom:
-              configMapKeyRef:
-                name: ai-config
-                key: ai_provider
-          - name: AI_EXTERNAL_URL
-            valueFrom:
-              configMapKeyRef:
-                name: ai-config
-                key: ai_url
-          - name: AI_EXTERNAL_API_KEY
-            valueFrom:
-              secretKeyRef:
-                name: ai-external-secret
-                key: api-key
+          {{- if .Values.ai.enabled }}
+            {{- if eq .Values.ai.mode "external" }}
+            - name: AI_PROVIDER
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-config
+                  key: ai_provider
+            - name: AI_EXTERNAL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-config
+                  key: ai_url
+            - name: AI_EXTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-external-secret
+                  key: api-key
+            {{- end }}
           {{- end }}
           #
           # Set CodeTogether runtime configuration
