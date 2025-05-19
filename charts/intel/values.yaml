@@ -139,6 +139,7 @@ securityContext: {}
   # runAsUser: 1000
 
 ai:
+  enabled: false
   mode: "bundled"  # Options: bundled | external
   provider: "ollama"  # No OpenAI dependency
   resources:
