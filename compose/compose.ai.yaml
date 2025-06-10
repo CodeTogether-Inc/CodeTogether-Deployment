@@ -1,0 +1,13 @@
+# 👇 Rename `.env-template` to `.env` before running this file
+# Set the appropriate values once renamed
+services: 
+  ai:
+    image: hub.edge.codetogether.com/releases/codetogether-llm:latest
+    container_name: codetogether-llm
+    ports:
+      - "8000:8000"
+    networks:
+      - codetogethernet
+    depends_on:
+       codetogether-intel:
+        condition: service_healthy
