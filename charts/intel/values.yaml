@@ -149,7 +149,7 @@ ai:
       gpu: false
     limits:
       cpu: "4"
-      memory: "8Gi"
+      memory: "4Gi"
       gpu: false
   image:
     repository: registry.digitalocean.com/codetogether-registry/codetogether-llm
