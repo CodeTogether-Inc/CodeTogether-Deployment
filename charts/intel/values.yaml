@@ -152,7 +152,7 @@ ai:
       memory: "8Gi"
       gpu: false
   image:
-    repository: registry.digitalocean.com/codetogether-registry/ai-summarization
+    repository: registry.digitalocean.com/codetogether-registry/codetogether-llm
     tag: latest
 
 
