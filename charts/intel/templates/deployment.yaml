@@ -42,38 +42,34 @@ spec:
             {{- end }}
             {{- if .Values.ai.enabled }}
               {{- if eq .Values.ai.mode "external" }}
-              - name: AI_PROVIDER
-                valueFrom:
-                  configMapKeyRef:
-                    name: ai-config
-                    key: ai_provider
-              - name: AI_EXTERNAL_URL
-                valueFrom:
-                  configMapKeyRef:
-                    name: ai-config
-                    key: ai_url
-              - name: AI_EXTERNAL_API_KEY
-                valueFrom:
-                  secretKeyRef:
-                    name: ai-external-secret
-                    key: api-key
+            - name: AI_PROVIDER
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-config
+                  key: ai_provider
+            - name: AI_EXTERNAL_URL
+              valueFrom:
+                configMapKeyRef:
+                  name: ai-config
+                  key: ai_url
+            - name: AI_EXTERNAL_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: ai-external-secret
+                  key: api-key
               {{- end }}
             {{- end }}
-            #
             # Set CodeTogether runtime configuration
-            #  
             - name: CT_HQ_BASE_URL
               value: {{ .Values.codetogether.url | quote }}
             {{- if .Values.java.customCacerts.enabled }}
             - name: CT_TRUST_STORE
               value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
             {{- end }}
-            # Custom Java options (excluding trust store related settings)
             {{- if .Values.java.customJavaOptions }}
             - name: CT_JAVA_OPTIONS
               value: "{{ .Values.java.customJavaOptions | default "" }}"
             {{- end }}
-            # Set trust store password only if trustStorePasswordKey is provided
             {{- if and .Values.java.customCacerts.enabled .Values.java.customCacerts.trustStorePasswordKey }}
             - name: CT_TRUST_STORE_PASSWD
               valueFrom:
@@ -92,9 +88,6 @@ spec:
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
             {{- end }}
-          # 
-          # Set container configuration
-          #
           ports:
             - name: http
               containerPort: 1080
