@@ -55,7 +55,7 @@ spec:
             - name: AI_EXTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.ai.externalSecret.name | default (printf "%s-ai-external-secret" (include "codetogether.fullname" .)) }}
+                  name: {{ (index .Values.ai "externalSecret" | default dict).name | default (printf "%s-ai-external-secret" (include "codetogether.fullname" .)) }}
                   key: api-key
               {{- end }}
             {{- end }}
