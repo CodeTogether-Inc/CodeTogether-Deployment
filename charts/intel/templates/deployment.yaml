@@ -28,38 +28,20 @@ spec:
       {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       containers:
-        {{- if .Values.ai.enabled }}
-          {{- if eq .Values.ai.mode "bundled" }}
-          - name: codetogether-llm
-            image: "{{ .Values.ai.image.repository }}:{{ .Values.ai.image.tag }}"
-            imagePullPolicy: Always
-            ports:
-              - name: ai
-                containerPort: 8000
-                protocol: TCP
-            resources:
-              requests:
-                cpu: {{ .Values.ai.resources.requests.cpu | quote }}
-                memory: {{ .Values.ai.resources.requests.memory | quote }}
-              limits:
-                cpu: {{ .Values.ai.resources.limits.cpu | quote }}
-                memory: {{ .Values.ai.resources.limits.memory | quote }}
-          {{- end }}
-        {{- end }}
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
-          - name: AI_MODE
-            value: {{ .Values.ai.mode | quote }}
-          {{- if eq .Values.ai.mode "bundled" }}
-          - name: AI_BUNDLED_URL
-            value: "http://codetogether-llm:8000"
-          {{- end }}
-          {{- if .Values.ai.enabled }}
-            {{- if eq .Values.ai.mode "external" }}
+            - name: AI_MODE
+              value: {{ .Values.ai.mode | quote }}
+            {{- if eq .Values.ai.mode "bundled" }}
+            - name: AI_BUNDLED_URL
+              value: "http://codetogether-llm:8000"
+            {{- end }}
+            {{- if .Values.ai.enabled }}
+              {{- if eq .Values.ai.mode "external" }}
             - name: AI_PROVIDER
               valueFrom:
                 configMapKeyRef:
@@ -73,35 +55,29 @@ spec:
             - name: AI_EXTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: ai-external-secret
+                  name: {{ (index .Values.ai "externalSecret" | default dict).name | default (printf "%s-ai-external-secret" (include "codetogether.fullname" .)) }}
                   key: api-key
+              {{- end }}
             {{- end }}
-          {{- end }}
-          #
-          # Set CodeTogether runtime configuration
-          #         
-          - name: CT_HQ_BASE_URL
-            value: {{ .Values.codetogether.url | quote }}
-          {{- if .Values.java.customCacerts.enabled }}
-          - name: CT_TRUST_STORE
-            value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts 
-          {{- end }}
-
-          # Custom Java options (excluding trust store related settings)
-          {{- if .Values.java.customJavaOptions }} 
-          - name: CT_JAVA_OPTIONS
-            value: "{{ .Values.java.customJavaOptions | default "" }}"
-          {{- end }}
-
-          # Set trust store password only if trustStorePasswordKey is provided
-          {{- if and .Values.java.customCacerts.enabled .Values.java.customCacerts.trustStorePasswordKey }}
-          - name: CT_TRUST_STORE_PASSWD
-            valueFrom:
-              secretKeyRef:
-                name: {{ .Values.java.customCacerts.cacertsSecretName }}
-                key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
-                optional: true
-          {{- end }}
+            # Set CodeTogether runtime configuration
+            - name: CT_HQ_BASE_URL
+              value: {{ .Values.codetogether.url | quote }}
+            {{- if .Values.java.customCacerts.enabled }}
+            - name: CT_TRUST_STORE
+              value: -Djavax.net.ssl.trustStore=/etc/ssl/certs/java/cacerts
+            {{- end }}
+            {{- if .Values.java.customJavaOptions }}
+            - name: CT_JAVA_OPTIONS
+              value: "{{ .Values.java.customJavaOptions | default "" }}"
+            {{- end }}
+            {{- if and .Values.java.customCacerts.enabled .Values.java.customCacerts.trustStorePasswordKey }}
+            - name: CT_TRUST_STORE_PASSWD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.java.customCacerts.cacertsSecretName }}
+                  key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
+                  optional: true
+            {{- end }}
 
           volumeMounts:
             - name: properties-volume
@@ -112,29 +88,21 @@ spec:
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
             {{- end }}
-
-          # 
-          # Set container configuration
-          #
           ports:
             - name: http
               containerPort: 1080
               protocol: TCP
-          
+
           livenessProbe:
-            httpGet:
-              path: /
-              port: http
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
             timeoutSeconds: {{ .Values.livenessProbe.timeoutSeconds }}
             successThreshold: {{ .Values.livenessProbe.successThreshold }}
             failureThreshold: {{ .Values.livenessProbe.failureThreshold }}
-          readinessProbe:
             httpGet:
               path: /
               port: http
-          
+
           readinessProbe:
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
@@ -147,6 +115,21 @@ spec:
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+
+        {{- if and .Values.ai.enabled (eq .Values.ai.mode "bundled") }}
+        - name: codetogether-llm
+          image: "{{ .Values.ai.image.repository }}:{{ .Values.ai.image.tag }}"
+          imagePullPolicy: Always
+          ports:
+            - name: ai
+              containerPort: 8000
+              protocol: TCP
+          {{- if .Values.ai.resources }}
+          resources:
+            {{- toYaml .Values.ai.resources | nindent 12 }}
+          {{- end }}
+        {{- end }}
+
       volumes:
         - name: properties-volume
           secret:
