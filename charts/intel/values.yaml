@@ -142,6 +142,9 @@ ai:
   enabled: false
   mode: "bundled"  # Options: bundled | external
   provider: "ollama"  # No OpenAI dependency
+  image:
+    repository: hub.edge.codetogether.com/releases/codetogether-llm
+    tag: latest
   resources:
     requests:
       cpu: "2"
@@ -151,10 +154,6 @@ ai:
       cpu: "4"
       memory: "8Gi"
       gpu: false
-  image:
-    repository: registry.digitalocean.com/codetogether-registry/codetogether-llm
-    tag: latest
-
 
 readinessProbe:
   initialDelaySeconds: 60
