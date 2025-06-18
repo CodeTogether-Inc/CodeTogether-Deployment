@@ -154,7 +154,6 @@ ai:
       memory: "4Gi"
       gpu: false
 
-
 readinessProbe:
   initialDelaySeconds: 60
   periodSeconds: 60
