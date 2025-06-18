@@ -1,0 +1,11 @@
+{{- if and .Values.ai.enabled (eq .Values.ai.mode "external") }}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: ai-config
+  namespace: {{ .Release.Namespace }}
+data:
+  ai_provider: {{ .Values.ai.provider | quote }}
+  ai_url: {{ .Values.ai.url | quote }}
+{{- end }}
+
