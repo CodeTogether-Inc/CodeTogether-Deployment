@@ -99,6 +99,10 @@ spec:
           {{- if eq .Values.codetogether.mode "locator-edge" }}
           - name: CT_LOCATOR
             value: {{ .Values.locatorEdge.locator | quote }}
+          {{- if .Values.locatorEdge.locatorLan }}
+          - name: CT_LOCATOR_INTERNAL
+            value: {{ .Values.locatorEdge.locatorLan | quote }}
+          {{- end }}
           - name: CT_REGION
             value: {{ .Values.locatorEdge.region | quote }}
           {{- end }}  
