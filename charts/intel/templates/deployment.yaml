@@ -38,7 +38,7 @@ spec:
               value: {{ .Values.ai.mode | quote }}
             {{- if eq .Values.ai.mode "bundled" }}
             - name: AI_BUNDLED_URL
-              value: "http://codetogether-llm:8000"
+              value: "http://localhost:8000"
             {{- end }}
             {{- if and .Values.ai.enabled (eq .Values.ai.mode "external") }}
             - name: AI_PROVIDER
@@ -79,7 +79,7 @@ spec:
             {{- if .Values.ai.enabled }}
             - name: CT_HQ_OLLAMA_AI_URL
               value: {{ if eq .Values.ai.mode "bundled" }}
-                "http://codetogether-llm:8000"
+                "http://localhost:8000"
               {{ else }}
                 {{ .Values.ai.url | quote }}
               {{ end }}
