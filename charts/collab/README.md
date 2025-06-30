@@ -36,11 +36,6 @@ The following table lists configurable parameters of the CodeTogether Collab cha
 | `codetogether.noclients`                    | Disables the `/clients` endpoint if set to `true`                                              | `false`                                                   |
 | `codetogether.timeZone.enabled`             | Enables a customized time zone for the container                                               | `false`                                                   |
 | `codetogether.timeZone.region`              | Time zone region for the container                                                             | `America/Chicago`                                         |
-| `direct.metrics.statsdEnabled`              | Enables StatsD metrics collection                                                              | `false`                                                   |
-| `direct.metrics.statsdHost`                 | Host for StatsD metrics                                                                        | `https://my-graphite-fqdn`                                |
-| `direct.metrics.statsdPort`                 | Port for StatsD metrics                                                                        | `8125`                                                    |
-| `direct.metrics.statsdProtocol`             | Protocol for StatsD metrics                                                                    | `UDP`                                                     |
-| `direct.metrics.prometheusEnabled`          | Enables Prometheus metrics collection                                                          | `false`                                                   |
 | `locatorCentral.database.host`              | Host for locator-central database                                                              | `10.10.0.2`                                               |
 | `locatorCentral.database.port`              | Port for locator-central database                                                              | `3306`                                                    |
 | `locatorCentral.database.schema`            | Schema name for locator-central database                                                      | `codetogether`                                            |

@@ -117,6 +117,9 @@ locatorCentral:
 locatorEdge:
   # URL that the Locator is listening on.
   locator: "https://codetogether.locator"
+  # Internal k8s url for the locator service.
+  # Optional - If not set k8s dns need to know how to resolve the locator url.
+  # locatorLan: "http://<collab-locator-service-name>.<namespace>.svc.cluster.local:443"
   # Optional region which can have CIDR IP address regions assigned to 
   # allowing regional routing of requests. Only enable if deploying
   # CodeTogether to multiple regional data centers.

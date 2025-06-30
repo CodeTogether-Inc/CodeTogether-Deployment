@@ -141,20 +141,16 @@ securityContext: {}
 ai:
   enabled: false
   mode: "bundled"  # Options: bundled | external
-  provider: "ollama"  # No OpenAI dependency
-  resources:
-    requests:
-      cpu: "2"
-      memory: "4Gi"
-      gpu: false
-    limits:
-      cpu: "4"
-      memory: "8Gi"
-      gpu: false
   image:
-    repository: registry.digitalocean.com/codetogether-registry/ai-summarization
+    repository: hub.edge.codetogether.com/releases/codetogether-llm
     tag: latest
-
+#  resources:       # Recommended resources configuration
+ #   requests:
+  #    cpu: "2"
+   #   memory: "4Gi"
+    #limits:
+     # cpu: "4"
+      #memory: "4Gi"
 
 readinessProbe:
   initialDelaySeconds: 60

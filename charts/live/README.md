@@ -1,7 +1,10 @@
 # README.md Helm Chart for CodeTogether Live
+# CodeTogether Live Chart (Legacy)
+
+> **⚠️ Legacy Chart**  
+> This chart is now considered legacy and is not longer supported, is not recommended for new deployments.
 
 ## Summary
-
 This chart creates a CodeTogether Live server deployment on a Kubernetes cluster using the Helm package manager.
 
 ## Prerequisites
