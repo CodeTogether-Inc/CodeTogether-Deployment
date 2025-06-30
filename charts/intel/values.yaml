@@ -148,11 +148,11 @@ ai:
     requests:
       cpu: "2"
       memory: "4Gi"
-      gpu: false
+      # gpu: "1"   # Uncomment and set only if GPU is needed
     limits:
       cpu: "4"
       memory: "4Gi"
-      gpu: false
+      # gpu: "1"   # Uncomment and set only if GPU is needed
 
 readinessProbe:
   initialDelaySeconds: 60
