@@ -79,7 +79,7 @@ spec:
             {{- if .Values.ai.enabled }}
             - name: CT_HQ_OLLAMA_AI_URL
               value: {{ if eq .Values.ai.mode "bundled" }}
-                "http://localhost:8000"
+                "http://codetogether-llm:8000"
               {{ else }}
                 {{ .Values.ai.url | quote }}
               {{ end }}
