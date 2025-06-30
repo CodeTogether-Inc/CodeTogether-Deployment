@@ -40,8 +40,7 @@ spec:
             - name: AI_BUNDLED_URL
               value: "http://codetogether-llm:8000"
             {{- end }}
-            {{- if .Values.ai.enabled }}
-              {{- if eq .Values.ai.mode "external" }}
+            {{- if and .Values.ai.enabled (eq .Values.ai.mode "external") }}
             - name: AI_PROVIDER
               valueFrom:
                 configMapKeyRef:
@@ -55,9 +54,8 @@ spec:
             - name: AI_EXTERNAL_API_KEY
               valueFrom:
                 secretKeyRef:
-                  name: {{ (index .Values.ai "externalSecret" | default dict).name | default (printf "%s-ai-external-secret" (include "codetogether.fullname" .)) }}
-                  key: api-key
-              {{- end }}
+                  name: {{ default (printf "%s-ai-external-secret" (include "codetogether.fullname" .)) .Values.ai.externalSecret.name | quote }}
+                  key: apiKey
             {{- end }}
             # Set CodeTogether runtime configuration
             - name: CT_HQ_BASE_URL
@@ -80,21 +78,23 @@ spec:
             {{- end }}
             {{- if .Values.ai.enabled }}
             - name: CT_HQ_OLLAMA_AI_URL
-              value: {{ if eq .Values.ai.mode "bundled" }}"http://localhost:8000"{{ else }}"{{ .Values.ai.url | quote }}"{{ end }}
+              value: {{ if eq .Values.ai.mode "bundled" }}
+                "http://localhost:8000"
+              {{ else }}
+                {{ .Values.ai.url | quote }}
+              {{ end }}
             - name: CT_HQ_OLLAMA_AI_MODEL_NAME
               value: {{ .Values.ai.modelName | default "gemma3:1b" | quote }}
             - name: CT_HQ_OLLAMA_AI_API_KEY
+              {{- if eq .Values.ai.mode "bundled" }}
+              value: "apiKey"
+              {{- else }}
               valueFrom:
                 secretKeyRef:
-                  name: {{- if and (eq .Values.ai.mode "external") (not .Values.ai.externalSecret.create) }}
-                    {{ .Values.ai.externalSecret.name }}
-                  {{- else }}
-                    {{ .Values.ai.externalSecret.name | default (printf "%s-ollama-api" .Release.Name) }}
-                  {{- end }}
+                  name: {{ default (printf "%s-ai-external-secret" (include "codetogether.fullname" .)) .Values.ai.externalSecret.name | quote }}
                   key: apiKey
+              {{- end }}
             {{- end }}
-
-
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
@@ -108,7 +108,6 @@ spec:
             - name: http
               containerPort: 1080
               protocol: TCP
-
           livenessProbe:
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
@@ -131,7 +130,6 @@ spec:
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-
         {{- if and .Values.ai.enabled (eq .Values.ai.mode "bundled") }}
         - name: codetogether-llm
           image: "{{ .Values.ai.image.repository }}:{{ .Values.ai.image.tag }}"
@@ -145,7 +143,6 @@ spec:
             {{- toYaml .Values.ai.resources | nindent 12 }}
           {{- end }}
         {{- end }}
-
       volumes:
         - name: properties-volume
           secret:
