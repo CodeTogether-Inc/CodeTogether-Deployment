@@ -78,6 +78,22 @@ spec:
                   key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
                   optional: true
             {{- end }}
+            {{- if .Values.ai.enabled }}
+            - name: CT_HQ_OLLAMA_AI_URL
+              value: {{ if eq .Values.ai.mode "bundled" }}"http://localhost:8000"{{ else }}"{{ .Values.ai.url | quote }}"{{ end }}
+            - name: CT_HQ_OLLAMA_AI_MODEL_NAME
+              value: {{ .Values.ai.modelName | default "gemma3:1b" | quote }}
+            - name: CT_HQ_OLLAMA_AI_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{- if and (eq .Values.ai.mode "external") (not .Values.ai.externalSecret.create) }}
+                    {{ .Values.ai.externalSecret.name }}
+                  {{- else }}
+                    {{ .Values.ai.externalSecret.name | default (printf "%s-ollama-api" .Release.Name) }}
+                  {{- end }}
+                  key: apiKey
+            {{- end }}
+
 
           volumeMounts:
             - name: properties-volume
