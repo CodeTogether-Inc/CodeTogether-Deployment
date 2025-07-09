@@ -1,0 +1,69 @@
+# 👇 Rename `.env-template` to `.env` before running this file
+# Set the appropriate values once renamed
+services:
+  # Relational database for Keycloak (optional)
+  mysql-shared:
+    image: mysql:8.0
+    container_name: mysql-shared
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: keycloak
+      MYSQL_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - codetogethernet
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+
+  # Keycloak service (optional)
+  codetogether-keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: codetogether-keycloak
+    env_file:
+      - .env
+    depends_on:
+      mysql-shared:
+        condition: service_healthy
+    command:
+      - "start"
+    environment:
+      # Admin credentials
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+
+      # Database connectivity
+      KC_DB: mysql
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME:-root}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KC_DB_URL_HOST: mysql-shared
+
+      # Feature flags & observability
+      KC_FEATURES: token-exchange
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+
+      # Reverse‑proxy / HTTP
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+    ports:
+      - "5999:8080"
+    networks:
+      - codetogethernet
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/health/ready"]
+      interval: 10s
+      timeout: 10s
+      retries: 20
+
+volumes:
+  mysql_data:

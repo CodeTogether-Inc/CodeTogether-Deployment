@@ -1,0 +1,6 @@
+data/
+nginx/log/
+nginx/ssl/*.key
+nginx/ssl/*.pem
+nginx/ssl/*.crt
+.env
