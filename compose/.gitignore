@@ -3,4 +3,8 @@ nginx/log/
 nginx/ssl/*.key
 nginx/ssl/*.pem
 nginx/ssl/*.crt
+keycloak/nginx/log/*.log
+keycloak/nginx/ssl/*.key
+keycloak/nginx/ssl/*.pem
+keycloak/nginx/ssl/*.crt
 .env
