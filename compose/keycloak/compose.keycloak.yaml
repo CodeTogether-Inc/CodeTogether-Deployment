@@ -1,0 +1,95 @@
+# 👇 Rename `.env-template` to `.env` before running this file
+# Set the appropriate values once renamed
+services:
+  # Relational database for Keycloak (optional)
+  codetogether-mysql:
+    image: mysql:8.0
+    container_name: codetogether-mysql
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      MYSQL_ROOT_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      MYSQL_DATABASE: keycloak
+      MYSQL_USER: ${KEYCLOAK_DB_USERNAME}
+      MYSQL_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - codetogethernet
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 10s
+      retries: 30
+  # Nginx reverse proxy for Keycloak (optional)
+  codetogether-keycloak-nginx:
+    image: nginx:latest
+    container_name: codetogether-keycloak-nginx
+    env_file:
+      - .env
+    environment:
+      - NGINX_ENVSUBST_OUTPUT_DIR=/etc/nginx
+    ports:
+      - "443:443"
+    volumes:
+      - ./nginx/nginx.conf.template:/etc/nginx/templates/nginx.conf.template:ro
+      - ./nginx/ssl:/etc/nginx/ssl
+      - ./nginx/log:/var/log/nginx
+    networks:
+      - codetogethernet
+    depends_on:
+       codetogether-keycloak:
+        condition: service_healthy
+
+  # Keycloak service (optional)
+  codetogether-keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    container_name: codetogether-keycloak
+    env_file:
+      - .env
+    depends_on:
+      codetogether-mysql:
+        condition: service_healthy
+    command:
+      - "start"
+    environment:
+      # Admin credentials
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+
+      # Database connectivity
+      KC_DB: mysql
+      KC_DB_USERNAME: ${KEYCLOAK_DB_USERNAME:-root}
+      KC_DB_PASSWORD: ${KEYCLOAK_DB_PASSWORD}
+      KC_DB_URL_HOST: codetogether-mysql
+
+      # Feature flags & observability
+      KC_FEATURES: token-exchange
+      KC_HEALTH_ENABLED: "true"
+      KC_METRICS_ENABLED: "true"
+
+      # Reverse‑proxy / HTTP
+      KC_HTTP_ENABLED: "true"
+      KC_PROXY: edge
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_STRICT: "false"
+      KC_HOSTNAME_STRICT_HTTPS: "false"
+      KC_HOSTNAME: ${KEYCLOAK_FQDN}
+      KC_FRONTEND_URL: https://${KEYCLOAK_FQDN}
+      KC_HTTP_PORT: 8080
+    networks:
+      - codetogethernet
+    healthcheck:
+      test: ["CMD-SHELL", "echo > /dev/tcp/localhost/8080 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
+
+volumes:
+  mysql_data:
+
+networks:
+  codetogethernet:
+    driver: bridge
