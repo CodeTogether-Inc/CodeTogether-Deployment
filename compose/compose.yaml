@@ -42,7 +42,6 @@ services:
       - .env
     environment:
       - CT_HQ_BASE_URL=https://${INTEL_FQDN}
-      - CT_TRUST_ALL_CERTS=${CT_TRUST_ALL_CERTS}
     networks:
       - codetogethernet
     volumes:
