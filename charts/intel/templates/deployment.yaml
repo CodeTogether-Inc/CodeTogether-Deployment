@@ -76,6 +76,10 @@ spec:
                   key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
                   optional: true
             {{- end }}
+            {{- if .Values.java.trustAllCerts }}
+            - name: CT_TRUST_ALL_CERTS
+              value: "true"
+            {{- end }}
             {{- if .Values.ai.enabled }}
             - name: CT_HQ_OLLAMA_AI_URL
               value: {{ if eq .Values.ai.mode "bundled" }}
