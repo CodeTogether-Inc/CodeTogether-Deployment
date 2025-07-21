@@ -76,7 +76,7 @@ spec:
                   key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
                   optional: true
             {{- end }}
-            {{- if .Values.java.trustAllCerts }}
+            {{- if .Values.codetogether.trustAllCerts }}
             - name: CT_TRUST_ALL_CERTS
               value: "true"
             {{- end }}

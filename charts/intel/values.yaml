@@ -38,6 +38,8 @@ imageCredentials:
 #
 codetogether:
   url: https://<server-fqdn>
+  trustAllCerts: false  # Set to 'true' to trust all certificates
+
 
 hqproperties:
   hq.sso.client.id: CLIENTID.apps.googleusercontent.com
@@ -93,7 +95,6 @@ java:
   # Example:
   # customJavaOptions: "-Xms512m -Xmx2g -XX:+UseG1GC"
   customJavaOptions: ""
-  trusstAllCerts: false  # Set to 'true' to trust all certificates
 
 #
 # Enables and configures Ingress (default = Nginx). The className value can be used
