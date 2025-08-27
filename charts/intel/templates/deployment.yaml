@@ -44,12 +44,12 @@ spec:
             - name: AI_PROVIDER
               valueFrom:
                 configMapKeyRef:
-                  name: ai-config
+                  name: {{ printf "%s-ai-config" (include "codetogether.fullname" .) }}
                   key: ai_provider
             - name: AI_EXTERNAL_URL
               valueFrom:
                 configMapKeyRef:
-                  name: ai-config
+                  name: {{ printf "%s-ai-config" (include "codetogether.fullname" .) }}
                   key: ai_url
             - name: AI_EXTERNAL_API_KEY
               valueFrom:

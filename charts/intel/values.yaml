@@ -143,9 +143,13 @@ securityContext: {}
 ai:
   enabled: false
   mode: "bundled"  # Options: bundled | external
-  image:
-    repository: hub.edge.codetogether.com/releases/codetogether-llm
-    tag: latest
+  provider: ""
+  url: ""
+  modelName: "gemma3:1b"
+  externalSecret:
+    create: false
+    name: ""
+    apiKey: ""
 #  resources:       # Recommended resources configuration
  #   requests:
   #    cpu: "2"
