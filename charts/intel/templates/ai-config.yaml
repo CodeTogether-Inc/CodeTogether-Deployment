@@ -2,10 +2,13 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: ai-config
+  name: {{ printf "%s-ai-config" (include "codetogether.fullname" .) }}
   namespace: {{ .Release.Namespace }}
+  labels:
+    {{- include "codetogether.labels" . | nindent 4 }}
 data:
   ai_provider: {{ .Values.ai.provider | quote }}
   ai_url: {{ .Values.ai.url | quote }}
 {{- end }}
+
 
