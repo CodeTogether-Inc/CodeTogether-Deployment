@@ -624,6 +624,27 @@ entries:
   codetogether-collab:
   - apiVersion: v2
     appVersion: 2025.1.0
+    created: "2025-09-18T23:00:30.769110109Z"
+    description: CodeTogether Collab
+    digest: 3a9b291fe106a555321f12dfab5285d8dabebd00cab645000facb7f0f56c7903
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-collab
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-collab-1.2.3/codetogether-collab-1.2.3.tgz
+    version: 1.2.3
+  - apiVersion: v2
+    appVersion: 2025.1.0
     created: "2025-02-12T17:41:21.329941176Z"
     description: CodeTogether Collab
     digest: 46e85ba240799a36324a0757787839a7076bf7779e34141feed5cdabd330868a
@@ -965,4 +986,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-intel-1.1.0/codetogether-intel-1.1.0.tgz
     version: 1.1.0
-generated: "2025-06-30T23:25:42.308292276Z"
+generated: "2025-09-18T23:00:30.917089932Z"
