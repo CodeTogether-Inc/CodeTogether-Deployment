@@ -3,7 +3,7 @@ name: codetogether-collab
 description: CodeTogether Collab
 
 type: application
-version: 1.2.2
+version: 1.2.3
 appVersion: "2025.1.0"
 
 icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
