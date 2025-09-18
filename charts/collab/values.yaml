@@ -206,13 +206,13 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext:
+securityContext: {} #defaults to
   # capabilities:
   #   drop:
   #   - ALL
   # runAsNonRoot: true
-  readOnlyRootFilesystem: true
-  runAsUser: 0
+  # readOnlyRootFilesystem: true # enable for read-only setup
+  # runAsUser: 0 # Use '0' for root user
 
 readinessProbe:
   initialDelaySeconds: 60

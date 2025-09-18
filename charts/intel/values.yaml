@@ -132,13 +132,13 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext:
+securityContext: {} #defaults to
 
   # capabilities:
   #   drop:
   #   - ALL
-  readOnlyRootFilesystem: true
-  runAsUser: 0
+  #readOnlyRootFilesystem: true  # enable for read-only setup
+  #runAsUser: 0 # Use '0' for root user
   # runAsNonRoot: true
   # runAsUser: 1000
 
@@ -183,4 +183,4 @@ affinity: {}
 replicaCount: 1
 
 readOnlyMode:
-  enabled: true
+  enabled: false # Set to 'true' to enable read-only mode
