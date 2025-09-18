@@ -206,12 +206,12 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {}
+securityContext:
   # capabilities:
   #   drop:
   #   - ALL
-  readOnlyRootFilesystem: true
   # runAsNonRoot: true
+  readOnlyRootFilesystem: true
   runAsUser: 0
 
 readinessProbe:
