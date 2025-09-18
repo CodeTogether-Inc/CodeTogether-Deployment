@@ -133,10 +133,12 @@ serviceAccount:
 podAnnotations: {}
 
 securityContext: {}
+
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: true
+  runAsUser: 0
   # runAsNonRoot: true
   # runAsUser: 1000
 
@@ -179,3 +181,6 @@ tolerations: []
 affinity: {}
 
 replicaCount: 1
+
+readOnlyMode:
+  enabled: true

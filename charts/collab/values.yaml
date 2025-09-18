@@ -210,9 +210,9 @@ securityContext: {}
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
+  readOnlyRootFilesystem: true
   # runAsNonRoot: true
-  # runAsUser: 1000
+  runAsUser: 0
 
 readinessProbe:
   initialDelaySeconds: 60
