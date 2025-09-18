@@ -138,7 +138,7 @@ securityContext: {} #defaults to
   #   drop:
   #   - ALL
   #readOnlyRootFilesystem: true  # enable for read-only setup
-  #runAsUser: 0 # Use '0' for root user
+  #runAsUser: 0 # Use '0' for root user for read-only setup
   # runAsNonRoot: true
   # runAsUser: 1000
 
