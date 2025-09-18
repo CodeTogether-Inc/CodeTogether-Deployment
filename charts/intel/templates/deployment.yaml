@@ -26,6 +26,17 @@ spec:
       imagePullSecrets:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
+      {{- if .Values.readOnlyMode.enabled }}
+      initContainers:
+        - name: prepare-ro
+          image: busybox:latest
+          securityContext:
+            runAsUser: 0
+          command: ["sh", "-lc", "mkdir -p /mnt/volatile/var-log-nginx /mnt/volatile/var-cache-nginx /mnt/var/log-codetogether || true"]
+          volumeMounts:
+            - name: volatile
+              mountPath: /mnt/volatile
+      {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
@@ -44,12 +55,12 @@ spec:
             - name: AI_PROVIDER
               valueFrom:
                 configMapKeyRef:
-                  name: ai-config
+                  name: {{ printf "%s-ai-config" (include "codetogether.fullname" .) }}
                   key: ai_provider
             - name: AI_EXTERNAL_URL
               valueFrom:
                 configMapKeyRef:
-                  name: ai-config
+                  name: {{ printf "%s-ai-config" (include "codetogether.fullname" .) }}
                   key: ai_url
             - name: AI_EXTERNAL_API_KEY
               valueFrom:
@@ -75,6 +86,10 @@ spec:
                   name: {{ .Values.java.customCacerts.cacertsSecretName }}
                   key: {{ .Values.java.customCacerts.trustStorePasswordKey }}
                   optional: true
+            {{- end }}
+            {{- if .Values.codetogether.trustAllCerts }}
+            - name: CT_TRUST_ALL_CERTS
+              value: "true"
             {{- end }}
             {{- if .Values.ai.enabled }}
             - name: CT_HQ_OLLAMA_AI_URL
@@ -103,6 +118,20 @@ spec:
             - name: java-cacerts
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
+            {{- end }}
+            {{- if .Values.readOnlyMode.enabled }}
+            - name: volatile
+              mountPath: /run/volatile
+            - name: run
+              mountPath: /run
+            - name: tmp
+              mountPath: /tmp
+            - name: volatile
+              mountPath: /var/log/nginx
+              subPath: var-log-nginx
+            - name: volatile
+              mountPath: /var/cache/nginx
+              subPath: var-cache-nginx            
             {{- end }}
           ports:
             - name: http
@@ -151,6 +180,16 @@ spec:
         - name: java-cacerts
           secret:
             secretName: {{ .Values.java.customCacerts.cacertsSecretName }}
+        {{- end }}
+        {{- if .Values.readOnlyMode.enabled }}
+        - name: volatile
+          emptyDir: {}
+        - name: run
+          emptyDir:
+            medium: Memory
+        - name: tmp
+          emptyDir:
+            medium: Memory
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:

@@ -32,12 +32,14 @@ imageCredentials:
   email: unused
 
 #
-# Set CodeTogether runing mode and server's FQDN (HTTPS is mandatory for CodeTogether)
+# Set CodeTogether running mode and server's FQDN (HTTPS is mandatory for CodeTogether)
 # Use 'direct' for simple evaluations and small deployments. CodeTogether can provide
 # guidance on the best deployment option based on your needs.
 #
 codetogether:
   url: https://<server-fqdn>
+  trustAllCerts: false  # Set to 'true' to trust all certificates
+
 
 hqproperties:
   hq.sso.client.id: CLIENTID.apps.googleusercontent.com
@@ -130,20 +132,26 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {}
+securityContext: {} #defaults to
+
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
+  #readOnlyRootFilesystem: true  # enable for read-only setup
+  #runAsUser: 0 # Use '0' for root user for read-only setup
   # runAsNonRoot: true
   # runAsUser: 1000
 
 ai:
   enabled: false
   mode: "bundled"  # Options: bundled | external
-  image:
-    repository: hub.edge.codetogether.com/releases/codetogether-llm
-    tag: latest
+  provider: ""
+  url: ""
+  modelName: "gemma3:1b"
+  externalSecret:
+    create: false
+    name: ""
+    apiKey: ""
 #  resources:       # Recommended resources configuration
  #   requests:
   #    cpu: "2"
@@ -173,3 +181,6 @@ tolerations: []
 affinity: {}
 
 replicaCount: 1
+
+readOnlyMode:
+  enabled: false # Set to 'true' to enable read-only mode

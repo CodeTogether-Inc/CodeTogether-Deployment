@@ -37,6 +37,11 @@ imageCredentials:
 openshift:
   enabled: false
 
+# Optional: use an existing secret for Intel connection
+intelsecret:
+  enabled: false              # default OFF - chart-managed secret
+  ref: ""                     # name of existing Secret (must have keys: url, secret)
+
 #
 # Values required for establishing connection with the Intel server.
 #
@@ -206,13 +211,13 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {}
+securityContext: {} #defaults to
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
   # runAsNonRoot: true
-  # runAsUser: 1000
+  # readOnlyRootFilesystem: true # enable for read-only setup
+  # runAsUser: 0 # Use '0' for root user for read-only setup
 
 readinessProbe:
   initialDelaySeconds: 60
