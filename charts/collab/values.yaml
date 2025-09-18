@@ -37,6 +37,11 @@ imageCredentials:
 openshift:
   enabled: false
 
+# Optional: use an existing secret for Intel connection
+intelsecret:
+  enabled: false              # default OFF - chart-managed secret
+  ref: ""                     # name of existing Secret (must have keys: url, secret)
+
 #
 # Values required for establishing connection with the Intel server.
 #
