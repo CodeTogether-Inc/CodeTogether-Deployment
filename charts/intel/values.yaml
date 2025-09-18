@@ -132,7 +132,7 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {}
+securityContext:
 
   # capabilities:
   #   drop:
