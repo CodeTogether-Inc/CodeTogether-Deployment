@@ -32,7 +32,7 @@ imageCredentials:
   email: unused
 
 #
-# Set CodeTogether runing mode and server's FQDN (HTTPS is mandatory for CodeTogether)
+# Set CodeTogether running mode and server's FQDN (HTTPS is mandatory for CodeTogether)
 # Use 'direct' for simple evaluations and small deployments. CodeTogether can provide
 # guidance on the best deployment option based on your needs.
 #
@@ -132,11 +132,13 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {}
+securityContext: {} #defaults to
+
   # capabilities:
   #   drop:
   #   - ALL
-  # readOnlyRootFilesystem: true
+  #readOnlyRootFilesystem: true  # enable for read-only setup
+  #runAsUser: 0 # Use '0' for root user for read-only setup
   # runAsNonRoot: true
   # runAsUser: 1000
 
@@ -179,3 +181,6 @@ tolerations: []
 affinity: {}
 
 replicaCount: 1
+
+readOnlyMode:
+  enabled: false # Set to 'true' to enable read-only mode
