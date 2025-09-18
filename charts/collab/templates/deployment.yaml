@@ -13,7 +13,7 @@ spec:
       annotations:
         checksum/coturn: {{ include (print $.Template.BasePath "/secret-coturn.yaml") . | sha256sum }}
         checksum/dashboard: {{ include (print $.Template.BasePath "/secret-dashboard.yaml") . | sha256sum }}
-        checksum/intel: {{ include (print $.Template.BasePath "/secret-intel.yaml") . | sha256sum }}
+        checksum/intel: {{- if not .Values.intelsecret.enabled }} {{ include (print $.Template.BasePath "/secret-intel.yaml") . | sha256sum }} {{- else }} "external" {{- end }}
         checksum/ssl: {{ include (print $.Template.BasePath "/secret-ssl.yaml") . | sha256sum }}
       {{- with .Values.podAnnotations }}
         {{- toYaml . | nindent 8 }}
@@ -139,15 +139,27 @@ spec:
             value: {{ .Values.codetogether.timeZone.region | quote }}
           {{- end }}
 
+          {{- if and .Values.intelsecret.enabled (not .Values.intelsecret.ref) }}
+          {{- fail "intelsecret.enabled=true requires intelsecret.ref (existing Secret name)" -}}
+          {{- end }}
+
           - name: CT_INTEL_URL
             valueFrom:
               secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-intel
+                name: {{ if .Values.intelsecret.enabled -}}
+                        {{ .Values.intelsecret.ref | quote }}
+                      {{- else }}
+                        {{ printf "%s-intel" (include "codetogether.fullname" .) | quote }}
+                      {{- end }}
                 key: url
           - name: CT_INTEL_SECRET
             valueFrom:
               secretKeyRef:
-                name: {{ include "codetogether.fullname" . }}-intel
+                name: {{ if .Values.intelsecret.enabled -}}
+                        {{ .Values.intelsecret.ref | quote }}
+                      {{- else }}
+                        {{ printf "%s-intel" (include "codetogether.fullname" .) | quote }}
+                      {{- end }}
                 key: secret
           {{- if .Values.dashboard.enabled }}
           - name: CT_DASHBOARD_USER
