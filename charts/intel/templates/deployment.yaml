@@ -26,17 +26,6 @@ spec:
       imagePullSecrets:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
-      {{- if .Values.readOnlyMode.enabled }}
-      initContainers:
-        - name: prepare-ro
-          image: busybox:latest
-          securityContext:
-            runAsUser: 0
-          command: ["sh", "-lc", "mkdir -p /mnt/volatile/var-log-nginx /mnt/volatile/var-cache-nginx /mnt/var/log-codetogether || true"]
-          volumeMounts:
-            - name: volatile
-              mountPath: /mnt/volatile
-      {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
@@ -110,6 +99,7 @@ spec:
                   key: apiKey
               {{- end }}
             {{- end }}
+{{- if .Values.securityContext.readOnlyRootFilesystem }}
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
@@ -119,20 +109,26 @@ spec:
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
             {{- end }}
-            {{- if .Values.readOnlyMode.enabled }}
-            - name: volatile
-              mountPath: /run/volatile
-            - name: run
-              mountPath: /run
-            - name: tmp
-              mountPath: /tmp
-            - name: volatile
-              mountPath: /var/log/nginx
-              subPath: var-log-nginx
-            - name: volatile
-              mountPath: /var/cache/nginx
-              subPath: var-cache-nginx            
+            # Read-only root FS mounts
+            - mountPath: /run
+              name: codetogether-runtime
+            - mountPath: /tmp
+              name: codetogether-tmp
+            - mountPath: /var/log/nginx
+              name: codetogether-runtime
+            - mountPath: /var/cache/nginx
+              name: codetogether-runtime
+{{- else }}
+          volumeMounts:
+            - name: properties-volume
+              mountPath: /opt/codetogether/runtime/cthq.properties
+              subPath: cthq.properties
+            {{- if .Values.java.customCacerts.enabled }}
+            - name: java-cacerts
+              mountPath: /etc/ssl/certs/java/cacerts
+              subPath: cacerts
             {{- end }}
+{{- end }}
           ports:
             - name: http
               containerPort: 1080
@@ -181,16 +177,13 @@ spec:
           secret:
             secretName: {{ .Values.java.customCacerts.cacertsSecretName }}
         {{- end }}
-        {{- if .Values.readOnlyMode.enabled }}
-        - name: volatile
+{{- if .Values.securityContext.readOnlyRootFilesystem }}
+        - name: codetogether-runtime
           emptyDir: {}
-        - name: run
+        - name: codetogether-tmp
           emptyDir:
             medium: Memory
-        - name: tmp
-          emptyDir:
-            medium: Memory
-        {{- end }}
+{{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
