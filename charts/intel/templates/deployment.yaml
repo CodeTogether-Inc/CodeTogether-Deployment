@@ -26,6 +26,17 @@ spec:
       imagePullSecrets:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
+      {{- if .Values.readOnlyMode.enabled }}
+      initContainers:
+        - name: prepare-ro
+          image: busybox:latest
+          securityContext:
+            runAsUser: 0
+          command: ["sh", "-lc", "mkdir -p /mnt/volatile/var-log-nginx /mnt/volatile/var-cache-nginx /mnt/var/log-codetogether || true"]
+          volumeMounts:
+            - name: volatile
+              mountPath: /mnt/volatile
+      {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
@@ -128,7 +139,7 @@ spec:
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
             {{- end }}
-{{- end }}
+
           ports:
             - name: http
               containerPort: 1080
@@ -184,6 +195,7 @@ spec:
           emptyDir:
             medium: Memory
 {{- end }}
+
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

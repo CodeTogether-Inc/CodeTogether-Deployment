@@ -139,7 +139,7 @@ securityContext: {} #defaults to
   #   - ALL
   #readOnlyRootFilesystem: true  # enable for read-only setup
   # runAsNonRoot: true           # false for non-root user
-  # runAsUser: 0
+  # runAsUser: 0 # Use '0' for root user for read-only setup
 
 ai:
   enabled: false
