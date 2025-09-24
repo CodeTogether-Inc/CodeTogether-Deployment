@@ -139,7 +139,7 @@ spec:
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
             {{- end }}
-
+{{- end }}
           ports:
             - name: http
               containerPort: 1080
