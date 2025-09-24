@@ -215,9 +215,9 @@ securityContext: {} #defaults
   # capabilities:
   #   drop:
   #   - ALL
-  # runAsNonRoot: true
   # readOnlyRootFilesystem: true # enable for read-only setup
-  # runAsUser: 1000
+  # runAsNonRoot: true
+  # runAsUser: 0
 
 readinessProbe:
   initialDelaySeconds: 60
