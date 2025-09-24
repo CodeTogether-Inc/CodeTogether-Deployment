@@ -138,9 +138,8 @@ securityContext: {} #defaults to
   #   drop:
   #   - ALL
   #readOnlyRootFilesystem: true  # enable for read-only setup
-  #runAsUser: 0 # Use '0' for root user for read-only setup
-  # runAsNonRoot: true
-  # runAsUser: 1000
+  # runAsNonRoot: true           # false for non-root user
+  # runAsUser: 0
 
 ai:
   enabled: false
@@ -181,6 +180,3 @@ tolerations: []
 affinity: {}
 
 replicaCount: 1
-
-readOnlyMode:
-  enabled: false # Set to 'true' to enable read-only mode
