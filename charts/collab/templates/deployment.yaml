@@ -253,7 +253,8 @@ spec:
         - name: codetogether-runtime
           emptyDir: {}
         - name: codetogether-tmp
-          emptyDir: {}
+          emptyDir:
+            medium: Memory
       {{- else if .Values.favicon.enabled }}
       volumes:
         - name: favicon-volume

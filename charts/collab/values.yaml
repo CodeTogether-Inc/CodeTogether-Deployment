@@ -211,12 +211,12 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {} #defaults to
+securityContext: {} #defaults
   # capabilities:
   #   drop:
   #   - ALL
-  # runAsNonRoot: true
   # readOnlyRootFilesystem: true # enable for read-only setup
+  # runAsNonRoot: true
   # runAsUser: 0 # Use '0' for root user for read-only setup
 
 readinessProbe:
