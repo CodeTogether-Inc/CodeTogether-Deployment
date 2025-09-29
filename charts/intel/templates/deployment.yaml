@@ -29,6 +29,9 @@ spec:
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       {{- if .Values.openshift.enabled }}
       # OpenShift
+      securityContext:
+        fsGroup: 0
+        fsGroupChangePolicy: "OnRootMismatch"
       {{- else if .Values.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
