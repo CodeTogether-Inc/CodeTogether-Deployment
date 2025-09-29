@@ -45,22 +45,22 @@ spec:
             {{- if .Values.openshift.enabled }}
             - |
               set -eu
+              umask 002
               for d in \
-                /run \
                 /var/log/nginx \
                 /var/cache/nginx
               do
-                install -d -m 0775 "$d"
+                install -d -m 2775 "$d"
               done
             {{- else }}
             - |
               set -eu
+              umask 002
               for d in \
-                /run \
                 /var/log/nginx \
                 /var/cache/nginx
               do
-                install -d -m 0775 "$d"
+                install -d -m 2775 "$d"
               done
               chown -R {{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsGroup | default 1000 }} \
                 /run /var/log/nginx /var/cache/nginx
