@@ -142,7 +142,7 @@ securityContext: {} #defaults
   #   - ALL
   # readOnlyRootFilesystem: true # enable for read-only setup
   # runAsNonRoot: true
-  # runAsUser: 1000 # Use '0' for root user, in vanilla k8s you can use any non-root uid
+  # runAsUser: 1000 # Use '0' for root user
   # runAsGroup: 1000
   # In openshift, dont set runAsUser or runAsGroup, let OpenShift assign the values
 
