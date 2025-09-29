@@ -27,6 +27,56 @@ spec:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
+      {{- if .Values.openshift.enabled }}
+      # OpenShift
+      {{- else if .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- end }}
+      {{- if .Values.securityContext.readOnlyRootFilesystem }}
+      initContainers:
+        - name: prepare-runtime
+          image: busybox:1.36
+          command: ["/bin/sh","-c"]
+          args:
+            {{- if .Values.openshift.enabled }}
+            - |
+              set -eu
+              for d in \
+                /run \
+                /var/log/nginx \
+                /var/cache/nginx
+              do
+                install -d -m 0775 "$d"
+              done
+            {{- else }}
+            - |
+              set -eu
+              for d in \
+                /run \
+                /var/log/nginx \
+                /var/cache/nginx
+              do
+                install -d -m 0775 "$d"
+              done
+              chown -R {{ default 1000 .Values.securityContext.runAsUser }}:{{ default 1000 .Values.securityContext.runAsGroup | default 1000 }} \
+                /run /var/log/nginx /var/cache/nginx
+            {{- end }}
+          securityContext:
+            {{- if .Values.openshift.enabled }}
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            {{- else }}
+            runAsUser: 0
+            runAsGroup: 0
+            runAsNonRoot: false
+            allowPrivilegeEscalation: false
+            {{- end }}
+          volumeMounts:
+            - { name: codetogether-runtime, mountPath: /run }
+            - { name: codetogether-runtime, mountPath: /var/log/nginx }
+            - { name: codetogether-runtime, mountPath: /var/cache/nginx }
+      {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:

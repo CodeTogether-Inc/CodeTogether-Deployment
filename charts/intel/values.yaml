@@ -132,14 +132,24 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {} #defaults to
+# Enable if deploying in OpenShift
+openshift:
+  enabled: false
 
+securityContext: {} #defaults
   # capabilities:
   #   drop:
   #   - ALL
-  #readOnlyRootFilesystem: true  # enable for read-only setup
-  # runAsNonRoot: true           # false for non-root user
-  # runAsUser: 0 # Use '0' for root user for read-only setup
+  # readOnlyRootFilesystem: true # enable for read-only setup
+  # runAsNonRoot: true
+  # runAsUser: 1000 # Use '0' for root user, in vanilla k8s you can use any non-root uid
+  # runAsGroup: 1000
+  # In openshift, dont set runAsUser or runAsGroup, let OpenShift assign the values
+
+podSecurityContext: {}
+# In OpenShift will inject automatically
+  #fsGroup: 1000
+  #fsGroupChangePolicy: "OnRootMismatch"
 
 ai:
   enabled: false
