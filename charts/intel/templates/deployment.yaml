@@ -87,6 +87,10 @@ spec:
               {{ else }}
                 {{ .Values.ai.url | quote }}
               {{ end }}
+            {{- if .Values.codetogether.customClientsUrl }}
+            - name: CT_HQ_OLLAMA_AI_CLIENTS_URL
+              value: {{ .Values.codetogether.customClientsUrl | quote }}
+            {{- end }}
             - name: CT_HQ_OLLAMA_AI_MODEL_NAME
               value: {{ .Values.ai.modelName | default "gemma3:1b" | quote }}
             - name: CT_HQ_OLLAMA_AI_API_KEY

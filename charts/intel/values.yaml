@@ -39,6 +39,7 @@ imageCredentials:
 codetogether:
   url: https://<server-fqdn>
   trustAllCerts: false  # Set to 'true' to trust all certificates
+  # customClientsUrl: "" # Optional custom URL for clients to download from
 
 
 hqproperties:
