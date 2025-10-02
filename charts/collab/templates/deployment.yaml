@@ -251,7 +251,7 @@ spec:
           emptyDir: {}
         - name: codetogether-tmp
           emptyDir:
-            medium: Memory
+            medium: {}
       {{- else if .Values.favicon.enabled }}
       volumes:
         - name: favicon-volume
