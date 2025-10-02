@@ -103,6 +103,7 @@ spec:
                   key: apiKey
               {{- end }}
             {{- end }}
+{{- if .Values.securityContext.readOnlyRootFilesystem }}
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
