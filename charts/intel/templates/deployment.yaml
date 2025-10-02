@@ -88,7 +88,7 @@ spec:
                 {{ .Values.ai.url | quote }}
               {{ end }}
             {{- if .Values.codetogether.customClientsUrl }}
-            - name: CT_HQ_OLLAMA_AI_CLIENTS_URL
+            - name: CT_CUSTOM_CLIENTS_ORIGIN
               value: {{ .Values.codetogether.customClientsUrl | quote }}
             {{- end }}
             - name: CT_HQ_OLLAMA_AI_MODEL_NAME
