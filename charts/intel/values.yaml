@@ -39,6 +39,7 @@ imageCredentials:
 codetogether:
   url: https://<server-fqdn>
   trustAllCerts: false  # Set to 'true' to trust all certificates
+  # customClientsUrl: "" # Optional custom URL for clients to download from
 
 
 hqproperties:
@@ -132,14 +133,14 @@ serviceAccount:
 
 podAnnotations: {}
 
-securityContext: {} #defaults to
-
+securityContext: {} #defaults
   # capabilities:
   #   drop:
   #   - ALL
-  #readOnlyRootFilesystem: true  # enable for read-only setup
-  # runAsNonRoot: true           # false for non-root user
-  # runAsUser: 0 # Use '0' for root user for read-only setup
+  # readOnlyRootFilesystem: true # enable for read-only setup
+  # runAsNonRoot: true
+  # runAsUser: 1000 # Use '0' for root user
+  # In openshift, dont set runAsUser, let OpenShift assign the values
 
 ai:
   enabled: false

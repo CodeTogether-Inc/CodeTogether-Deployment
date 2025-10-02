@@ -194,10 +194,6 @@ spec:
               name: codetogether-runtime
             - mountPath: /tmp
               name: codetogether-tmp
-            - mountPath: /var/log/nginx
-              name: codetogether-runtime
-            - mountPath: /var/cache/nginx
-              name: codetogether-runtime
             {{- if .Values.favicon.enabled }}
             - mountPath: /opt/volatile-template/nginx/favicon.ico
               name: favicon-volume
@@ -248,13 +244,13 @@ spec:
 
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
+  
       {{- if .Values.securityContext.readOnlyRootFilesystem}}
       volumes:
         - name: codetogether-runtime
           emptyDir: {}
         - name: codetogether-tmp
-          emptyDir:
-            medium: Memory
+          emptyDir: {}
       {{- else if .Values.favicon.enabled }}
       volumes:
         - name: favicon-volume

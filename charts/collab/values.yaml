@@ -217,7 +217,8 @@ securityContext: {} #defaults
   #   - ALL
   # readOnlyRootFilesystem: true # enable for read-only setup
   # runAsNonRoot: true
-  # runAsUser: 0 # Use '0' for root user for read-only setup
+  # runAsUser: 1000 # Use '0' for root user, in vanilla k8s you can use any non-root uid
+  # In openshift, dont set runAsUser, let OpenShift assign the values
 
 readinessProbe:
   initialDelaySeconds: 60
