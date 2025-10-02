@@ -624,6 +624,27 @@ entries:
   codetogether-collab:
   - apiVersion: v2
     appVersion: 2025.1.0
+    created: "2025-10-02T18:08:46.251061839Z"
+    description: CodeTogether Collab
+    digest: c705455cd9754b0ed384b153a5fe75d89f4f1308f1305f404b60eeaff48b0bdb
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-collab
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-collab-1.2.5/codetogether-collab-1.2.5.tgz
+    version: 1.2.5
+  - apiVersion: v2
+    appVersion: 2025.1.0
     created: "2025-09-25T18:31:29.795458756Z"
     description: CodeTogether Collab
     digest: ed8c0353ca591fc689c0d90bb8e5366dc632d9cbd12cb4fa64b69541a8d8375d
@@ -913,6 +934,25 @@ entries:
   codetogether-intel:
   - apiVersion: v2
     appVersion: 2025.3.0
+    created: "2025-10-02T18:08:46.389004064Z"
+    description: CodeTogether Intel provides advanced project insights for developers
+    digest: f4cd25140e3f23a01389ee718cc5f72297f7337cb1bf54161544f4098e3ddcab
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - intel
+    - insights
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-intel
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-intel-1.2.8/codetogether-intel-1.2.8.tgz
+    version: 1.2.8
+  - apiVersion: v2
+    appVersion: 2025.3.0
     created: "2025-09-25T18:31:29.995996874Z"
     description: CodeTogether Intel provides advanced project insights for developers
     digest: b2083223f9f741e7cdafec9a69bbc30ef59922d90ef42516e5b590b66d5c1354
@@ -1045,4 +1085,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-intel-1.1.0/codetogether-intel-1.1.0.tgz
     version: 1.1.0
-generated: "2025-09-25T18:31:29.996138168Z"
+generated: "2025-10-02T18:08:46.389180764Z"
