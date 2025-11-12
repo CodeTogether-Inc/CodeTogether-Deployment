@@ -27,6 +27,48 @@ spec:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
+      {{- if .Values.securityContext.readOnlyRootFilesystem }}
+      initContainers:
+        - name: init-writable-dirs
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+            - /bin/sh
+            - -c
+            - |
+              set -euo pipefail
+              for p in \
+                /run/volatile \
+                /run/volatile/clients \
+                /run/volatile/dashboard \
+                /run/volatile/log-codetogether \
+                /run/volatile/nginx \
+                /run/volatile/plugins \
+                /run/volatile/var-cache ; do
+                mkdir -p "$p"
+              done
+              mkdir -p /var/log/nginx
+              mkdir -p /var/cache/nginx
+              CHOWN_UID="{{ default 10001 .Values.securityContext.runAsUser }}"
+              CHOWN_GID="{{ default (default 10001 .Values.securityContext.runAsUser) .Values.securityContext.runAsGroup }}"
+              chown -R "${CHOWN_UID}:${CHOWN_GID}" /run /tmp /var/tmp /var/log/nginx /var/cache/nginx || true
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+            readOnlyRootFilesystem: false
+            allowPrivilegeEscalation: false
+          volumeMounts:
+            - name: runtime-tmp
+              mountPath: /run
+            - name: runtime-tmp
+              mountPath: /var/log/nginx
+            - name: runtime-tmp
+              mountPath: /var/cache/nginx
+            - name: tmp
+              mountPath: /tmp
+            - name: tmp
+              mountPath: /var/tmp
+      {{- end }}      
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -116,6 +158,18 @@ spec:
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
             {{- end }}
+          {{- if .Values.securityContext.readOnlyRootFilesystem }}
+            - name: runtime-tmp
+              mountPath: /run
+            - name: runtime-tmp
+              mountPath: /var/log/nginx
+            - name: runtime-tmp
+              mountPath: /var/cache/nginx
+            - name: tmp
+              mountPath: /tmp
+            - name: tmp
+              mountPath: /var/tmp              
+            {{- end }}
           ports:
             - name: http
               containerPort: 1080
@@ -163,6 +217,13 @@ spec:
         - name: java-cacerts
           secret:
             secretName: {{ .Values.java.customCacerts.cacertsSecretName }}
+        {{- end }}
+        {{- if .Values.securityContext.readOnlyRootFilesystem }}
+        - name: runtime-tmp
+          emptyDir: {}
+        - name: tmp
+          emptyDir:
+            medium: Memory
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
