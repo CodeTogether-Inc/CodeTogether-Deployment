@@ -26,37 +26,12 @@ spec:
       imagePullSecrets:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
-      serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
-      {{- if .Values.securityContext.readOnlyRootFilesystem }}
-      initContainers:
-        - name: init-writable-dirs
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
-          command:
-            - /bin/sh
-            - -c
-            - |
-              set -euo pipefail
-              for p in \
-                /run/volatile \
-                /run/volatile/clients \
-                /run/volatile/dashboard \
-                /run/volatile/log-codetogether \
-                /run/volatile/nginx \
-                /run/volatile/plugins \
-                /run/volatile/var-cache ; do
-                mkdir -p "$p"
-              done
-              mkdir -p /var/log/nginx
-              mkdir -p /var/cache/nginx
-              CHOWN_UID="{{ default 10001 .Values.securityContext.runAsUser }}"
-              CHOWN_GID="{{ default (default 10001 .Values.securityContext.runAsUser) .Values.securityContext.runAsGroup }}"
-              chown -R "${CHOWN_UID}:${CHOWN_GID}" /run /tmp /var/tmp /var/log/nginx /var/cache/nginx || true
+      serviceAccountName: {{ include "codetogether.serviceAccountName" . }}      
+      containers:
+        - name: {{ .Chart.Name }}
           securityContext:
-            runAsUser: 0
-            runAsGroup: 0
-            readOnlyRootFilesystem: false
-            allowPrivilegeEscalation: false
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.securityContext.readOnlyRootFilesystem }}
           volumeMounts:
             - name: runtime-tmp
               mountPath: /run
@@ -68,11 +43,7 @@ spec:
               mountPath: /tmp
             - name: tmp
               mountPath: /var/tmp
-      {{- end }}      
-      containers:
-        - name: {{ .Chart.Name }}
-          securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
