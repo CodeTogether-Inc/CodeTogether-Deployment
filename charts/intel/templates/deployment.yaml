@@ -26,24 +26,11 @@ spec:
       imagePullSecrets:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
-      serviceAccountName: {{ include "codetogether.serviceAccountName" . }}      
+      serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          {{- if .Values.securityContext.readOnlyRootFilesystem }}
-          volumeMounts:
-            - name: runtime-tmp
-              mountPath: /run
-            - name: runtime-tmp
-              mountPath: /var/log/nginx
-            - name: runtime-tmp
-              mountPath: /var/cache/nginx
-            - name: tmp
-              mountPath: /tmp
-            - name: tmp
-              mountPath: /var/tmp
-          {{- end }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
