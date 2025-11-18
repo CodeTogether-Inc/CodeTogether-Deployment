@@ -119,8 +119,6 @@ spec:
           {{- if .Values.securityContext.readOnlyRootFilesystem }}
             - name: run-volatile
               mountPath: /run/volatile
-            - name: var-log-nginx
-              mountPath: /var/log/nginx
             - name: run-nginx
               mountPath: /run
             - name: tmp
@@ -178,10 +176,6 @@ spec:
         {{- end }}
         {{- if .Values.securityContext.readOnlyRootFilesystem }}
         - name: run-volatile
-          emptyDir: {}
-        - name: var-log-nginx
-          emptyDir: {}
-        - name: run-nginx
           emptyDir: {}
         - name: tmp
           emptyDir:
