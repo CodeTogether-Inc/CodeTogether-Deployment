@@ -117,12 +117,12 @@ spec:
               subPath: cacerts
             {{- end }}
           {{- if .Values.securityContext.readOnlyRootFilesystem }}
-            - name: runtime-tmp
-              mountPath: /run
-            - name: runtime-tmp
+            - name: run-volatile
+              mountPath: /run/volatile
+            - name: var-log-nginx
               mountPath: /var/log/nginx
-            - name: runtime-tmp
-              mountPath: /var/cache/nginx
+            - name: run-nginx
+              mountPath: /run
             - name: tmp
               mountPath: /tmp
             - name: tmp
@@ -177,7 +177,11 @@ spec:
             secretName: {{ .Values.java.customCacerts.cacertsSecretName }}
         {{- end }}
         {{- if .Values.securityContext.readOnlyRootFilesystem }}
-        - name: runtime-tmp
+        - name: run-volatile
+          emptyDir: {}
+        - name: var-log-nginx
+          emptyDir: {}
+        - name: run-nginx
           emptyDir: {}
         - name: tmp
           emptyDir:
