@@ -119,8 +119,6 @@ spec:
           {{- if .Values.securityContext.readOnlyRootFilesystem }}
             - name: run-volatile
               mountPath: /run/volatile
-            - name: run-nginx
-              mountPath: /run
             - name: tmp
               mountPath: /tmp
             - name: tmp
