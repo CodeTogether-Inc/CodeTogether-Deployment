@@ -116,6 +116,14 @@ spec:
               mountPath: /etc/ssl/certs/java/cacerts
               subPath: cacerts
             {{- end }}
+          {{- if .Values.securityContext.readOnlyRootFilesystem }}
+            - name: run-volatile
+              mountPath: /run/volatile
+            - name: tmp
+              mountPath: /tmp
+            - name: tmp
+              mountPath: /var/tmp              
+            {{- end }}
           ports:
             - name: http
               containerPort: 1080
@@ -163,6 +171,13 @@ spec:
         - name: java-cacerts
           secret:
             secretName: {{ .Values.java.customCacerts.cacertsSecretName }}
+        {{- end }}
+        {{- if .Values.securityContext.readOnlyRootFilesystem }}
+        - name: run-volatile
+          emptyDir: {}
+        - name: tmp
+          emptyDir:
+            medium: Memory
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
