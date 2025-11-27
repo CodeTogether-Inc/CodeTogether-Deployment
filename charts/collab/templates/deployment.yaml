@@ -194,6 +194,8 @@ spec:
               name: codetogether-runtime
             - mountPath: /tmp
               name: codetogether-tmp
+            - mountPath: /run/volatile
+              name: run-volatile
             {{- if .Values.favicon.enabled }}
             - mountPath: /opt/volatile-template/nginx/favicon.ico
               name: favicon-volume
@@ -250,6 +252,8 @@ spec:
         - name: codetogether-runtime
           emptyDir: {}
         - name: codetogether-tmp
+          emptyDir: {}
+        - name: run-volatile
           emptyDir: {}
       {{- else if .Values.favicon.enabled }}
       volumes:
