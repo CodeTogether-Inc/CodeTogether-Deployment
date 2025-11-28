@@ -111,14 +111,6 @@ spec:
           - name: CT_AV_ENABLED
             value: {{ .Values.av.enabled | quote }}
 
-          # ------------------------------
-          # A/V DEPRECATION NOTICE
-          # ------------------------------
-          {{- if or .Values.av.enabled .Values.av.serverIP .Values.av.stunServers.enabled .Values.av.jitsiUrl }}
-          - name: CT_AV_DEPRECATED_WARNING
-            value: "Audio/Video options detected in Helm values, but A/V is no longer supported and will be ignored."
-          {{- end }}
-
           {{- if .Values.av.enabled }} 
           - name: CT_AV_LAN_IP
             value: {{ .Values.av.serverIP | quote }}
