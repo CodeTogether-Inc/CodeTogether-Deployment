@@ -191,10 +191,12 @@ spec:
 
           {{- if .Values.securityContext.readOnlyRootFilesystem}}
           volumeMounts:
-            - mountPath: /run
-              name: codetogether-runtime
-            - mountPath: /tmp
-              name: codetogether-tmp
+            - name: run-volatile
+              mountPath: /run/volatile
+            - name: tmp
+              mountPath: /tmp
+            - name: tmp
+              mountPath: /var/tmp
             {{- if .Values.favicon.enabled }}
             - mountPath: /opt/volatile-template/nginx/favicon.ico
               name: favicon-volume
@@ -248,10 +250,12 @@ spec:
   
       {{- if .Values.securityContext.readOnlyRootFilesystem}}
       volumes:
-        - name: codetogether-runtime
-          emptyDir: {}
-        - name: codetogether-tmp
-          emptyDir: {}
+        - name: run-volatile
+          emptyDir:
+            medium: Memory
+        - name: tmp
+          emptyDir:
+            medium: Memory
       {{- else if .Values.favicon.enabled }}
       volumes:
         - name: favicon-volume
