@@ -1,0 +1,20 @@
+image:
+  tag: c819a2996f8d96cfcadc73cba625d01d70f8df2b
+
+environment: dev
+replicaCount: 1
+
+ingress:
+  hosts:
+    - host: portal.dev.codetogether.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 300m
+    memory: 384Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi 
