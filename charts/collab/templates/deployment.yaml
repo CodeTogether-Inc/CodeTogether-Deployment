@@ -110,6 +110,7 @@ spec:
           {{- if or (eq .Values.codetogether.mode "direct") (eq .Values.codetogether.mode "locator-edge") }}
           - name: CT_AV_ENABLED
             value: {{ .Values.av.enabled | quote }}
+
           {{- if .Values.av.enabled }} 
           - name: CT_AV_LAN_IP
             value: {{ .Values.av.serverIP | quote }}

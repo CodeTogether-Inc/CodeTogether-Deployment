@@ -3,3 +3,21 @@ Application URL:
   {{- $host := (urlParse .Values.codetogether.url).host }}
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host }}{{ .path }}
 {{- end }}
+
+{{- if or .Values.av.enabled .Values.av.serverIP .Values.av.stunServers.enabled .Values.av.jitsiUrl }}
+
+###############################################################################
+# WARNING: A/V OPTIONS DEPRECATED
+###############################################################################
+Audio/Video options were detected in your Helm values:
+
+  av.enabled              = {{ .Values.av.enabled | default "false" }}
+  av.serverIP             = {{ .Values.av.serverIP | default "" }}
+  av.stunServers.enabled  = {{ .Values.av.stunServers.enabled | default "false" }}
+  av.jitsiUrl             = {{ .Values.av.jitsiUrl | default "" }}
+
+A/V is no longer supported and these settings will be ignored by the server.
+Please remove these values from your codetogether-values.yaml.
+###############################################################################
+
+{{- end }}
