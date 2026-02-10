@@ -203,6 +203,7 @@ av:
 service:
   type: ClusterIP
   port: 443
+  annotations: {}
 
 serviceAccount:
   create: true
