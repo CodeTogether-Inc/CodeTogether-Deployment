@@ -27,6 +27,12 @@ spec:
         - name: {{ include "codetogether.fullname" . }}-pull-secret
       {{- end }}
       serviceAccountName: {{ include "codetogether.serviceAccountName" . }}
+
+      {{- with .Values.initContainers }}
+      initContainers:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
