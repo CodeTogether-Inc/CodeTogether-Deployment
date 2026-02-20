@@ -216,8 +216,7 @@ podAnnotations: {}
 # Useful to wait for dependencies (e.g., Intel URL reachability, locator DB readiness, etc.)
 # before CodeTogether Collab starts.
 initContainers: []
-# Example:
-# initContainers:
+# Example (replace the `[]` above with the list below):
 #   - name: wait-for-intel
 #     image: busybox:1.36
 #     command: ["sh", "-c"]
