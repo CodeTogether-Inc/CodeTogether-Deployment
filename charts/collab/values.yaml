@@ -212,6 +212,18 @@ serviceAccount:
 
 podAnnotations: {}
 
+# Optional: add initContainers (startup containers) to the pod spec.
+# Useful to wait for dependencies (e.g., Intel URL reachability, locator DB readiness, etc.)
+# before CodeTogether Collab starts.
+initContainers: []
+# Example (replace the `[]` above with the list below):
+#   - name: wait-for-intel
+#     image: busybox:1.36
+#     command: ["sh", "-c"]
+#     args:
+#       - >
+#         until nc -z your-intel-host 443; do echo "Waiting for Intel..."; sleep 2; done
+
 securityContext: {} #defaults
   # capabilities:
   #   drop:

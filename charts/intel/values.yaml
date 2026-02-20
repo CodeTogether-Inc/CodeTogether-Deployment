@@ -136,8 +136,7 @@ podAnnotations: {}
 # Optional: add initContainers (startup containers) to the pod spec.
 # Useful to wait for Cassandra or run startup checks before Intel starts.
 initContainers: []
-# Example:
-# initContainers:
+# Example (replace the `[]` above with the list below):
 #   - name: wait-for-cassandra
 #     image: busybox:1.36
 #     command: ["sh", "-c"]
