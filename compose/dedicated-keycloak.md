@@ -1,5 +1,7 @@
 # Dedicated / External Keycloak: startup gate for Intel
 
+This overlay assumes you already have a Keycloak instance running outside of Docker Compose.
+
 If Keycloak is **not** started by Docker Compose (dedicated/external Keycloak), Intel may start too early.
 Use the overlay `compose.dedicated-keycloak.yaml` to make Intel wait until Keycloak is reachable.
 
