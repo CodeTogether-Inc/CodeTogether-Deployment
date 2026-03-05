@@ -1,0 +1,25 @@
+services:
+  # Readiness gate for dedicated/external Keycloak.
+  # Intel will wait until the realm OIDC metadata endpoint responds successfully.
+  keycloak-ready:
+    image: curlimages/curl:8.6.0
+    command: ["sh", "-lc", "sleep infinity"]
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fsS https://${KEYCLOAK_FQDN}/realms/${KEYCLOAK_REALM}/.well-known/openid-configuration > /dev/null || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+    networks:
+      - codetogethernet
+
+  codetogether-intel:
+    depends_on:
+      cassandra:
+        condition: service_healthy
+      keycloak-ready:
+        condition: service_healthy
+
+networks:
+  codetogethernet:
+    external: true
