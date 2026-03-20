@@ -192,4 +192,32 @@ tolerations: []
 
 affinity: {}
 
+# Additional environment variables to set on the container
+# Example:
+#   extraEnvVars:
+#     - name: MY_VAR
+#       value: "my-value"
+#     - name: MY_SECRET_VAR
+#       valueFrom:
+#         secretKeyRef:
+#           name: my-secret
+#           key: my-key
+extraEnvVars: []
+
+# Additional volumes to add to the pod
+# Example:
+#   extraVolumes:
+#     - name: my-config
+#       configMap:
+#         name: my-configmap
+extraVolumes: []
+
+# Additional volume mounts for the main container
+# Example:
+#   extraVolumeMounts:
+#     - name: my-config
+#       mountPath: /etc/myapp/config.yaml
+#       subPath: config.yaml
+extraVolumeMounts: []
+
 replicaCount: 1

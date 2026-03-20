@@ -113,6 +113,9 @@ spec:
                   key: apiKey
               {{- end }}
             {{- end }}
+            {{- with .Values.extraEnvVars }}
+            {{- toYaml . | nindent 12 }}
+            {{- end }}
           volumeMounts:
             - name: properties-volume
               mountPath: /opt/codetogether/runtime/cthq.properties
@@ -129,6 +132,9 @@ spec:
               mountPath: /tmp
             - name: tmp
               mountPath: /var/tmp              
+            {{- end }}
+            {{- with .Values.extraVolumeMounts }}
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           ports:
             - name: http
@@ -184,6 +190,9 @@ spec:
         - name: tmp
           emptyDir:
             medium: Memory
+        {{- end }}
+        {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
         {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
