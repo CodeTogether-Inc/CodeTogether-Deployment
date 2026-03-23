@@ -220,4 +220,6 @@ extraVolumes: []
 #       subPath: config.yaml
 extraVolumeMounts: []
 
+extraContainers: []
+
 replicaCount: 1
