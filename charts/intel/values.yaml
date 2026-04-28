@@ -173,6 +173,8 @@ ai:
       #memory: "4Gi"
 
 readinessProbe:
+  path: /
+  port: http
   initialDelaySeconds: 60
   periodSeconds: 60
   timeoutSeconds: 15
@@ -180,6 +182,8 @@ readinessProbe:
   failureThreshold: 1
 
 livenessProbe:
+  path: /
+  port: http
   initialDelaySeconds: 60
   periodSeconds: 60
   timeoutSeconds: 15
