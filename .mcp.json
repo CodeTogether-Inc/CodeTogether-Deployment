@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "aitrax": {
+      "type": "stdio",
+      "command": "node",
+      "args": [
+        ".tools/ct/aitrax.mjs"
+      ]
+    }
+  }
+}
