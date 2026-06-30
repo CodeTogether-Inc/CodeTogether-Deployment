@@ -170,6 +170,12 @@ The following table lists the primary configurable parameters and defaults.
 | `livenessProbe.path` | Liveness endpoint on port 8080 | `/actuator/health` |
 | `startupProbe.enabled` | Enable startup probe | `true` |
 
+`image.tag` controls which container image the Deployment pulls at install or
+upgrade time. `appVersion` in `Chart.yaml` is chart metadata only; it does not
+pin the running image unless you set `image.tag` or `image.digest`. Most
+installations can use the default `latest` tag and receive hub.edge updates on
+`helm upgrade` after the registry tag moves.
+
 ## Pre-Created Properties Secret
 
 For GitOps workflows, create and manage the properties Secret outside Helm:
@@ -202,9 +208,12 @@ Render the chart locally before installing:
 ```bash
 helm template codetogether-ai codetogether/codetogether-ai \
   --set-file ctaiPropertiesFile=./ctai-configuration.properties \
+  --set service.fqdn=https://ai.example.com \
   --set imageCredentials.username=test \
   --set imageCredentials.password=test
 ```
+
+`service.fqdn` must match `service_fqdn` in the properties file when both are set.
 
 At runtime, CodeTogether AI validates the mounted configuration before the
 service starts. If validation fails, the pod exits and logs a block beginning
@@ -228,6 +237,18 @@ helm upgrade codetogether-ai codetogether/codetogether-ai \
   --set-file ctaiPropertiesFile=./ctai-configuration.properties \
   --set imageCredentials.username=replace-with-hub-edge-username \
   --set imageCredentials.password=replace-with-hub-edge-password
+```
+
+Using `latest` is fine for most installs. Pin a known GA build only when change
+control requires a fixed container version:
+
+```bash
+helm upgrade codetogether-ai codetogether/codetogether-ai \
+  --namespace codetogether-ai \
+  --set-file ctaiPropertiesFile=./ctai-configuration.properties \
+  --set imageCredentials.username=replace-with-hub-edge-username \
+  --set imageCredentials.password=replace-with-hub-edge-password \
+  --set image.tag=0.1.1204
 ```
 
 The Deployment rolls when the chart-managed properties Secret changes.
