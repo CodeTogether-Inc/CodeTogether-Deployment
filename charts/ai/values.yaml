@@ -71,8 +71,8 @@ ingress:
     # OTLP telemetry batches can exceed the nginx-ingress 1MB default body size
     # and get rejected with 413 before reaching the backend. Raise the limit so
     # tracker uploads land. The in-pod nginx already allows 32m, so the ingress
-    # hop is the binding constraint. Overlays may add deployment-specific
-    # annotations (e.g. external-dns); Helm deep-merges them with this default.
+    # hop is the binding constraint. Additional ingress annotations
+    # (e.g. external-dns hostname) merge with this default.
     nginx.ingress.kubernetes.io/proxy-body-size: "16m"
   # className: codetogether-nginx
   tls:

@@ -120,6 +120,17 @@ Ingress host and TLS are derived from `service_fqdn` in
 `ctai-configuration.properties`. If you also set `service.fqdn` in Helm values,
 it must exactly match `service_fqdn`.
 
+By default, the chart does not set `ingress.className`, matching the
+CodeTogether Intel chart. Clusters without a default IngressClass should set one
+explicitly:
+
+```bash
+--set ingress.className=nginx
+```
+
+If you set `ingress.className=codetogether-nginx`, the chart also creates a
+matching `IngressClass`.
+
 ## Configuration
 
 The following table lists the primary configurable parameters and defaults.
