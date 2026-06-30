@@ -15,6 +15,34 @@ storage master key is stored in a separate Kubernetes Secret.
 - A TLS Secret for Ingress when `ingress.enabled=true`.
 - CodeTogether-provided credentials for `hub.edge.codetogether.com`.
 
+## PostgreSQL Prerequisites
+
+This chart does not install Postgres. Provide an external database reachable
+from the cluster and configure it in `ctai-configuration.properties`.
+
+Before the first pod starts, run the database grants as a Postgres admin. A
+dedicated application user is recommended:
+
+```sql
+GRANT ALL PRIVILEGES ON DATABASE <db> TO <app_user>;
+GRANT CREATE ON DATABASE <db> TO <app_user>;
+ALTER DATABASE <db> OWNER TO <app_user>;
+ALTER ROLE <app_user> BYPASSRLS;
+```
+
+`BYPASSRLS` matches the production application role shape. CodeTogether uses
+row-level security on platform tables, including `oauth2_cache`, where SSO
+stores OAuth state. Without it, SSO redirects can fail because OAuth state
+cannot be inserted or read.
+
+Managed Postgres superusers, such as DigitalOcean's `doadmin`, bypass RLS but
+are not recommended for production application connections. If your provider
+requires SSL, append `?sslmode=require` to the JDBC URL, for example:
+
+```properties
+database_url=jdbc:postgresql://postgres.example.internal:5432/codetogether?sslmode=require
+```
+
 ## Install
 
 ### 1. Prepare the configuration file
@@ -70,6 +98,8 @@ sso_provider1_client_id=replace-with-google-client-id
 sso_provider1_client_secret=replace-with-google-client-secret
 sso_provider1_client_issuer_url=https://accounts.google.com
 ```
+
+Before testing SSO, complete the [PostgreSQL prerequisites](#postgresql-prerequisites).
 
 ### 3. Create the TLS Secret
 
@@ -227,6 +257,10 @@ kubectl logs -n codetogether-ai deploy/codetogether-ai --previous
 Common causes include unfilled example values, Postgres connectivity problems,
 missing or changed master-key Secret, an HTTP `service_fqdn`, missing TLS
 Secret, or SSO provider settings that do not match the registered redirect URI.
+If login fails after returning from Google or another identity provider with
+`authorization_request_not_found`, check that the database user has `BYPASSRLS`
+and that the registered OAuth redirect URI exactly matches
+`{service_fqdn}/api/v1/auth/sso/provider/callback`.
 
 ## Upgrade
 

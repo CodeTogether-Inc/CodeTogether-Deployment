@@ -72,9 +72,11 @@ github_state_secret=replace-with-generated-github-state-secret
 # Or run: ./generate-properties-secrets.sh (in this chart directory)
 sso_jwt_secret=replace-with-generated-sso-jwt-secret
 
-# Register the full callback URL at your IdP:
-#   https://<service_fqdn>/api/v1/auth/sso/provider/callback
+# Register the full callback URL at your IdP. Full callback URL:
+#   {service_fqdn}/api/v1/auth/sso/provider/callback
+# It must match your IdP registration exactly.
 # Example: https://mycompany.codetogether.com/api/v1/auth/sso/provider/callback
+sso_redirect_uri=/api/v1/auth/sso/provider/callback
 #
 # -----------------------------------------------------------------------------
 # SSO providers
