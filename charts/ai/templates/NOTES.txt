@@ -1,0 +1,36 @@
+Application URL:
+{{- if .Values.ingress.enabled }}
+  {{- $host := (urlParse (include "ctai.serviceFqdn" .)).host }}
+  https://{{ $host }}/
+{{- else }}
+  Use: kubectl port-forward svc/{{ include "ctai.fullname" . }} 1080:{{ .Values.service.port }}
+{{- end }}
+
+Health checks:
+  Portal/nginx: GET /healthz on port 1080
+  Backend:      GET /actuator/health on port 8080
+
+{{- if eq (include "ctai.propertiesEnabled" .) "true" }}
+
+Configuration:
+  Wizard properties (including deployment secrets) are mounted at {{ include "ctai.propertiesFilePath" . }}.
+  start-ctai sets CTAI_PROPERTIES_FILE to that path; CustomYamlBuilder reads them at startup.
+{{- else }}
+
+Configuration:
+  Env-only mode (no properties Secret). Pass the wizard file with:
+    --set-file ctaiPropertiesFile=./ctai-configuration.properties
+  or use ctaipropertiessecret for a pre-created Secret.
+{{- end }}
+
+{{- if eq (include "ctai.masterKeyEnvEnabled" .) "true" }}
+
+Protected storage master key:
+  Injected from Secret {{ include "ctai.masterKeySecretName" . }} as CTAI_PROTECTED_STORAGE_MASTER_KEY_B64
+  (not in the properties file).
+{{- if eq .Values.masterKey.source "auto" }}
+  Dev auto mode: back up Secret {{ include "ctai.masterKeySecretName" . }} with your database.
+{{- else }}
+  Production: run ./generate-master-key.sh in this chart directory before install.
+{{- end }}
+{{- end }}
