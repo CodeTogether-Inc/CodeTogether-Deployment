@@ -1,0 +1,150 @@
+# =============================================================================
+# CodeTogether — configuration template (manual fill-in)
+# =============================================================================
+#
+# Copy this file, replace placeholder values, and save as:
+#   ctai-configuration.properties
+#
+# Lines starting with # are comments and are ignored when the file is loaded.
+# Each setting uses key=value format (same keys written by the config wizard).
+#
+# Prefer the config wizard when possible — it validates settings, generates
+# secrets, and can test database, SSO, and SMTP connectivity.
+#
+# After editing manually, you can open the saved file in the wizard (Intro →
+# Open existing properties file...) to review or update settings.
+#
+# =============================================================================
+
+# Company display name shown in the application.
+# You can update this later from the dashboard.
+company_name=Example Company
+
+# Public Fully Qualified Domain Name (fqdn) for the CodeTogether service. This hostname must be DNS routable and must use https://.
+service_fqdn=https://example.codetogether.io
+
+# Sender address and display name for outbound mail.
+email_from_address=noreply@example.com
+email_from_name=Example Company
+
+# SMTP server hostname and port (587 is typical with STARTTLS).
+smtp_host=smtp.example.com
+smtp_port=587
+
+# true when the SMTP server requires authentication; false for open relay /
+# IP-allowlisted servers.
+smtp_auth_enabled=false
+# required when smtp_auth_enabled=true
+smtp_username=
+smtp_password=
+
+# STARTTLS: connect on a plain connection first, then upgrade to TLS before
+# sending credentials (typical on port 587).
+smtp_start_tls=true
+
+# Connection timeouts in ISO-8601 duration form (defaults shown).
+smtp_connect_timeout=PT10S
+smtp_read_timeout=PT30S
+
+# PostgreSQL JDBC URL. Pattern: jdbc:postgresql://<hostname[:port]>/<database>
+# Use a dedicated database for CodeTogether rather than reusing an existing one.
+database_url=jdbc:postgresql://postgres.example.internal:5432/codetogether
+database_username=codetogether
+database_password=replace-with-postgres-password
+
+# Schemas for telemetry, platform, and datamart data (defaults shown).
+# Telemetry: developer and AI activity.
+# Datamart: analytics calculated from telemetry.
+# Platform: backend server data.
+database_telemetry_schema=telemetry
+database_platform_schema=platform
+database_datamart_schema=datamart
+
+# Signs short-lived state tokens during GitHub OAuth flows — used when connecting
+# a GitHub App and when creating a new GitHub App via manifest provisioning.
+# Generate a unique random value; do not reuse across deployments.
+# Or run: ./generate-properties-secrets.sh (in this chart directory)
+github_state_secret=replace-with-generated-github-state-secret
+
+# Signs JWT session cookies to secure user sessions after SSO login.
+# Generate a unique random value; must differ from the other deployment secrets.
+# Do not change after login to the dashboard unless you want your login cookies to change
+# Or run: ./generate-properties-secrets.sh (in this chart directory)
+sso_jwt_secret=replace-with-generated-sso-jwt-secret
+
+# Register the full callback URL at your IdP:
+#   https://<service_fqdn>/api/v1/auth/sso/provider/callback
+# Example: https://mycompany.codetogether.com/api/v1/auth/sso/provider/callback
+#
+# -----------------------------------------------------------------------------
+# SSO providers
+# -----------------------------------------------------------------------------
+#
+# Each provider uses a numbered prefix: sso_provider1, sso_provider2, ...
+# Use consecutive integers starting at 1 with no gaps.
+#
+# Required keys per provider (replace N with 1, 2, 3, ...):
+#   sso_providerN_type          Provider kind (see valid types below).
+#   sso_providerN               Provider name (see naming rules below).
+#   sso_providerN_client_id     OAuth client ID from your identity provider.
+#   sso_providerN_client_secret OAuth client secret.
+#
+# Valid sso_providerN_type values:
+#   keycloak, github, google, azure, okta, custom
+#
+# sso_providerN (name field) rules:
+#   - For keycloak, google, azure, okta: use the same string as _type
+#     (e.g. sso_provider1_type=keycloak and sso_provider1=keycloak).
+#   - For github: use github.
+#   - For custom (optional second sign-in provider): use a unique lowercase
+#     name (e.g. customprovidername) or a built-in kind for an alternate
+#     account (github, keycloak, etc.). Only one custom provider is allowed.
+#   - You cannot register two providers with the same registration id
+#     (e.g. two keycloak entries); use custom for a second GitHub or Keycloak.
+#
+# OIDC providers (keycloak, google, azure, okta, and custom with issuer):
+#   sso_providerN_client_issuer_url=<https://issuer-url>
+#
+# GitHub (and custom providers using GitHub OAuth endpoints): set _auth_uri,
+# _token_uri, _info_uri, _jwt_set_uri, and optionally _logout_uri instead of
+# client_issuer_url. Standard GitHub values:
+#   auth:  https://github.com/login/oauth/authorize
+#   token: https://github.com/login/oauth/access_token
+#   info:  https://api.github.com/user
+#   jwks:  https://token.actions.githubusercontent.com/.well-known/jwks
+#   logout: https://github.com/logout
+#
+# Optional keys (omit to use runtime defaults):
+#   sso_providerN_client_authentication_method
+#   sso_providerN_display_label       Custom provider label shown to users.
+#   sso_providerN_name_attribute      Default varies by type (e.g. login for GitHub).
+#   sso_providerN_scopes              Default: openid,email,profile (email,profile for GitHub).
+#   sso_providerN_authorization_grant_type  Default: authorization_code
+#   sso_providerN_role_mapping_claim
+#   sso_providerN_role-mappings       Note: hyphen in the property name.
+#
+# Example — first provider (Keycloak / OIDC):
+sso_provider1_type=keycloak
+sso_provider1=keycloak
+sso_provider1_client_id=replace-with-client-id
+sso_provider1_client_secret=replace-with-client-secret
+sso_provider1_client_issuer_url=https://auth.example.com/realms/codetogether
+
+# Example — second provider (uncomment and renumber if needed):
+# sso_provider2_type=custom
+# sso_provider2=<customprovidername>
+# sso_provider2_client_id=<client-id>
+# sso_provider2_client_secret=<client-secret>
+# sso_provider2_display_label=<Label shown on sign-in button>
+# sso_provider2_client_issuer_url=https://<auth-host>/realms/<realm>
+#
+# Example — GitHub as first provider (use preset URIs; no client_issuer_url):
+# sso_provider1_type=github
+# sso_provider1=github
+# sso_provider1_client_id=<github-oauth-client-id>
+# sso_provider1_client_secret=<github-oauth-client-secret>
+# sso_provider1_auth_uri=https://github.com/login/oauth/authorize
+# sso_provider1_token_uri=https://github.com/login/oauth/access_token
+# sso_provider1_info_uri=https://api.github.com/user
+# sso_provider1_jwt_set_uri=https://token.actions.githubusercontent.com/.well-known/jwks
+# sso_provider1_logout_uri=https://github.com/logout
