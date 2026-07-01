@@ -1,0 +1,22 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "{{ include "ctai.fullname" . }}-test-connection"
+  labels:
+    {{- include "ctai.labels" . | nindent 4 }}
+  annotations:
+    "helm.sh/hook": test
+spec:
+  restartPolicy: Never
+  containers:
+    - name: wget
+      image: busybox:1.36
+      command: ['wget']
+      args: ['{{ printf "http://%s:%d/healthz" (include "ctai.fullname" .) (int .Values.service.port) }}']
+  {{- if .Values.imageCredentials.pullSecret }}
+  imagePullSecrets:
+    - name: {{ .Values.imageCredentials.pullSecret }}
+  {{- else if .Values.imageCredentials.enabled }}
+  imagePullSecrets:
+    - name: {{ include "ctai.fullname" . }}-pull-secret
+  {{- end }}

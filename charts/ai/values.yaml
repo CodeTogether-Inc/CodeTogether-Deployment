@@ -1,0 +1,134 @@
+# Default values for CodeTogether AI on Kubernetes.
+# Based on charts/intel from CodeTogether-Deployment; adapted for the ct-ai
+# codetogether-ai customer image and start-ctai entrypoint.
+#
+# Kubernetes required version: v1.19+
+#
+# Configuration modes (pick one):
+#   1. Properties file (recommended):
+#        helm install ctai . \
+#          --set-file ctaiPropertiesFile=./ctai-configuration.properties
+#   2. Pre-created Secret (GitOps):
+#        ctaipropertiessecret.enabled=true, ctaipropertiessecret.ref=...
+#   3. Env-only — leave properties empty; set service.fqdn and extraEnvVars.
+nameOverride: ""
+fullnameOverride: ""
+
+image:
+  repository: hub.edge.codetogether.com/releases/codetogether-ai
+  pullPolicy: Always
+  tag: "latest"
+  digest: ""
+
+imageCredentials:
+  # pullSecret: "my-customer-pull-secret"
+  enabled: true
+  registry: hub.edge.codetogether.com
+  username: "my-customer-username"
+  password: "my-customer-password"
+  email: unused
+
+# Public HTTPS URL (same meaning as service_fqdn in ctai-configuration.properties).
+# Optional when using --set-file: service_fqdn is read from the properties file
+# instead. Required for GitOps (pre-created properties Secret) and env-only installs.
+service:
+  fqdn: ""
+  annotations: {}
+  type: ClusterIP
+  port: 1080
+
+# Properties file contents. Set at install time with --set-file:
+#   --set-file ctaiPropertiesFile=./ctai-configuration.properties
+ctaiPropertiesFile: ""
+
+# Protected-storage master key — delivered via dedicated Secret as CTAI_PROTECTED_STORAGE_MASTER_KEY_B64,
+# not in the properties file. Production workflow:
+#   1. Run generate-master-key.sh on your workstation and kubectl apply the Secret.
+#   2. Set masterKey.existingSecret to that Secret name (default: ctai-master-key).
+masterKey:
+  source: secret       # secret (production) | auto (dev only) | external (advanced — chart does not inject)
+  existingSecret: ctai-master-key
+  existingSecretKey: CTAI_PROTECTED_STORAGE_MASTER_KEY_B64
+  existingSecretVersionKey: CTAI_PROTECTED_STORAGE_MASTER_KEY_VERSION
+  # Used only when source=auto for non-production testing.
+  masterKeyB64: ""
+  masterKeyVersion: v1
+
+# Use a pre-created Secret instead of chart-generated properties.
+# Secret must contain key: ctai-configuration.properties
+ctaipropertiessecret:
+  enabled: false
+  ref: ""
+
+properties:
+  # Matches Dockerfile layout and start-ctai CTAI_CONFIGURATION_HOME.
+  mountPath: /opt/ctai/server/config
+  fileName: ctai-configuration.properties
+
+ingress:
+  enabled: true
+  annotations:
+    # OTLP telemetry batches can exceed the nginx-ingress 1MB default body size
+    # and get rejected with 413 before reaching the backend. Raise the limit so
+    # tracker uploads land. The in-pod nginx already allows 32m, so the ingress
+    # hop is the binding constraint. Additional ingress annotations
+    # (e.g. external-dns hostname) merge with this default.
+    nginx.ingress.kubernetes.io/proxy-body-size: "16m"
+  # className: codetogether-nginx
+  tls:
+    secretName: codetogether-ai-tls
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: "codetogether-ai"
+
+podAnnotations: {}
+podSecurityContext:
+  fsGroup: 2200
+
+securityContext:
+  runAsNonRoot: true
+  runAsUser: 2200
+  runAsGroup: 2200
+  allowPrivilegeEscalation: false
+
+resources: {}
+
+readinessProbe:
+  path: /healthz
+  port: http
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  timeoutSeconds: 10
+  successThreshold: 1
+  failureThreshold: 6
+
+livenessProbe:
+  path: /actuator/health
+  port: backend
+  initialDelaySeconds: 90
+  periodSeconds: 30
+  timeoutSeconds: 10
+  successThreshold: 1
+  failureThreshold: 6
+
+startupProbe:
+  enabled: true
+  path: /actuator/health
+  port: backend
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 10
+  failureThreshold: 30
+
+initContainers: []
+nodeSelector: {}
+tolerations: []
+affinity: {}
+replicaCount: 1
+
+extraEnvVars: []
+extraVolumes: []
+extraVolumeMounts: []
+extraContainers: []

@@ -1,0 +1,51 @@
+{{- include "ctai.validateConfiguration" . -}}
+{{- if .Values.ingress.enabled }}
+{{- $fullName := include "ctai.fullname" . }}
+{{- $svcPort := .Values.service.port }}
+{{- $host := (urlParse (include "ctai.serviceFqdn" .)).host }}
+{{- $kver := .Capabilities.KubeVersion.Version | default .Capabilities.KubeVersion.GitVersion }}
+{{- $hasIngressV1 := .Capabilities.APIVersions.Has "networking.k8s.io/v1/Ingress" }}
+{{- $isIngressV1 := or $hasIngressV1 (semverCompare ">=1.19-0" $kver) }}
+{{- if $isIngressV1 }}
+apiVersion: networking.k8s.io/v1
+{{- else }}
+apiVersion: networking.k8s.io/v1beta1
+{{- end }}
+kind: Ingress
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "ctai.labels" . | nindent 4 }}
+  {{- with .Values.ingress.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  {{- if and .Values.ingress.className $isIngressV1 }}
+  ingressClassName: {{ .Values.ingress.className }}
+  {{- end }}
+  {{- if .Values.ingress.tls }}
+  tls:
+    - hosts:
+        - {{ $host | quote }}
+      secretName: {{ .Values.ingress.tls.secretName }}
+  {{- end }}
+  rules:
+    - host: {{ $host | quote }}
+      http:
+        paths:
+          - path: /
+            {{- if $isIngressV1 }}
+            pathType: Prefix
+            {{- end }}
+            backend:
+              {{- if $isIngressV1 }}
+              service:
+                name: {{ $fullName }}
+                port:
+                  number: {{ $svcPort }}
+              {{- else }}
+              serviceName: {{ $fullName }}
+              servicePort: {{ $svcPort }}
+              {{- end }}
+{{- end }}

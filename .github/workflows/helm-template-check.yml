@@ -32,6 +32,15 @@ jobs:
         run: |
           helm template intel ./charts/intel --values ./charts/intel/values.yaml
 
+      - name: Validate AI Chart
+        run: |
+          helm lint ./charts/ai
+          helm template test ./charts/ai \
+            --set-file ctaiPropertiesFile=./charts/ai/ctai-configuration.properties.template \
+            --set service.fqdn=https://example.codetogether.io \
+            --set imageCredentials.username=test \
+            --set imageCredentials.password=test
+
       - name: Validate Live Chart
         run: |
           helm template live ./charts/live --values ./charts/live/values.yaml
