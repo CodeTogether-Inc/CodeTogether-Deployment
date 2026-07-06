@@ -196,6 +196,7 @@ The following table lists the primary configurable parameters and defaults.
 | `serviceAccount.create` | Create a ServiceAccount | `true` |
 | `serviceAccount.name` | ServiceAccount name | `codetogether-ai` |
 | `replicaCount` | Deployment replica count | `1` |
+| `manageReplicas` | Render `spec.replicas`; set `false` when external scaling tools own replica count | `true` |
 | `readinessProbe.path` | Readiness endpoint on port 1080 | `/healthz` |
 | `livenessProbe.path` | Liveness endpoint on port 8080 | `/actuator/health` |
 | `startupProbe.enabled` | Enable startup probe | `true` |
@@ -286,6 +287,27 @@ helm upgrade codetogether-ai codetogether/codetogether-ai \
 ```
 
 The Deployment rolls when the chart-managed properties Secret changes.
+
+### Server-side apply replica conflicts
+
+Some clusters use external scaling automation, HPA, or `kubectl scale` to manage
+Deployment replica count. If that manager owns `.spec.replicas`, Helm upgrades
+can fail with a server-side apply conflict similar to:
+
+```text
+conflict with "agent" using apps/v1: .spec.replicas
+```
+
+Set `manageReplicas: false` in your custom `values.yaml` to make Helm omit
+`spec.replicas` and leave replica ownership to the external tool:
+
+```yaml
+manageReplicas: false
+```
+
+The default remains `manageReplicas: true`, preserving existing production
+behavior. Internal or CI overlays that must pin a replica count should keep
+`manageReplicas: true`.
 
 ## Uninstall
 
