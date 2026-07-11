@@ -1,0 +1,24 @@
+# Default values for the application
+replicaCount: 2
+
+image:
+  repository: registry.digitalocean.com/codetogether-registry/portal
+  tag: latest
+  pullPolicy: Always
+
+imagePullSecrets:
+  - name: digitalocean-registry
+
+service:
+  type: ClusterIP
+  port: 3000
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi
+
+

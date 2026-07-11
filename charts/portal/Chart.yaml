@@ -1,0 +1,4 @@
+apiVersion: v2
+name: portal
+description: A Helm chart for deploying the portal
+version: 0.1.0
