@@ -10,7 +10,7 @@ spec:
     - port: {{ .Values.service.port }}
       targetPort: http
       protocol: TCP
-      name: http  
+      name: http
     {{- if include "codetogether.avEnabled" . }}
     - port: 4443
       targetPort: av-tcp

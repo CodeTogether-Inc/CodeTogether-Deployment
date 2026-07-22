@@ -46,7 +46,7 @@ spec:
           env:
           #
           # Set CodeTogether runtime configuration
-          #         
+          #
           - name: CT_SERVER_URL
             value: {{ .Values.codetogether.url | quote }}
           - name: CT_TRUST_ALL_CERTS
@@ -56,7 +56,7 @@ spec:
           - name: CT_LOCATOR
             value: "none"
           - name: CT_PROMETHEUS_ENABLED
-            value: {{ .Values.direct.metrics.prometheusEnabled | quote }}         
+            value: {{ .Values.direct.metrics.prometheusEnabled | quote }}
           {{- if .Values.direct.metrics.statsdEnabled }}
           - name: CT_METRICS_STATSD_HOST
             value: {{ .Values.direct.metrics.statsdHost | quote }}
@@ -105,7 +105,7 @@ spec:
             value: {{ .Values.locatorEdge.locator | quote }}
           - name: CT_REGION
             value: {{ .Values.locatorEdge.region | quote }}
-          {{- end }}  
+          {{- end }}
 
           - name: CT_AV_ENABLED
             value: {{ include "codetogether.avEnabled" . | default "false" | quote }}
@@ -228,7 +228,7 @@ spec:
               subPath: favicon.ico
           {{- end }}
 
-          # 
+          #
           # Set container configuration
           #
           ports:
@@ -243,7 +243,7 @@ spec:
               containerPort: 10000
               protocol: UDP
             {{- end }}
-          
+
           livenessProbe:
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
@@ -253,7 +253,7 @@ spec:
             httpGet:
               path: /ct-health/
               port: http
-          
+
           readinessProbe:
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}
