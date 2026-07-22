@@ -18,6 +18,9 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
+  # Optional immutable image digest (sha256:...). When set, digest takes
+  # precedence over tag.
+  digest: ""
 
 #
 # Configure the source location for the Docker image, using the

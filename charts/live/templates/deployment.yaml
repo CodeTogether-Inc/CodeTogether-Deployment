@@ -11,7 +11,9 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if and .Values.av.enabled .Values.av.stunServers.enabled }}
         checksum/coturn: {{ include (print $.Template.BasePath "/secret-coturn.yaml") . | sha256sum }}
+        {{- end }}
         checksum/dashboard: {{ include (print $.Template.BasePath "/secret-dashboard.yaml") . | sha256sum }}
         checksum/license: {{ include (print $.Template.BasePath "/secret-license.yaml") . | sha256sum }}
         checksum/sso: {{ include (print $.Template.BasePath "/secret-sso.yaml") . | sha256sum }}
@@ -34,7 +36,11 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.digest }}
+          image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+          {{- else }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
 
           env:
@@ -113,7 +119,7 @@ spec:
             value: "false"
           {{- end }}
 
-          {{- if .Values.av.stunServers.enabled }}
+          {{- if and .Values.av.enabled .Values.av.stunServers.enabled }}
           - name: CT_AV_COTURN_SERVER
             value: {{ .Values.av.stunServers.server | quote }}
           - name: CT_AV_COTURN_SECRET
@@ -123,7 +129,7 @@ spec:
                 key: secret
           {{- end }}
 
-          {{- if and .Values.av.jitsiUrl (ne .Values.av.jitsiUrl "") }}
+          {{- if and .Values.av.enabled .Values.av.jitsiUrl (ne .Values.av.jitsiUrl "") }}
           - name: CT_JITSI_URL
             value: {{ .Values.av.jitsiUrl | quote }}
           {{- end }}

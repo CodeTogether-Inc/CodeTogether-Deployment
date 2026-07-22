@@ -25,6 +25,7 @@ The following table lists configurable parameters of the CodeTogether Live chart
 | `image.repository`                          | Docker image repository for CodeTogether Live                                                  | `codetogether/codetogether`                               |
 | `image.pullPolicy`                          | Container image pull policy                                                                    | `Always`                                                  |
 | `image.tag`                                 | Tag for the CodeTogether Live image                                                            | `latest`                                                  |
+| `image.digest`                              | Optional immutable image digest; takes precedence over `image.tag`                             | `""`                                                      |
 | `imageCredentials.enabled`                  | Enables authentication for private Docker registry                                             | `false`                                                   |
 | `imageCredentials.registry`                 | Docker registry URL                                                                            | `hub.edge.codetogether.com`                               |
 | `imageCredentials.username`                 | Docker registry username                                                                       | `my-customer-username`                                    |
