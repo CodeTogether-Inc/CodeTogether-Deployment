@@ -1,8 +1,8 @@
 # README.md Helm Chart for CodeTogether Live
 # CodeTogether Live Chart (Legacy)
 
-> **⚠️ Legacy Chart**  
-> This chart is now considered legacy and is not longer supported, is not recommended for new deployments.
+> **⚠️ Legacy Chart**
+> This chart is considered legacy, is no longer supported, and is not recommended for new deployments.
 
 ## Summary
 This chart creates a CodeTogether Live server deployment on a Kubernetes cluster using the Helm package manager.
@@ -25,6 +25,7 @@ The following table lists configurable parameters of the CodeTogether Live chart
 | `image.repository`                          | Docker image repository for CodeTogether Live                                                  | `codetogether/codetogether`                               |
 | `image.pullPolicy`                          | Container image pull policy                                                                    | `Always`                                                  |
 | `image.tag`                                 | Tag for the CodeTogether Live image                                                            | `latest`                                                  |
+| `image.digest`                              | Optional immutable image digest; takes precedence over `image.tag`                             | `""`                                                      |
 | `imageCredentials.enabled`                  | Enables authentication for private Docker registry                                             | `false`                                                   |
 | `imageCredentials.registry`                 | Docker registry URL                                                                            | `hub.edge.codetogether.com`                               |
 | `imageCredentials.username`                 | Docker registry username                                                                       | `my-customer-username`                                    |
