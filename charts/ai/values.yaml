@@ -127,6 +127,10 @@ nodeSelector: {}
 tolerations: []
 affinity: {}
 replicaCount: 1
+# When false, Helm omits spec.replicas so external tools (HPA, kubectl scale,
+# cluster automation) can own replica count without SSA conflicts on upgrade.
+# Fresh installs still default to 1 pod when replicas is omitted.
+manageReplicas: true
 
 extraEnvVars: []
 extraVolumes: []
