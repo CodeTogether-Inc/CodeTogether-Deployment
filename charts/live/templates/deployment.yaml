@@ -11,7 +11,7 @@ spec:
   template:
     metadata:
       annotations:
-        {{- if and .Values.av.enabled .Values.av.stunServers.enabled }}
+        {{- if and (include "codetogether.avEnabled" .) .Values.av.stunServers.enabled }}
         checksum/coturn: {{ include (print $.Template.BasePath "/secret-coturn.yaml") . | sha256sum }}
         {{- end }}
         checksum/dashboard: {{ include (print $.Template.BasePath "/secret-dashboard.yaml") . | sha256sum }}
@@ -107,19 +107,14 @@ spec:
             value: {{ .Values.locatorEdge.region | quote }}
           {{- end }}  
 
-          {{- if or (eq .Values.codetogether.mode "direct") (eq .Values.codetogether.mode "locator-edge") }}
           - name: CT_AV_ENABLED
-            value: {{ .Values.av.enabled | quote }}
-          {{- if .Values.av.enabled }} 
+            value: {{ include "codetogether.avEnabled" . | default "false" | quote }}
+          {{- if include "codetogether.avEnabled" . }}
           - name: CT_AV_LAN_IP
             value: {{ .Values.av.serverIP | quote }}
           {{- end }}
-          {{- else }}
-          - name: CT_AV_ENABLED
-            value: "false"
-          {{- end }}
 
-          {{- if and .Values.av.enabled .Values.av.stunServers.enabled }}
+          {{- if and (include "codetogether.avEnabled" .) .Values.av.stunServers.enabled }}
           - name: CT_AV_COTURN_SERVER
             value: {{ .Values.av.stunServers.server | quote }}
           - name: CT_AV_COTURN_SECRET
@@ -129,7 +124,7 @@ spec:
                 key: secret
           {{- end }}
 
-          {{- if and .Values.av.enabled .Values.av.jitsiUrl (ne .Values.av.jitsiUrl "") }}
+          {{- if and (include "codetogether.avEnabled" .) .Values.av.jitsiUrl (ne .Values.av.jitsiUrl "") }}
           - name: CT_JITSI_URL
             value: {{ .Values.av.jitsiUrl | quote }}
           {{- end }}
@@ -240,7 +235,7 @@ spec:
             - name: http
               containerPort: 1080
               protocol: TCP
-            {{- if .Values.av.enabled }}
+            {{- if include "codetogether.avEnabled" . }}
             - name: av-tcp
               containerPort: 4443
               protocol: TCP

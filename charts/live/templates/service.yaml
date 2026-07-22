@@ -11,7 +11,7 @@ spec:
       targetPort: http
       protocol: TCP
       name: http  
-    {{- if .Values.av.enabled }}
+    {{- if include "codetogether.avEnabled" . }}
     - port: 4443
       targetPort: av-tcp
       protocol: TCP
