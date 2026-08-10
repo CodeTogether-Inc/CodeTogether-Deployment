@@ -1,0 +1,20 @@
+environment: production
+replicaCount: 2
+image:
+  tag: prod-1c73b5aa304002a7412eadd86f063350ec78db8d
+
+ingress:
+  enabled: false
+  hosts:
+    - host: app.codetogether.com
+      paths:
+        - path: /
+          pathType: Prefix
+
+resources:
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 200m
+    memory: 256Mi 
