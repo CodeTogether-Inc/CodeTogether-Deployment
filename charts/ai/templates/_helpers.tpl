@@ -240,6 +240,10 @@ passed to the server as CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS.
 {{- if hasKey $clientIp "trustedProxyHops" -}}
 {{- $hops = $clientIp.trustedProxyHops -}}
 {{- end -}}
+{{- /* Validate the value as given: int would turn 2.9 into 2 and true into 1. */ -}}
+{{- if or (kindIs "bool" $hops) (not (regexMatch "^[0-9]+$" (toString $hops))) -}}
+{{- fail (printf "clientIp.trustedProxyHops must be a whole number of at least 1 (the in-pod nginx is always a hop), got %v" $hops) -}}
+{{- end -}}
 {{- $n := int $hops -}}
 {{- if lt $n 1 -}}
 {{- fail (printf "clientIp.trustedProxyHops must be a whole number of at least 1 (the in-pod nginx is always a hop), got %v" $hops) -}}

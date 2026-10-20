@@ -206,7 +206,9 @@ Gateway side, check that:
 `clientIp.trustedProxyHops` (default `2`: Ingress controller or Gateway, plus the
 nginx in the pod) tells the server how many proxies in front of the pod append
 to `X-Forwarded-For`. Add one for each extra proxy in front (load balancer, WAF,
-corporate proxy). Too high resolves to no address, never to a wrong one. A
+corporate proxy). Set it to exactly the proxies you control: too low records a
+proxy's address, and too high can record an address the client put in its own
+`X-Forwarded-For` when your outermost proxy keeps that header. A
 `CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS` entry in `extraEnvVars` takes precedence.
 
 ## Configuration

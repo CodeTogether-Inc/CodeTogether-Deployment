@@ -110,9 +110,9 @@ gateway:
 # Client address handling (X-Forwarded-For trust).
 #
 # The server counts proxies from the right-hand end of
-# `X-Forwarded-For ++ [socket peer]`, so a client-supplied header can't choose
-# the recorded address. It needs to know how many proxies in front of the pod
-# this deployment vouches for:
+# `X-Forwarded-For ++ [socket peer]` and records the entry just past the proxies
+# it trusts. Set the count to exactly the proxies in front of the pod that you
+# control and that append to X-Forwarded-For:
 #
 #   2  your Ingress controller or Gateway, plus the nginx inside the pod.
 #      Correct for a stock Kubernetes install (the default).
@@ -121,7 +121,11 @@ gateway:
 #   1  nothing proxies in front of the Service (for example a LoadBalancer
 #      Service reached directly, with no Ingress or Gateway).
 #
-# Too high resolves to no address (recorded as degraded), never to a wrong one.
+# Match the real chain. Too low records one of your proxies' addresses. Too high
+# reads past the client: if your outermost proxy keeps an incoming
+# X-Forwarded-For (many Gateways append to it), that entry is whatever the
+# client sent, so it can be spoofed. Only when the outermost proxy replaces the
+# header does too high resolve to no address (recorded as degraded).
 # Without this setting the server assumes 1 (Docker), and every address
 # resolves to the Ingress controller or Gateway.
 # A CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS entry in extraEnvVars takes precedence.
