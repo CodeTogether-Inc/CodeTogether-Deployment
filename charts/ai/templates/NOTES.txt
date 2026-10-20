@@ -1,7 +1,6 @@
 Application URL:
-{{- if .Values.ingress.enabled }}
-  {{- $host := (urlParse (include "ctai.serviceFqdn" .)).host }}
-  https://{{ $host }}/
+{{- if or .Values.ingress.enabled .Values.gateway.enabled }}
+  https://{{ include "ctai.publicHost" . }}/
 {{- else }}
   Use: kubectl port-forward svc/{{ include "ctai.fullname" . }} 1080:{{ .Values.service.port }}
 {{- end }}
@@ -32,5 +31,30 @@ Protected storage master key:
   Dev auto mode: back up Secret {{ include "ctai.masterKeySecretName" . }} with your database.
 {{- else }}
   Production: run ./generate-master-key.sh in this chart directory before install.
+{{- end }}
+{{- end }}
+
+{{- if .Values.gateway.enabled }}
+
+Gateway API:
+  {{- $parents := list }}
+  {{- range .Values.gateway.parentRefs }}
+  {{- $p := .name }}
+  {{- with .namespace }}{{ $p = printf "%s (namespace %s)" $p . }}{{ end }}
+  {{- with .sectionName }}{{ $p = printf "%s listener %s" $p . }}{{ end }}
+  {{- $parents = append $parents $p }}
+  {{- end }}
+  HTTPRoute {{ include "ctai.fullname" . }} attaches to: {{ join ", " $parents }}
+  Check it was accepted: kubectl get httproute {{ include "ctai.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.parents[*].conditions}'
+{{- if eq (include "ctai.renderClientSettingsPolicy" .) "true" }}
+  Request body limit: ClientSettingsPolicy {{ include "ctai.fullname" . }} ({{ .Values.gateway.nginxGatewayFabric.clientSettingsPolicy.bodyMaxSize }}).
+{{- else }}
+  WARNING: no request body limit was rendered for the Gateway. OTLP uploads over
+  the gateway's default (1MB on NGINX Gateway Fabric) will fail with 413. Set the
+  equivalent limit for your Gateway implementation.
+{{- end }}
+{{- if .Values.ingress.enabled }}
+  WARNING: ingress.enabled is also true, so both an Ingress and an HTTPRoute
+  serve this host. Set ingress.enabled=false once the Gateway path works.
 {{- end }}
 {{- end }}

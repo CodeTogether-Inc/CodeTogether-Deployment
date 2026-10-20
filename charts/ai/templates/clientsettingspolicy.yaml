@@ -1,0 +1,18 @@
+{{- if eq (include "ctai.renderClientSettingsPolicy" .) "true" }}
+{{- $fullName := include "ctai.fullname" . }}
+# NGINX Gateway Fabric: request body limit for this route (replaces the Ingress
+# annotation nginx.ingress.kubernetes.io/proxy-body-size).
+apiVersion: gateway.nginx.org/v1alpha1
+kind: ClientSettingsPolicy
+metadata:
+  name: {{ $fullName }}
+  labels:
+    {{- include "ctai.labels" . | nindent 4 }}
+spec:
+  targetRef:
+    group: gateway.networking.k8s.io
+    kind: HTTPRoute
+    name: {{ $fullName }}
+  body:
+    maxSize: {{ .Values.gateway.nginxGatewayFabric.clientSettingsPolicy.bodyMaxSize | quote }}
+{{- end }}
