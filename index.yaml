@@ -624,6 +624,27 @@ entries:
   codetogether-ai:
   - apiVersion: v2
     appVersion: 1.2.8165
+    created: "2026-10-20T21:06:25.013340512Z"
+    description: CodeTogether AI on-premises Kubernetes deployment
+    digest: 231326a974ecd8612fe25e674908ed5db772123c4d80f58b5cacd4147776e4e2
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - ctai
+    - ai
+    - aitrax
+    - on-premises
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-ai
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-ai-0.2.2/codetogether-ai-0.2.2.tgz
+    version: 0.2.2
+  - apiVersion: v2
+    appVersion: 1.2.8165
     created: "2026-10-20T20:16:56.761545306Z"
     description: CodeTogether AI on-premises Kubernetes deployment
     digest: e436c58dc6c5029f4d965fa2ba1dfbaa43ee7a141c098767629bcd625a7aad34
@@ -1366,4 +1387,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-intel-1.1.0/codetogether-intel-1.1.0.tgz
     version: 1.1.0
-generated: "2026-10-20T20:16:56.761664713Z"
+generated: "2026-10-20T21:06:25.013436815Z"
