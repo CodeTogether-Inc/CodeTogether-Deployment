@@ -1,5 +1,6 @@
 Application URL:
-{{- if or .Values.ingress.enabled .Values.gateway.enabled }}
+{{- $gw := .Values.gateway | default dict }}
+{{- if or .Values.ingress.enabled $gw.enabled }}
   https://{{ include "ctai.publicHost" . }}/
 {{- else }}
   Use: kubectl port-forward svc/{{ include "ctai.fullname" . }} 1080:{{ .Values.service.port }}
@@ -34,11 +35,11 @@ Protected storage master key:
 {{- end }}
 {{- end }}
 
-{{- if .Values.gateway.enabled }}
+{{- if $gw.enabled }}
 
 Gateway API:
   {{- $parents := list }}
-  {{- range .Values.gateway.parentRefs }}
+  {{- range $gw.parentRefs }}
   {{- $p := .name }}
   {{- with .namespace }}{{ $p = printf "%s (namespace %s)" $p . }}{{ end }}
   {{- with .sectionName }}{{ $p = printf "%s listener %s" $p . }}{{ end }}
@@ -47,7 +48,7 @@ Gateway API:
   HTTPRoute {{ include "ctai.fullname" . }} attaches to: {{ join ", " $parents }}
   Check it was accepted: kubectl get httproute {{ include "ctai.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.parents[*].conditions}'
 {{- if eq (include "ctai.renderClientSettingsPolicy" .) "true" }}
-  Request body limit: ClientSettingsPolicy {{ include "ctai.fullname" . }} ({{ .Values.gateway.nginxGatewayFabric.clientSettingsPolicy.bodyMaxSize }}).
+  Request body limit: ClientSettingsPolicy {{ include "ctai.fullname" . }} ({{ include "ctai.clientSettingsBodyMaxSize" . }}).
 {{- else }}
   WARNING: no request body limit was rendered for the Gateway. OTLP uploads over
   the gateway's default (1MB on NGINX Gateway Fabric) will fail with 413. Set the
