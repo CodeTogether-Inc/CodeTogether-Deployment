@@ -71,9 +71,11 @@ spec:
                   key: {{ .Values.masterKey.existingSecretVersionKey | default "CTAI_PROTECTED_STORAGE_MASTER_KEY_VERSION" }}
                   optional: true
             {{- end }}
+            {{- if not (include "ctai.trustedProxyHopsInExtraEnv" .) }}
             # X-Forwarded-For trust: see clientIp in values.yaml.
             - name: CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS
               value: {{ include "ctai.trustedProxyHops" . | quote }}
+            {{- end }}
             {{- with .Values.extraEnvVars }}
             {{- toYaml . | nindent 12 }}
             {{- end }}

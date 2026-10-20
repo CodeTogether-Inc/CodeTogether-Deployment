@@ -198,14 +198,16 @@ Gateway side, check that:
 - the listener can read its certificate Secret. A Secret in another namespace
   needs a `ReferenceGrant` there.
 - the route is accepted:
-  `kubectl get httproute codetogether-ai -o jsonpath='{.status.parents[*].conditions}'`.
+  `kubectl get httproute <release-fullname> -o jsonpath='{.status.parents[*].conditions}'`
+  (the install notes print the exact command).
 
 ### Client IP addresses
 
 `clientIp.trustedProxyHops` (default `2`: Ingress controller or Gateway, plus the
 nginx in the pod) tells the server how many proxies in front of the pod append
 to `X-Forwarded-For`. Add one for each extra proxy in front (load balancer, WAF,
-corporate proxy). Too high resolves to no address, never to a wrong one.
+corporate proxy). Too high resolves to no address, never to a wrong one. A
+`CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS` entry in `extraEnvVars` takes precedence.
 
 ## Configuration
 

@@ -248,10 +248,28 @@ passed to the server as CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS.
 {{- end }}
 
 {{/*
-Public host for the Ingress and the HTTPRoute.
+Public host (with any port) from service_fqdn, as shown in the application URL.
 */}}
 {{- define "ctai.publicHost" -}}
 {{- (urlParse (include "ctai.serviceFqdn" .)).host -}}
+{{- end }}
+
+{{/*
+HTTPRoute hostname: the public host without a port (Gateway API hostnames
+can't carry one).
+*/}}
+{{- define "ctai.routeHostname" -}}
+{{- regexReplaceAll ":[0-9]+$" (include "ctai.publicHost" .) "" -}}
+{{- end }}
+
+{{/*
+"true" when extraEnvVars already sets CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS, so
+the chart doesn't render a duplicate.
+*/}}
+{{- define "ctai.trustedProxyHopsInExtraEnv" -}}
+{{- range .Values.extraEnvVars -}}
+{{- if eq (toString .name) "CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS" -}}true{{- end -}}
+{{- end -}}
 {{- end }}
 
 {{/*

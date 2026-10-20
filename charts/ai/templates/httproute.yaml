@@ -23,7 +23,7 @@ spec:
   parentRefs:
     {{- toYaml .Values.gateway.parentRefs | nindent 4 }}
   hostnames:
-    - {{ include "ctai.publicHost" . | quote }}
+    - {{ include "ctai.routeHostname" . | quote }}
   rules:
     - matches:
         - path:
