@@ -1,5 +1,6 @@
-{{- if .Values.gateway.enabled }}
-{{- if not .Values.gateway.parentRefs }}
+{{- $gw := .Values.gateway | default dict }}
+{{- if $gw.enabled }}
+{{- if not $gw.parentRefs }}
 {{- fail "gateway.enabled=true requires gateway.parentRefs: the Gateway (name, and namespace/sectionName if needed) the HTTPRoute attaches to." }}
 {{- end }}
 {{- if not (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1/HTTPRoute") }}
@@ -12,16 +13,16 @@ metadata:
   name: {{ $fullName }}
   labels:
     {{- include "ctai.labels" . | nindent 4 }}
-    {{- with .Values.gateway.labels }}
+    {{- with $gw.labels }}
     {{- toYaml . | nindent 4 }}
     {{- end }}
-  {{- with .Values.gateway.annotations }}
+  {{- with $gw.annotations }}
   annotations:
     {{- toYaml . | nindent 4 }}
   {{- end }}
 spec:
   parentRefs:
-    {{- toYaml .Values.gateway.parentRefs | nindent 4 }}
+    {{- toYaml $gw.parentRefs | nindent 4 }}
   hostnames:
     - {{ include "ctai.routeHostname" . | quote }}
   rules:

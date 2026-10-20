@@ -14,5 +14,5 @@ spec:
     kind: HTTPRoute
     name: {{ $fullName }}
   body:
-    maxSize: {{ .Values.gateway.nginxGatewayFabric.clientSettingsPolicy.bodyMaxSize | quote }}
+    maxSize: {{ include "ctai.clientSettingsBodyMaxSize" . | quote }}
 {{- end }}

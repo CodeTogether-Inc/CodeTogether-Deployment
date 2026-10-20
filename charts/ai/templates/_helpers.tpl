@@ -280,12 +280,20 @@ the chart doesn't render a duplicate.
 Whether to render the NGINX Gateway Fabric ClientSettingsPolicy: "true" or "".
 */}}
 {{- define "ctai.renderClientSettingsPolicy" -}}
-{{- if .Values.gateway.enabled -}}
-{{- $mode := toString ((.Values.gateway.nginxGatewayFabric | default dict).clientSettingsPolicy | default dict).enabled -}}
+{{- if (.Values.gateway | default dict).enabled -}}
+{{- $mode := toString (((.Values.gateway | default dict).nginxGatewayFabric | default dict).clientSettingsPolicy | default dict).enabled -}}
 {{- if eq $mode "true" -}}
 true
 {{- else if and (eq $mode "auto") (.Capabilities.APIVersions.Has "gateway.nginx.org/v1alpha1/ClientSettingsPolicy") -}}
 true
 {{- end -}}
 {{- end -}}
+{{- end }}
+
+{{/*
+ClientSettingsPolicy body limit. Read defensively: a `helm upgrade --reuse-values`
+from a chart without `gateway` keeps the old values and skips these defaults.
+*/}}
+{{- define "ctai.clientSettingsBodyMaxSize" -}}
+{{- (((.Values.gateway | default dict).nginxGatewayFabric | default dict).clientSettingsPolicy | default dict).bodyMaxSize | default "16m" -}}
 {{- end }}
