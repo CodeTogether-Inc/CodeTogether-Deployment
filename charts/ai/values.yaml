@@ -78,6 +78,60 @@ ingress:
   tls:
     secretName: codetogether-ai-tls
 
+# Gateway API (gateway.networking.k8s.io/v1), for clusters that route with a
+# Gateway instead of an Ingress controller (for example NGINX Gateway Fabric,
+# replacing the retired ingress-nginx). Off by default.
+#
+# The chart attaches an HTTPRoute to a Gateway you already run; it does not
+# create the Gateway, its listeners or its certificate. Set ingress.enabled=false
+# when you switch, unless you deliberately run both during a migration.
+gateway:
+  enabled: false
+  # Gateway(s) the HTTPRoute attaches to. Required when enabled. Example:
+  #   parentRefs:
+  #     - name: shared-gateway
+  #       namespace: gateway-system
+  #       sectionName: https   # the HTTPS listener that holds the certificate
+  parentRefs: []
+  annotations: {}
+  labels: {}
+  # NGINX Gateway Fabric only. Replaces the Ingress annotation
+  # nginx.ingress.kubernetes.io/proxy-body-size: OTLP telemetry batches exceed
+  # the 1MB default and would be rejected with 413 before reaching the backend.
+  nginxGatewayFabric:
+    clientSettingsPolicy:
+      # auto: render only when the cluster serves
+      #       gateway.nginx.org/v1alpha1 ClientSettingsPolicy
+      # true: always render (e.g. `helm template` without cluster access)
+      # false: never render (another Gateway API implementation)
+      enabled: auto
+      bodyMaxSize: "16m"
+
+# Client address handling (X-Forwarded-For trust).
+#
+# The server counts proxies from the right-hand end of
+# `X-Forwarded-For ++ [socket peer]` and records the entry just past the proxies
+# it trusts. Set the count to exactly the proxies in front of the pod that you
+# control and that append to X-Forwarded-For:
+#
+#   2  your Ingress controller or Gateway, plus the nginx inside the pod.
+#      Correct for a stock Kubernetes install (the default).
+#   3+ add one for each proxy in front that appends to X-Forwarded-For
+#      (external load balancer, WAF, corporate reverse proxy).
+#   1  nothing proxies in front of the Service (for example a LoadBalancer
+#      Service reached directly, with no Ingress or Gateway).
+#
+# Match the real chain. Too low records one of your proxies' addresses. Too high
+# reads past the client: if your outermost proxy keeps an incoming
+# X-Forwarded-For (many Gateways append to it), that entry is whatever the
+# client sent, so it can be spoofed. Only when the outermost proxy replaces the
+# header does too high resolve to no address (recorded as degraded).
+# Without this setting the server assumes 1 (Docker), and every address
+# resolves to the Ingress controller or Gateway.
+# A CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS entry in extraEnvVars takes precedence.
+clientIp:
+  trustedProxyHops: 2
+
 serviceAccount:
   create: true
   annotations: {}

@@ -40,6 +40,17 @@ jobs:
             --set service.fqdn=https://example.codetogether.io \
             --set imageCredentials.username=test \
             --set imageCredentials.password=test
+          helm template test ./charts/ai \
+            --set-file ctaiPropertiesFile=./charts/ai/ctai-configuration.properties.template \
+            --set service.fqdn=https://example.codetogether.io \
+            --set imageCredentials.username=test \
+            --set imageCredentials.password=test \
+            --set ingress.enabled=false \
+            --set gateway.enabled=true \
+            --set 'gateway.parentRefs[0].name=shared-gateway' \
+            --set 'gateway.parentRefs[0].namespace=gateway-system' \
+            --api-versions gateway.networking.k8s.io/v1/HTTPRoute \
+            --api-versions gateway.nginx.org/v1alpha1/ClientSettingsPolicy
 
       - name: Validate Live Chart
         run: |

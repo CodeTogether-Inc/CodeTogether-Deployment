@@ -3,7 +3,7 @@ name: codetogether-ai
 description: CodeTogether AI on-premises Kubernetes deployment
 
 type: application
-version: 0.1.0
+version: 0.2.0
 appVersion: "0.1.1204"
 
 icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
