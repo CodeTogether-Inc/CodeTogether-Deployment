@@ -229,3 +229,41 @@ Host:port for CTAI_SERVICE_EXTERNAL_IDENTIFIER from the resolved service URL.
 {{- $parsed.host -}}
 {{- end -}}
 {{- end }}
+
+{{/*
+Proxies in front of the pod (Ingress controller or Gateway + in-pod nginx),
+passed to the server as CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS.
+*/}}
+{{- define "ctai.trustedProxyHops" -}}
+{{- $clientIp := .Values.clientIp | default dict -}}
+{{- $hops := 2 -}}
+{{- if hasKey $clientIp "trustedProxyHops" -}}
+{{- $hops = $clientIp.trustedProxyHops -}}
+{{- end -}}
+{{- $n := int $hops -}}
+{{- if lt $n 1 -}}
+{{- fail (printf "clientIp.trustedProxyHops must be a whole number of at least 1 (the in-pod nginx is always a hop), got %v" $hops) -}}
+{{- end -}}
+{{- $n -}}
+{{- end }}
+
+{{/*
+Public host for the Ingress and the HTTPRoute.
+*/}}
+{{- define "ctai.publicHost" -}}
+{{- (urlParse (include "ctai.serviceFqdn" .)).host -}}
+{{- end }}
+
+{{/*
+Whether to render the NGINX Gateway Fabric ClientSettingsPolicy: "true" or "".
+*/}}
+{{- define "ctai.renderClientSettingsPolicy" -}}
+{{- if .Values.gateway.enabled -}}
+{{- $mode := toString ((.Values.gateway.nginxGatewayFabric | default dict).clientSettingsPolicy | default dict).enabled -}}
+{{- if eq $mode "true" -}}
+true
+{{- else if and (eq $mode "auto") (.Capabilities.APIVersions.Has "gateway.nginx.org/v1alpha1/ClientSettingsPolicy") -}}
+true
+{{- end -}}
+{{- end -}}
+{{- end }}

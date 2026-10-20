@@ -78,6 +78,53 @@ ingress:
   tls:
     secretName: codetogether-ai-tls
 
+# Gateway API (gateway.networking.k8s.io/v1), for clusters that route with a
+# Gateway instead of an Ingress controller (for example NGINX Gateway Fabric,
+# replacing the retired ingress-nginx). Off by default.
+#
+# The chart attaches an HTTPRoute to a Gateway you already run; it does not
+# create the Gateway, its listeners or its certificate. Set ingress.enabled=false
+# when you switch, unless you deliberately run both during a migration.
+gateway:
+  enabled: false
+  # Gateway(s) the HTTPRoute attaches to. Required when enabled. Example:
+  #   parentRefs:
+  #     - name: shared-gateway
+  #       namespace: gateway-system
+  #       sectionName: https   # the HTTPS listener that holds the certificate
+  parentRefs: []
+  annotations: {}
+  labels: {}
+  # NGINX Gateway Fabric only. Replaces the Ingress annotation
+  # nginx.ingress.kubernetes.io/proxy-body-size: OTLP telemetry batches exceed
+  # the 1MB default and would be rejected with 413 before reaching the backend.
+  nginxGatewayFabric:
+    clientSettingsPolicy:
+      # auto: render only when the cluster serves
+      #       gateway.nginx.org/v1alpha1 ClientSettingsPolicy
+      # true: always render (e.g. `helm template` without cluster access)
+      # false: never render (another Gateway API implementation)
+      enabled: auto
+      bodyMaxSize: "16m"
+
+# Client address handling (X-Forwarded-For trust).
+#
+# The server counts proxies from the right-hand end of
+# `X-Forwarded-For ++ [socket peer]`, so a client-supplied header can't choose
+# the recorded address. It needs to know how many proxies in front of the pod
+# this deployment vouches for:
+#
+#   2  your Ingress controller or Gateway, plus the nginx inside the pod.
+#      Correct for a stock Kubernetes install (the default).
+#   3+ add one for each proxy in front that appends to X-Forwarded-For
+#      (external load balancer, WAF, corporate reverse proxy).
+#
+# Too high resolves to no address (recorded as degraded), never to a wrong one.
+# Without this setting the server assumes 1 (Docker), and every address
+# resolves to the Ingress controller or Gateway.
+clientIp:
+  trustedProxyHops: 2
+
 serviceAccount:
   create: true
   annotations: {}
