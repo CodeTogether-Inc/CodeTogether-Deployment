@@ -51,6 +51,13 @@ jobs:
             --set 'gateway.parentRefs[0].namespace=gateway-system' \
             --api-versions gateway.networking.k8s.io/v1/HTTPRoute \
             --api-versions gateway.nginx.org/v1alpha1/ClientSettingsPolicy
+          # helm upgrade --reuse-values from a chart without `gateway` drops the key
+          helm template test ./charts/ai \
+            --set-file ctaiPropertiesFile=./charts/ai/ctai-configuration.properties.template \
+            --set service.fqdn=https://example.codetogether.io \
+            --set imageCredentials.username=test \
+            --set imageCredentials.password=test \
+            --set gateway=null
 
       - name: Validate Live Chart
         run: |
