@@ -229,3 +229,63 @@ Host:port for CTAI_SERVICE_EXTERNAL_IDENTIFIER from the resolved service URL.
 {{- $parsed.host -}}
 {{- end -}}
 {{- end }}
+
+{{/*
+Proxies in front of the pod (Ingress controller or Gateway + in-pod nginx),
+passed to the server as CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS.
+*/}}
+{{- define "ctai.trustedProxyHops" -}}
+{{- $clientIp := .Values.clientIp | default dict -}}
+{{- $hops := 2 -}}
+{{- if hasKey $clientIp "trustedProxyHops" -}}
+{{- $hops = $clientIp.trustedProxyHops -}}
+{{- end -}}
+{{- /* Validate the value as given: int would turn 2.9 into 2 and true into 1. */ -}}
+{{- if or (kindIs "bool" $hops) (not (regexMatch "^[0-9]+$" (toString $hops))) -}}
+{{- fail (printf "clientIp.trustedProxyHops must be a whole number of at least 1 (the in-pod nginx is always a hop), got %v" $hops) -}}
+{{- end -}}
+{{- $n := int $hops -}}
+{{- if lt $n 1 -}}
+{{- fail (printf "clientIp.trustedProxyHops must be a whole number of at least 1 (the in-pod nginx is always a hop), got %v" $hops) -}}
+{{- end -}}
+{{- $n -}}
+{{- end }}
+
+{{/*
+Public host (with any port) from service_fqdn, as shown in the application URL.
+*/}}
+{{- define "ctai.publicHost" -}}
+{{- (urlParse (include "ctai.serviceFqdn" .)).host -}}
+{{- end }}
+
+{{/*
+HTTPRoute hostname: the public host without a port (Gateway API hostnames
+can't carry one).
+*/}}
+{{- define "ctai.routeHostname" -}}
+{{- regexReplaceAll ":[0-9]+$" (include "ctai.publicHost" .) "" -}}
+{{- end }}
+
+{{/*
+"true" when extraEnvVars already sets CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS, so
+the chart doesn't render a duplicate.
+*/}}
+{{- define "ctai.trustedProxyHopsInExtraEnv" -}}
+{{- range .Values.extraEnvVars -}}
+{{- if eq (toString .name) "CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS" -}}true{{- end -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+Whether to render the NGINX Gateway Fabric ClientSettingsPolicy: "true" or "".
+*/}}
+{{- define "ctai.renderClientSettingsPolicy" -}}
+{{- if .Values.gateway.enabled -}}
+{{- $mode := toString ((.Values.gateway.nginxGatewayFabric | default dict).clientSettingsPolicy | default dict).enabled -}}
+{{- if eq $mode "true" -}}
+true
+{{- else if and (eq $mode "auto") (.Capabilities.APIVersions.Has "gateway.nginx.org/v1alpha1/ClientSettingsPolicy") -}}
+true
+{{- end -}}
+{{- end -}}
+{{- end }}

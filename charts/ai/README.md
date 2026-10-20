@@ -13,6 +13,8 @@ storage master key is stored in a separate Kubernetes Secret.
 - PostgreSQL reachable from the cluster. This chart does not install Postgres.
 - A DNS-routable HTTPS host for CodeTogether AI, configured as `service_fqdn`.
 - A TLS Secret for Ingress when `ingress.enabled=true`.
+- Or, instead of an Ingress controller, Gateway API CRDs and a `Gateway` when
+  `gateway.enabled=true` (see "Gateway API" below).
 - CodeTogether-provided credentials for `hub.edge.codetogether.com`.
 
 ## PostgreSQL Prerequisites
@@ -161,6 +163,54 @@ explicitly:
 If you set `ingress.className=codetogether-nginx`, the chart also creates a
 matching `IngressClass`.
 
+### Gateway API (NGINX Gateway Fabric)
+
+Clusters that route with Gateway API instead of an Ingress controller (for
+example NGINX Gateway Fabric, which replaces the retired ingress-nginx) can have
+the chart attach an `HTTPRoute` to an existing `Gateway`:
+
+```yaml
+ingress:
+  enabled: false
+gateway:
+  enabled: true
+  parentRefs:
+    - name: shared-gateway        # your Gateway
+      namespace: gateway-system   # omit if it is in the release namespace
+      sectionName: https          # the HTTPS listener with the certificate
+```
+
+The chart renders:
+
+- an `HTTPRoute` for the `service_fqdn` host, `/` to the chart Service;
+- with NGINX Gateway Fabric, a `ClientSettingsPolicy` that raises the request
+  body limit to `16m` (`gateway.nginxGatewayFabric.clientSettingsPolicy`). It
+  replaces the Ingress annotation `nginx.ingress.kubernetes.io/proxy-body-size`;
+  without it, tracker uploads over 1MB fail with 413. With `enabled: auto` it is
+  rendered only when the cluster serves that API. For another Gateway API
+  implementation, set the equivalent limit on your side.
+
+The chart doesn't create the `Gateway`, its listeners or certificates. On the
+Gateway side, check that:
+
+- the listener allows routes from the release namespace
+  (`allowedRoutes.namespaces`);
+- the listener can read its certificate Secret. A Secret in another namespace
+  needs a `ReferenceGrant` there.
+- the route is accepted:
+  `kubectl get httproute <release-fullname> -o jsonpath='{.status.parents[*].conditions}'`
+  (the install notes print the exact command).
+
+### Client IP addresses
+
+`clientIp.trustedProxyHops` (default `2`: Ingress controller or Gateway, plus the
+nginx in the pod) tells the server how many proxies in front of the pod append
+to `X-Forwarded-For`. Add one for each extra proxy in front (load balancer, WAF,
+corporate proxy). Set it to exactly the proxies you control: too low records a
+proxy's address, and too high can record an address the client put in its own
+`X-Forwarded-For` when your outermost proxy keeps that header. A
+`CTAI_INGEST_OTEL_TRUSTED_PROXY_HOPS` entry in `extraEnvVars` takes precedence.
+
 ## Configuration
 
 The following table lists the primary configurable parameters and defaults.
@@ -193,6 +243,12 @@ The following table lists the primary configurable parameters and defaults.
 | `ingress.enabled` | Create an Ingress resource | `true` |
 | `ingress.annotations` | Ingress annotations | `nginx.ingress.kubernetes.io/proxy-body-size: "16m"` |
 | `ingress.tls.secretName` | TLS Secret for Ingress | `codetogether-ai-tls` |
+| `gateway.enabled` | Create a Gateway API `HTTPRoute` | `false` |
+| `gateway.parentRefs` | Gateway(s) the `HTTPRoute` attaches to; required when enabled | `[]` |
+| `gateway.annotations` / `gateway.labels` | Extra `HTTPRoute` metadata | `{}` |
+| `gateway.nginxGatewayFabric.clientSettingsPolicy.enabled` | NGINX Gateway Fabric body-size policy: `auto`, `true` or `false` | `auto` |
+| `gateway.nginxGatewayFabric.clientSettingsPolicy.bodyMaxSize` | Request body limit on the Gateway | `16m` |
+| `clientIp.trustedProxyHops` | Proxies in front of the pod that append to `X-Forwarded-For` | `2` |
 | `serviceAccount.create` | Create a ServiceAccount | `true` |
 | `serviceAccount.name` | ServiceAccount name | `codetogether-ai` |
 | `replicaCount` | Deployment replica count | `1` |
