@@ -299,7 +299,7 @@ The following table lists the primary configurable parameters and defaults.
 | `gateway.annotations` / `gateway.labels` | Extra `HTTPRoute` metadata (`labels` also go on the `ListenerSet`) | `{}` |
 | `gateway.nginxGatewayFabric.clientSettingsPolicy.enabled` | NGINX Gateway Fabric body-size policy: `auto`, `true` or `false` | `auto` |
 | `gateway.nginxGatewayFabric.clientSettingsPolicy.bodyMaxSize` | Request body limit on the Gateway | `16m` |
-| `gateway.listenerSet.enabled` | Create a `ListenerSet` with this release's HTTPS listener; the `HTTPRoute` attaches to it when `gateway.parentRefs` is empty | `false` |
+| `gateway.listenerSet.enabled` | Create a `ListenerSet` with this release's HTTPS listener; the `HTTPRoute` attaches to it when `gateway.parentRefs` is empty. Requires `gateway.enabled=true` | `false` |
 | `gateway.listenerSet.parentRef` | The shared Gateway (`name`, `namespace`); required when enabled | `{}` |
 | `gateway.listenerSet.listenerName` / `port` | Listener name (the route's `sectionName`) and port | `https` / `443` |
 | `gateway.listenerSet.tlsSecretName` | TLS Secret for the listener | `<release fullname>-tls` |

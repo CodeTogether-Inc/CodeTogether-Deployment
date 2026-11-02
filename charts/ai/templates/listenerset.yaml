@@ -1,3 +1,7 @@
+{{- $gwValues := .Values.gateway | default dict }}
+{{- if and ($gwValues.listenerSet | default dict).enabled (not $gwValues.enabled) }}
+{{- fail "gateway.listenerSet.enabled=true requires gateway.enabled=true: the ListenerSet carries the HTTPRoute's listener, and without the HTTPRoute nothing is rendered." }}
+{{- end }}
 {{- if eq (include "ctai.listenerSetEnabled" .) "true" }}
 {{- $ls := .Values.gateway.listenerSet }}
 {{- $parent := $ls.parentRef | default dict }}
