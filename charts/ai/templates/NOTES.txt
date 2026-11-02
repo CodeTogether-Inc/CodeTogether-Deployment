@@ -45,6 +45,14 @@ Gateway API:
   {{- with .sectionName }}{{ $p = printf "%s listener %s" $p . }}{{ end }}
   {{- $parents = append $parents $p }}
   {{- end }}
+  {{- if eq (include "ctai.listenerSetEnabled" .) "true" }}
+  {{- $lsParent := $gw.listenerSet.parentRef }}
+  ListenerSet {{ include "ctai.fullname" . }} adds an HTTPS listener to Gateway {{ $lsParent.name }}{{ with $lsParent.namespace }} (namespace {{ . }}){{ end }}.
+  Check it was accepted: kubectl get listenerset {{ include "ctai.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.conditions}'
+  {{- if not $parents }}
+  {{- $parents = list (printf "ListenerSet %s listener %s" (include "ctai.fullname" .) ($gw.listenerSet.listenerName | default "https")) }}
+  {{- end }}
+  {{- end }}
   HTTPRoute {{ include "ctai.fullname" . }} attaches to: {{ join ", " $parents }}
   Check it was accepted: kubectl get httproute {{ include "ctai.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.parents[*].conditions}'
 {{- if eq (include "ctai.renderClientSettingsPolicy" .) "true" }}

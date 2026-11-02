@@ -297,3 +297,27 @@ from a chart without `gateway` keeps the old values and skips these defaults.
 {{- define "ctai.clientSettingsBodyMaxSize" -}}
 {{- (((.Values.gateway | default dict).nginxGatewayFabric | default dict).clientSettingsPolicy | default dict).bodyMaxSize | default "16m" -}}
 {{- end }}
+
+{{/*
+ListenerSet settings, read defensively like the rest of `gateway`.
+*/}}
+{{- define "ctai.listenerSetEnabled" -}}
+{{- $gw := .Values.gateway | default dict -}}
+{{- if and $gw.enabled ($gw.listenerSet | default dict).enabled -}}true{{- end -}}
+{{- end }}
+
+{{/*
+HTTPRoute parentRefs: gateway.parentRefs when set; otherwise the chart's
+ListenerSet and its listener.
+*/}}
+{{- define "ctai.routeParentRefs" -}}
+{{- $gw := .Values.gateway | default dict -}}
+{{- if $gw.parentRefs -}}
+{{- toYaml $gw.parentRefs -}}
+{{- else if eq (include "ctai.listenerSetEnabled" .) "true" -}}
+- group: gateway.networking.k8s.io
+  kind: ListenerSet
+  name: {{ include "ctai.fullname" . }}
+  sectionName: {{ ($gw.listenerSet | default dict).listenerName | default "https" }}
+{{- end -}}
+{{- end }}

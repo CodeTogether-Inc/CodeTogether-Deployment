@@ -106,6 +106,26 @@ gateway:
       # false: never render (another Gateway API implementation)
       enabled: auto
       bodyMaxSize: "16m"
+  # Optional ListenerSet (gateway.networking.k8s.io/v1): adds this release's
+  # HTTPS listener (the service_fqdn host and its certificate) to a shared Gateway, so the
+  # shared Gateway doesn't need a listener edited for each application. The
+  # Gateway must allow it (spec.allowedListeners). When enabled and parentRefs
+  # is empty, the HTTPRoute attaches to this ListenerSet.
+  listenerSet:
+    enabled: false
+    # The Gateway this ListenerSet adds a listener to. Required when enabled.
+    # Example:
+    #   parentRef:
+    #     name: gateway-ngf
+    #     namespace: kube-system
+    parentRef: {}
+    listenerName: https
+    port: 443
+    # cert-manager reads these (cert-manager.io/cluster-issuer or
+    # cert-manager.io/issuer) and issues the certificate into tlsSecretName.
+    annotations: {}
+    # TLS Secret in the release namespace. Defaults to <release fullname>-tls.
+    tlsSecretName: ""
 
 # Client address handling (X-Forwarded-For trust).
 #

@@ -1,7 +1,7 @@
 {{- $gw := .Values.gateway | default dict }}
 {{- if $gw.enabled }}
-{{- if not $gw.parentRefs }}
-{{- fail "gateway.enabled=true requires gateway.parentRefs: the Gateway (name, and namespace/sectionName if needed) the HTTPRoute attaches to." }}
+{{- if not (include "ctai.routeParentRefs" .) }}
+{{- fail "gateway.enabled=true requires gateway.parentRefs (the Gateway, and namespace/sectionName if needed, the HTTPRoute attaches to) or gateway.listenerSet.enabled=true." }}
 {{- end }}
 {{- if not (.Capabilities.APIVersions.Has "gateway.networking.k8s.io/v1/HTTPRoute") }}
 {{- fail "gateway.enabled=true but the cluster does not serve gateway.networking.k8s.io/v1 HTTPRoute. Install the Gateway API CRDs (or pass --api-versions gateway.networking.k8s.io/v1/HTTPRoute to helm template)." }}
@@ -22,7 +22,7 @@ metadata:
   {{- end }}
 spec:
   parentRefs:
-    {{- toYaml $gw.parentRefs | nindent 4 }}
+    {{- include "ctai.routeParentRefs" . | nindent 4 }}
   hostnames:
     - {{ include "ctai.routeHostname" . | quote }}
   rules:
