@@ -217,7 +217,20 @@ gateway:
 The shared Gateway has to accept ListenerSets from the release namespace
 (`spec.allowedListeners.namespaces`). With a cert-manager version that supports
 ListenerSets, the issuer annotation on the ListenerSet issues the certificate
-into that Secret; otherwise create the Secret yourself.
+into that Secret; otherwise create the Secret yourself. On cert-manager v1.21
+that support is off by default; enable it in the cert-manager chart values:
+
+```yaml
+config:
+  apiVersion: controller.config.cert-manager.io/v1alpha1
+  kind: ControllerConfiguration
+  enableGatewayAPI: true
+  enableGatewayAPIListenerSet: true
+featureGates: ListenerSets=true
+```
+
+Without it, cert-manager logs `skipping disabled controller ... listenerset` and
+no certificate is issued.
 
 If you already applied a ListenerSet with the same name by hand, Helm refuses to
 take it over. Let Helm adopt it before the upgrade:
