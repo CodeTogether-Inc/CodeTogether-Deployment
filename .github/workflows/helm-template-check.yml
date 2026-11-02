@@ -51,6 +51,22 @@ jobs:
             --set 'gateway.parentRefs[0].namespace=gateway-system' \
             --api-versions gateway.networking.k8s.io/v1/HTTPRoute \
             --api-versions gateway.nginx.org/v1alpha1/ClientSettingsPolicy
+          # ListenerSet on a shared Gateway; the HTTPRoute attaches to it
+          helm template test ./charts/ai \
+            --set-file ctaiPropertiesFile=./charts/ai/ctai-configuration.properties.template \
+            --set service.fqdn=https://example.codetogether.io \
+            --set imageCredentials.username=test \
+            --set imageCredentials.password=test \
+            --set ingress.enabled=false \
+            --set gateway.enabled=true \
+            --set gateway.listenerSet.enabled=true \
+            --set gateway.listenerSet.parentRef.name=shared-gateway \
+            --set gateway.listenerSet.parentRef.namespace=gateway-system \
+            --api-versions gateway.networking.k8s.io/v1/HTTPRoute \
+            --api-versions gateway.networking.k8s.io/v1/ListenerSet \
+            > /tmp/listenerset.yaml
+          grep -q '^kind: ListenerSet$' /tmp/listenerset.yaml
+          grep -q 'kind: ListenerSet$' <(sed -n '/^kind: HTTPRoute$/,/^---/p' /tmp/listenerset.yaml)
           # helm upgrade --reuse-values from a chart without `gateway` drops the key
           helm template test ./charts/ai \
             --set-file ctaiPropertiesFile=./charts/ai/ctai-configuration.properties.template \
