@@ -4,7 +4,7 @@ description: CodeTogether AI on-premises Kubernetes deployment
 
 type: application
 version: 0.2.3
-appVersion: "1.2.8165"
+appVersion: "1.2.8616"
 
 icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
 home: https://www.codetogether.com
