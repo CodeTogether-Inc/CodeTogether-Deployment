@@ -11,7 +11,9 @@ spec:
   template:
     metadata:
       annotations:
+        {{- if and (include "codetogether.avEnabled" .) .Values.av.stunServers.enabled }}
         checksum/coturn: {{ include (print $.Template.BasePath "/secret-coturn.yaml") . | sha256sum }}
+        {{- end }}
         checksum/dashboard: {{ include (print $.Template.BasePath "/secret-dashboard.yaml") . | sha256sum }}
         checksum/license: {{ include (print $.Template.BasePath "/secret-license.yaml") . | sha256sum }}
         checksum/sso: {{ include (print $.Template.BasePath "/secret-sso.yaml") . | sha256sum }}
@@ -34,13 +36,17 @@ spec:
         - name: {{ .Chart.Name }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- if .Values.image.digest }}
+          image: "{{ .Values.image.repository }}@{{ .Values.image.digest }}"
+          {{- else }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          {{- end }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
 
           env:
           #
           # Set CodeTogether runtime configuration
-          #         
+          #
           - name: CT_SERVER_URL
             value: {{ .Values.codetogether.url | quote }}
           - name: CT_TRUST_ALL_CERTS
@@ -50,7 +56,7 @@ spec:
           - name: CT_LOCATOR
             value: "none"
           - name: CT_PROMETHEUS_ENABLED
-            value: {{ .Values.direct.metrics.prometheusEnabled | quote }}         
+            value: {{ .Values.direct.metrics.prometheusEnabled | quote }}
           {{- if .Values.direct.metrics.statsdEnabled }}
           - name: CT_METRICS_STATSD_HOST
             value: {{ .Values.direct.metrics.statsdHost | quote }}
@@ -99,21 +105,16 @@ spec:
             value: {{ .Values.locatorEdge.locator | quote }}
           - name: CT_REGION
             value: {{ .Values.locatorEdge.region | quote }}
-          {{- end }}  
+          {{- end }}
 
-          {{- if or (eq .Values.codetogether.mode "direct") (eq .Values.codetogether.mode "locator-edge") }}
           - name: CT_AV_ENABLED
-            value: {{ .Values.av.enabled | quote }}
-          {{- if .Values.av.enabled }} 
+            value: {{ include "codetogether.avEnabled" . | default "false" | quote }}
+          {{- if include "codetogether.avEnabled" . }}
           - name: CT_AV_LAN_IP
             value: {{ .Values.av.serverIP | quote }}
           {{- end }}
-          {{- else }}
-          - name: CT_AV_ENABLED
-            value: "false"
-          {{- end }}
 
-          {{- if .Values.av.stunServers.enabled }}
+          {{- if and (include "codetogether.avEnabled" .) .Values.av.stunServers.enabled }}
           - name: CT_AV_COTURN_SERVER
             value: {{ .Values.av.stunServers.server | quote }}
           - name: CT_AV_COTURN_SECRET
@@ -123,7 +124,7 @@ spec:
                 key: secret
           {{- end }}
 
-          {{- if and .Values.av.jitsiUrl (ne .Values.av.jitsiUrl "") }}
+          {{- if and (include "codetogether.avEnabled" .) .Values.av.jitsiUrl (ne .Values.av.jitsiUrl "") }}
           - name: CT_JITSI_URL
             value: {{ .Values.av.jitsiUrl | quote }}
           {{- end }}
@@ -227,14 +228,14 @@ spec:
               subPath: favicon.ico
           {{- end }}
 
-          # 
+          #
           # Set container configuration
           #
           ports:
             - name: http
               containerPort: 1080
               protocol: TCP
-            {{- if .Values.av.enabled }}
+            {{- if include "codetogether.avEnabled" . }}
             - name: av-tcp
               containerPort: 4443
               protocol: TCP
@@ -242,7 +243,7 @@ spec:
               containerPort: 10000
               protocol: UDP
             {{- end }}
-          
+
           livenessProbe:
             initialDelaySeconds: {{ .Values.livenessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.livenessProbe.periodSeconds }}
@@ -252,7 +253,7 @@ spec:
             httpGet:
               path: /ct-health/
               port: http
-          
+
           readinessProbe:
             initialDelaySeconds: {{ .Values.readinessProbe.initialDelaySeconds }}
             periodSeconds: {{ .Values.readinessProbe.periodSeconds }}

@@ -18,6 +18,9 @@ image:
   pullPolicy: Always
   # Overrides the image tag whose default is the chart appVersion.
   tag: "latest"
+  # Optional immutable image digest (sha256:...). When set, digest takes
+  # precedence over tag.
+  digest: ""
 
 #
 # Configure the source location for the Docker image, using the
@@ -74,7 +77,7 @@ codetogether:
 #
 # Configure if CodeTogether is running in 'direct' mode.
 #
-direct: 
+direct:
   # When running in 'direct' mode, integration with StatsD or Prometheus can be
   # enabled in the Docker file. For Locator deployments, configure dynamically
   # on the locator's Dashboard.
@@ -97,7 +100,7 @@ locatorCentral:
     port: 3306
     schema: "codetogether"
     # Supported values: 'mysql' or 'postgres'
-    dialect: "mysql"  
+    dialect: "mysql"
     user: "my-db-username"
     password: "my-db-password"
     # Optionally enable SSL security to database
@@ -110,14 +113,14 @@ locatorCentral:
     # sslKey: "my-db-ssl-key-base64-encoded"
     # sslCA: "my-db-ssl-certificate-authority-base64-encoded"
     # sslCert: "my-db-ssl-certificate-base64-encoded"
-    
+
 #
 # Configure if CodeTogether is running in 'locator-edge' mode.
 #
 locatorEdge:
   # URL that the Locator is listening on.
   locator: "https://codetogether.locator"
-  # Optional region which can have CIDR IP address regions assigned to 
+  # Optional region which can have CIDR IP address regions assigned to
   # allowing regional routing of requests. Only enable if deploying
   # CodeTogether to multiple regional data centers.
   region: "default"
@@ -157,7 +160,7 @@ ingress:
 #
 # CodeTogether has a dashboard to view metrics, and for the locator, update
 # configuration on the fly. If a custom username and password is not enabled,
-# one will be dynamically generated and shared in the log when the server 
+# one will be dynamically generated and shared in the log when the server
 # starts up. Accessed at https://url/dashboard.
 #
 dashboard:
@@ -165,7 +168,7 @@ dashboard:
   enabled: false
   username: "my-dashboard-username"
   password: "my-dashboard-password"
-  # Name of existing secret to use for Dashboard credentials. If specfied,
+  # Name of existing secret to use for Dashboard credentials. If specified,
   # then dashboard.username and dashboard.password will be ignored and picked up from this secret.
   # existingSecret: ""
 
@@ -175,17 +178,17 @@ dashboard:
 #
 av:
   enabled: false
-  # If auto, will attempt lookup of the IP address of the server. If the 
+  # If auto, will attempt lookup of the IP address of the server. If the
   # container fails to start, IP address can be manually configured.
   serverIP: "auto"
   # Optional - If you want to use your own STUN servers, set this to 'true'
   # and specify <server:port> separated by a comma ','.
-  stunServers: 
+  stunServers:
     enabled: false
     server: "coturn.example.com"
     secret: "my-secret"
-  # Optional - Jitsi Settings for locator edge servers with locator or extenral jitsi meet server
-  # jitsiUrl: "https://your.jtsi.server"
+  # Optional - Jitsi settings for locator edge servers with locator or external Jitsi Meet server
+  # jitsiUrl: "https://your.jitsi.server"
 
 #
 # Optionally enable integration with your SSO Provider. If using SSO, this
@@ -251,7 +254,7 @@ proxy:
   enabled: false
   # Proxy URI format, omit credentials if unauthenticated:
   # http://myuser:mypassword@myproxyhost.com:port
-  # Note: At this point only HTTP proxy is supported. Additionally, 
+  # Note: At this point only HTTP proxy is supported. Additionally,
   # if you are using special characters in the password, please verify escaping.
   uri: ""
   # Name of existing secret to use for proxy URI. If specified,

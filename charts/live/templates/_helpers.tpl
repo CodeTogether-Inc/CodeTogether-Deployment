@@ -24,6 +24,15 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 
 {{/*
+Return true when A/V is enabled for a supported Live deployment mode.
+*/}}
+{{- define "codetogether.avEnabled" -}}
+{{- if and .Values.av.enabled (or (eq .Values.codetogether.mode "direct") (eq .Values.codetogether.mode "locator-edge")) -}}
+true
+{{- end -}}
+{{- end }}
+
+{{/*
 Create chart name and version as used by the chart label.
 */}}
 {{- define "codetogether.chart" -}}
