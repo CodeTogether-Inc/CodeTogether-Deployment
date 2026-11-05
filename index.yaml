@@ -3,6 +3,27 @@ entries:
   codetogether:
   - apiVersion: v2
     appVersion: 2024.2.0
+    created: "2026-11-05T22:52:03.197715499Z"
+    description: CodeTogether Live provides pair programming and collaborative coding
+    digest: cdd956c1761f2ed79a22217c0eceac62fdee6e8d6a5a73335273886eadbf0ead
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - live
+    - collaborative
+    - pair
+    - programming
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-1.4.26/codetogether-1.4.26.tgz
+    version: 1.4.26
+  - apiVersion: v2
+    appVersion: 2024.2.0
     created: "2025-06-30T23:25:42.062630059Z"
     description: CodeTogether Live provides pair programming and collaborative coding
     digest: d5e8b844d675875314efe481ec5610fd22067c1e53b9ffe8094946e30c0d401b
@@ -622,6 +643,27 @@ entries:
     - legacy/codetogether-1.0.1.tgz
     version: 1.0.1
   codetogether-ai:
+  - apiVersion: v2
+    appVersion: 1.2.8616
+    created: "2026-11-05T22:52:03.377525669Z"
+    description: CodeTogether AI on-premises Kubernetes deployment
+    digest: 3ae7d2ba2e657b0a521e4265d2c1018e8318bab8afc12572e52a49c93b53af95
+    home: https://www.codetogether.com
+    icon: https://www.codetogether.com/wp-content/uploads/2020/02/codetogether-circle-128.png
+    keywords:
+    - codetogether
+    - ctai
+    - ai
+    - aitrax
+    - on-premises
+    maintainers:
+    - email: info@codetogether.com
+      name: CodeTogether Inc.
+    name: codetogether-ai
+    type: application
+    urls:
+    - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-ai-0.2.3/codetogether-ai-0.2.3.tgz
+    version: 0.2.3
   - apiVersion: v2
     appVersion: 1.2.8165
     created: "2026-10-20T21:06:25.013340512Z"
@@ -1387,4 +1429,4 @@ entries:
     urls:
     - https://github.com/CodeTogether-Inc/CodeTogether-Deployment/releases/download/codetogether-intel-1.1.0/codetogether-intel-1.1.0.tgz
     version: 1.1.0
-generated: "2026-10-20T21:06:25.013436815Z"
+generated: "2026-11-05T22:52:03.377768172Z"
