@@ -190,8 +190,59 @@ The chart renders:
   rendered only when the cluster serves that API. For another Gateway API
   implementation, set the equivalent limit on your side.
 
-The chart doesn't create the `Gateway`, its listeners or certificates. On the
-Gateway side, check that:
+#### ListenerSet: your own listener on a shared Gateway
+
+Instead of adding a listener to the shared `Gateway` for this host, the chart
+can create a `ListenerSet` (`gateway.networking.k8s.io/v1`, Gateway API v1.5+)
+that adds the HTTPS listener for the `service_fqdn` host, with its certificate,
+from the release namespace. The `HTTPRoute` then attaches to that ListenerSet, so leave
+`gateway.parentRefs` empty:
+
+```yaml
+ingress:
+  enabled: false
+gateway:
+  enabled: true
+  listenerSet:
+    enabled: true
+    parentRef:
+      name: gateway-ngf          # the shared Gateway
+      namespace: kube-system
+    # The listener's hostname is the service_fqdn host. The certificate Secret
+    # defaults to <release fullname>-tls; set listenerSet.tlsSecretName to change it.
+    annotations:
+      cert-manager.io/cluster-issuer: cert-manager-clusterissuer
+```
+
+The shared Gateway has to accept ListenerSets from the release namespace
+(`spec.allowedListeners.namespaces`). With a cert-manager version that supports
+ListenerSets, the issuer annotation on the ListenerSet issues the certificate
+into that Secret; otherwise create the Secret yourself. On cert-manager v1.21
+that support is off by default; enable it in the cert-manager chart values:
+
+```yaml
+config:
+  apiVersion: controller.config.cert-manager.io/v1alpha1
+  kind: ControllerConfiguration
+  enableGatewayAPI: true
+  enableGatewayAPIListenerSet: true
+featureGates: ListenerSets=true
+```
+
+Without it, cert-manager logs `skipping disabled controller ... listenerset` and
+no certificate is issued.
+
+If you already applied a ListenerSet with the same name by hand, Helm refuses to
+take it over. Let Helm adopt it before the upgrade:
+
+```bash
+kubectl -n <namespace> label listenerset <release-fullname> app.kubernetes.io/managed-by=Helm
+kubectl -n <namespace> annotate listenerset <release-fullname> \
+  meta.helm.sh/release-name=<release> meta.helm.sh/release-namespace=<namespace>
+```
+
+The chart doesn't create the `Gateway`, and without a ListenerSet it doesn't
+create listeners or certificates either. On the Gateway side, check that:
 
 - the listener allows routes from the release namespace
   (`allowedRoutes.namespaces`);
@@ -244,10 +295,15 @@ The following table lists the primary configurable parameters and defaults.
 | `ingress.annotations` | Ingress annotations | `nginx.ingress.kubernetes.io/proxy-body-size: "16m"` |
 | `ingress.tls.secretName` | TLS Secret for Ingress | `codetogether-ai-tls` |
 | `gateway.enabled` | Create a Gateway API `HTTPRoute` | `false` |
-| `gateway.parentRefs` | Gateway(s) the `HTTPRoute` attaches to; required when enabled | `[]` |
-| `gateway.annotations` / `gateway.labels` | Extra `HTTPRoute` metadata | `{}` |
+| `gateway.parentRefs` | Gateway(s) the `HTTPRoute` attaches to; required when enabled unless `gateway.listenerSet.enabled` | `[]` |
+| `gateway.annotations` / `gateway.labels` | Extra `HTTPRoute` metadata (`labels` also go on the `ListenerSet`) | `{}` |
 | `gateway.nginxGatewayFabric.clientSettingsPolicy.enabled` | NGINX Gateway Fabric body-size policy: `auto`, `true` or `false` | `auto` |
 | `gateway.nginxGatewayFabric.clientSettingsPolicy.bodyMaxSize` | Request body limit on the Gateway | `16m` |
+| `gateway.listenerSet.enabled` | Create a `ListenerSet` with this release's HTTPS listener; the `HTTPRoute` attaches to it when `gateway.parentRefs` is empty. Requires `gateway.enabled=true` | `false` |
+| `gateway.listenerSet.parentRef` | The shared Gateway (`name`, `namespace`); required when enabled | `{}` |
+| `gateway.listenerSet.listenerName` / `port` | Listener name (the route's `sectionName`) and port | `https` / `443` |
+| `gateway.listenerSet.tlsSecretName` | TLS Secret for the listener | `<release fullname>-tls` |
+| `gateway.listenerSet.annotations` | `ListenerSet` annotations (e.g. the cert-manager issuer); labels come from `gateway.labels` | `{}` |
 | `clientIp.trustedProxyHops` | Proxies in front of the pod that append to `X-Forwarded-For` | `2` |
 | `serviceAccount.create` | Create a ServiceAccount | `true` |
 | `serviceAccount.name` | ServiceAccount name | `codetogether-ai` |
