@@ -23,6 +23,34 @@ jobs:
       - name: Validate Collab Chart
         run: |
           helm template collab ./charts/collab --values ./charts/collab/values.yaml
+          # Gateway API: HTTPRoute on an existing Gateway listener
+          helm template collab ./charts/collab --values ./charts/collab/values.yaml \
+            --set ingress.enabled=false \
+            --set gateway.enabled=true \
+            --set 'gateway.parentRefs[0].name=shared-gateway' \
+            --set 'gateway.parentRefs[0].namespace=gateway-system' \
+            --api-versions gateway.networking.k8s.io/v1/HTTPRoute
+          # ListenerSet on a shared Gateway; the HTTPRoute attaches to it
+          helm template collab ./charts/collab --values ./charts/collab/values.yaml \
+            --set ingress.enabled=false \
+            --set gateway.enabled=true \
+            --set gateway.listenerSet.enabled=true \
+            --set gateway.listenerSet.parentRef.name=shared-gateway \
+            --set gateway.listenerSet.parentRef.namespace=gateway-system \
+            --api-versions gateway.networking.k8s.io/v1/HTTPRoute \
+            --api-versions gateway.networking.k8s.io/v1/ListenerSet \
+            > /tmp/collab-listenerset.yaml
+          grep -q '^kind: ListenerSet$' /tmp/collab-listenerset.yaml
+          grep -q 'kind: ListenerSet$' <(sed -n '/^kind: HTTPRoute$/,/^---/p' /tmp/collab-listenerset.yaml)
+          # listenerSet without gateway.enabled must fail instead of rendering nothing
+          if helm template collab ./charts/collab --values ./charts/collab/values.yaml \
+            --set gateway.listenerSet.enabled=true \
+            --set gateway.listenerSet.parentRef.name=shared-gateway > /tmp/collab-ls-no-gw.out 2>&1; then
+            echo "listenerSet without gateway.enabled rendered" >&2; exit 1
+          fi
+          grep -q 'requires gateway.enabled=true' /tmp/collab-ls-no-gw.out
+          # helm upgrade --reuse-values from a chart without `gateway` drops the key
+          helm template collab ./charts/collab --values ./charts/collab/values.yaml --set gateway=null
 
       - name: Validate HQ Chart
         run: |

@@ -163,6 +163,49 @@ ingress:
   tls:
     - secretName: codetogether-tls
 #
+# Gateway API (gateway.networking.k8s.io/v1), for clusters that route with a
+# Gateway instead of an Ingress controller (for example NGINX Gateway Fabric,
+# replacing the retired ingress-nginx). Off by default.
+#
+# The chart attaches an HTTPRoute for the codetogether.url host to a Gateway you
+# already run. It does not create the Gateway. Set ingress.enabled=false when you
+# switch, unless you deliberately run both during a migration.
+#
+gateway:
+  enabled: false
+  # Gateway(s) the HTTPRoute attaches to. Required when enabled, unless
+  # listenerSet.enabled is true. Example:
+  #   parentRefs:
+  #     - name: shared-gateway
+  #       namespace: gateway-system
+  #       sectionName: https   # the HTTPS listener that holds the certificate
+  parentRefs: []
+  annotations: {}
+  labels: {}
+  # Optional ListenerSet (gateway.networking.k8s.io/v1, Gateway API v1.5+): adds
+  # this release's HTTPS listener (the codetogether.url host and its certificate)
+  # to a shared Gateway, so the shared Gateway doesn't need a listener edited for
+  # each application. The Gateway must allow it (spec.allowedListeners). When
+  # enabled and parentRefs is empty, the HTTPRoute attaches to this ListenerSet;
+  # if parentRefs is set, the HTTPRoute attaches only to those parents.
+  listenerSet:
+    enabled: false
+    # The Gateway this ListenerSet adds a listener to. Required when enabled.
+    # Example:
+    #   parentRef:
+    #     name: gateway-ngf
+    #     namespace: kube-system
+    parentRef: {}
+    listenerName: https
+    port: 443
+    # cert-manager reads these (cert-manager.io/cluster-issuer or
+    # cert-manager.io/issuer) and issues the certificate into tlsSecretName.
+    annotations: {}
+    # TLS Secret in the release namespace. Defaults to <release fullname>-tls.
+    # Set it to codetogether-tls to keep the certificate the Ingress used.
+    tlsSecretName: ""
+
+#
 # CodeTogether has a dashboard to view metrics, and for the locator, update
 # configuration on the fly. If a custom username and password is not enabled,
 # one will be dynamically generated and shared in the log when the server 
