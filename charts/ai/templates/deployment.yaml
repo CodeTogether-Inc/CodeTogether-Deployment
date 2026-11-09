@@ -7,6 +7,10 @@ metadata:
     {{- include "ctai.labels" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  {{- /* Read through default: --reuse-values from a chart before 0.2.4 has no deploymentStrategy. */}}
+  {{- $strategy := .Values.deploymentStrategy | default (dict "type" "RollingUpdate" "rollingUpdate" (dict "maxSurge" 0 "maxUnavailable" 1)) }}
+  strategy:
+    {{- toYaml $strategy | nindent 4 }}
   selector:
     matchLabels:
       {{- include "ctai.selectorLabels" . | nindent 6 }}

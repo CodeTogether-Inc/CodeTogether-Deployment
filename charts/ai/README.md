@@ -399,6 +399,51 @@ helm upgrade codetogether-ai codetogether/codetogether-ai \
 
 The Deployment rolls when the chart-managed properties Secret changes.
 
+### Rollout strategy
+
+From chart 0.2.4 the Deployment stops the old pod before it starts the new one
+(`deploymentStrategy`: `RollingUpdate` with `maxSurge: 0`, `maxUnavailable: 1`).
+On a single replica an upgrade therefore has a short outage while the new pod
+starts. Earlier charts used the Kubernetes default, which starts the new pod
+first.
+
+The pods of one release share an embedded Hazelcast cluster, and a pod only
+joins a cluster that runs its own Hazelcast minor version. When a release
+changes that version (the release notes say so), any old pod still running
+makes the new pod fail to join: its container exits and restarts in a loop, and
+the rollout never completes while the old pods keep serving. `helm upgrade`
+without `--wait` still prints `deployed`; `kubectl rollout status` shows the
+stall.
+
+- **One replica:** the default strategy handles it, as long as the release was
+  upgraded to chart 0.2.4 or later. Upgrade the chart and the image in the same
+  `helm upgrade`, as above.
+- **More than one replica:** upgrade across a Hazelcast version with
+  `Recreate`, which stops every old pod first (a short outage):
+
+  ```bash
+  helm upgrade codetogether-ai codetogether/codetogether-ai \
+    --namespace codetogether-ai \
+    --reset-then-reuse-values \
+    --set deploymentStrategy.type=Recreate \
+    --set deploymentStrategy.rollingUpdate=null
+  ```
+
+  `rollingUpdate=null` is required: Helm merges overrides into the existing
+  values, and Kubernetes rejects `Recreate` while `rollingUpdate` is set. The
+  same command completes a rollout that has already stalled.
+  `--reset-then-reuse-values` keeps `Recreate` for later upgrades; to return to
+  the default on a later upgrade, add (Helm 3.10 or later)
+  `--set-json 'deploymentStrategy={"type":"RollingUpdate","rollingUpdate":{"maxSurge":0,"maxUnavailable":1}}'`.
+
+If a rollout has already stalled on a chart older than 0.2.4, switch the
+Deployment to `Recreate` directly:
+
+```bash
+kubectl -n codetogether-ai patch deployment codetogether-ai \
+  -p '{"spec":{"strategy":{"type":"Recreate","rollingUpdate":null}}}'
+```
+
 ## Uninstall
 
 ```bash

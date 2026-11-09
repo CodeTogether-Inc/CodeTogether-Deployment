@@ -113,6 +113,27 @@ jobs:
             --set imageCredentials.username=test \
             --set imageCredentials.password=test \
             --set gateway=null
+          # Rollout strategy: the default, what --reuse-values from a chart
+          # before 0.2.4 leaves (no deploymentStrategy), and a Recreate override.
+          ai_strategy() {
+            helm template test ./charts/ai \
+              --set-file ctaiPropertiesFile=./charts/ai/ctai-configuration.properties.template \
+              --set service.fqdn=https://example.codetogether.io \
+              --set imageCredentials.username=test \
+              --set imageCredentials.password=test \
+              --show-only templates/deployment.yaml "$@" \
+              | sed -n '/^  strategy:$/,/^  selector:$/p'
+          }
+          default_strategy="$(ai_strategy)"
+          grep -q 'type: RollingUpdate' <<<"$default_strategy"
+          grep -q 'maxSurge: 0' <<<"$default_strategy"
+          grep -q 'maxUnavailable: 1' <<<"$default_strategy"
+          [ "$(ai_strategy --set deploymentStrategy=null)" = "$default_strategy" ]
+          recreate_strategy="$(ai_strategy --set deploymentStrategy.type=Recreate --set deploymentStrategy.rollingUpdate=null)"
+          grep -q 'type: Recreate' <<<"$recreate_strategy"
+          if grep -q 'rollingUpdate' <<<"$recreate_strategy"; then
+            echo "Recreate rendered rollingUpdate" >&2; exit 1
+          fi
 
       - name: Validate Live Chart
         run: |
