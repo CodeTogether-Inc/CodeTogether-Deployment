@@ -152,17 +152,26 @@ config:
 featureGates: ListenerSets=true
 ```
 
-If you already applied a ListenerSet with the same name by hand, Helm refuses to
-take it over. Let Helm adopt it before the upgrade:
+Chart versions before 1.3.0 don't render Gateway API objects, so a Gateway setup
+on them was applied by hand. If a ListenerSet or an HTTPRoute with the release
+fullname already exists, Helm refuses to take it over (`invalid ownership
+metadata`) and the upgrade stops without changing anything. Let Helm adopt each
+one that exists before the upgrade:
 
 ```bash
-kubectl -n <namespace> label listenerset <release-fullname> app.kubernetes.io/managed-by=Helm
-kubectl -n <namespace> annotate listenerset <release-fullname> \
-  meta.helm.sh/release-name=<release> meta.helm.sh/release-namespace=<namespace>
+for kind in listenerset httproute; do
+  kubectl -n <namespace> label $kind <release-fullname> app.kubernetes.io/managed-by=Helm
+  kubectl -n <namespace> annotate $kind <release-fullname> \
+    meta.helm.sh/release-name=<release> meta.helm.sh/release-namespace=<namespace>
+done
 ```
 
+With the same host and TLS Secret name, the upgrade keeps serving traffic and
+cert-manager keeps the existing certificate.
+
 A `helm rollback` to a chart version without `gateway`, or a `helm uninstall`,
-deletes the ListenerSet and with it this host's listener.
+deletes the ListenerSet and the HTTPRoute, and with them this host's listener
+and route.
 
 The chart doesn't create the `Gateway`. On the Gateway side, check that:
 
