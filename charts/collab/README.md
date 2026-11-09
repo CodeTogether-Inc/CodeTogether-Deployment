@@ -11,6 +11,10 @@ This chart has been created with Helm v3 and tested with:
 - Kubernetes v1.18+
 - Helm v3.5+
 
+With `gateway.enabled=true` (see [Gateway API](#gateway-api-nginx-gateway-fabric)),
+the cluster also needs the Gateway API CRDs (v1.5+ for the ListenerSet) and a
+`Gateway`, for example from NGINX Gateway Fabric.
+
 ## Configuration
 
 The following table lists configurable parameters of the CodeTogether Collab chart and their default values:
@@ -47,6 +51,14 @@ The following table lists configurable parameters of the CodeTogether Collab cha
 | `locatorEdge.region`                        | Region for the edge server                                                                     | `default`                                                 |
 | `ingress.enabled`                           | Enables ingress controller resource                                                           | `true`                                                    |
 | `ingress.tls.secretName`                    | TLS secret name for ingress                                                                   | `codetogether-tls`                                        |
+| `gateway.enabled`                           | Creates a Gateway API `HTTPRoute` for the `codetogether.url` host                              | `false`                                                   |
+| `gateway.parentRefs`                        | Gateway(s) the `HTTPRoute` attaches to; required when enabled unless `gateway.listenerSet.enabled` | `[]`                                                  |
+| `gateway.annotations` / `gateway.labels`    | Extra `HTTPRoute` metadata (`labels` also go on the `ListenerSet`)                             | `{}`                                                      |
+| `gateway.listenerSet.enabled`               | Creates a `ListenerSet` with this release's HTTPS listener; requires `gateway.enabled=true`    | `false`                                                   |
+| `gateway.listenerSet.parentRef`             | The shared Gateway (`name`, `namespace`); required when enabled                                | `{}`                                                      |
+| `gateway.listenerSet.listenerName` / `port` | Listener name (the route's `sectionName`) and port                                             | `https` / `443`                                           |
+| `gateway.listenerSet.tlsSecretName`         | TLS Secret for the listener                                                                    | `<release fullname>-tls`                                  |
+| `gateway.listenerSet.annotations`           | `ListenerSet` annotations (e.g. the cert-manager issuer)                                       | `{}`                                                      |
 | `dashboard.enabled`                         | Enables the dashboard and allows configuration of credentials                                  | `false`                                                   |
 | `dashboard.username`                        | Dashboard username                                                                             | `my-dashboard-username`                                   |
 | `dashboard.password`                        | Dashboard password                                                                             | `my-dashboard-password`                                   |
@@ -77,6 +89,90 @@ To secure CodeTogether, you can add a `secret` that contains your TLS (Transport
 ```bash
 $ kubectl create secret tls codetogether-tls --key <your-private-key-filename> --cert <your-certificate-filename>
 ```
+
+## Gateway API (NGINX Gateway Fabric)
+
+Clusters that route with Gateway API instead of an Ingress controller (for
+example NGINX Gateway Fabric, which replaces the retired ingress-nginx) can have
+the chart attach an `HTTPRoute` to an existing `Gateway`:
+
+```yaml
+ingress:
+  enabled: false
+gateway:
+  enabled: true
+  parentRefs:
+    - name: shared-gateway        # your Gateway
+      namespace: gateway-system   # omit if it is in the release namespace
+      sectionName: https          # the HTTPS listener with the certificate
+```
+
+The chart renders an `HTTPRoute` for the `codetogether.url` host that sends `/`
+to the chart Service. WebSocket connections need no extra setting: NGINX Gateway
+Fabric passes the upgrade through. Settings you added as Ingress annotations
+(`ingress.annotations`, `ingress.config`) don't carry over; set the equivalent on
+your Gateway.
+
+### ListenerSet: your own listener on a shared Gateway
+
+Instead of adding a listener to the shared `Gateway` for this host, the chart
+can create a `ListenerSet` (`gateway.networking.k8s.io/v1`, Gateway API v1.5+)
+that adds the HTTPS listener for the `codetogether.url` host, with its
+certificate, from the release namespace. The `HTTPRoute` then attaches to that
+ListenerSet, so leave `gateway.parentRefs` empty:
+
+```yaml
+ingress:
+  enabled: false
+gateway:
+  enabled: true
+  listenerSet:
+    enabled: true
+    parentRef:
+      name: gateway-ngf          # the shared Gateway
+      namespace: kube-system
+    # The certificate Secret defaults to <release fullname>-tls. Set
+    # tlsSecretName: codetogether-tls to keep the certificate from the TLS step.
+    annotations:
+      cert-manager.io/cluster-issuer: cert-manager-clusterissuer
+```
+
+The shared Gateway has to accept ListenerSets from the release namespace
+(`spec.allowedListeners.namespaces`). With a cert-manager version that supports
+ListenerSets, the issuer annotation on the ListenerSet issues the certificate
+into that Secret; otherwise create the Secret yourself. On cert-manager v1.21
+that support is off by default; enable it in the cert-manager chart values:
+
+```yaml
+config:
+  apiVersion: controller.config.cert-manager.io/v1alpha1
+  kind: ControllerConfiguration
+  enableGatewayAPI: true
+  enableGatewayAPIListenerSet: true
+featureGates: ListenerSets=true
+```
+
+If you already applied a ListenerSet with the same name by hand, Helm refuses to
+take it over. Let Helm adopt it before the upgrade:
+
+```bash
+kubectl -n <namespace> label listenerset <release-fullname> app.kubernetes.io/managed-by=Helm
+kubectl -n <namespace> annotate listenerset <release-fullname> \
+  meta.helm.sh/release-name=<release> meta.helm.sh/release-namespace=<namespace>
+```
+
+A `helm rollback` to a chart version without `gateway`, or a `helm uninstall`,
+deletes the ListenerSet and with it this host's listener.
+
+The chart doesn't create the `Gateway`. On the Gateway side, check that:
+
+- the listener allows routes from the release namespace
+  (`allowedRoutes.namespaces`);
+- the listener can read its certificate Secret. A Secret in another namespace
+  needs a `ReferenceGrant` there;
+- the route is accepted:
+  `kubectl get httproute <release-fullname> -o jsonpath='{.status.parents[*].conditions}'`
+  (the install notes print the exact command).
 
 ## Installing the Chart
 
