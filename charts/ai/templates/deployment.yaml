@@ -6,7 +6,9 @@ metadata:
   labels:
     {{- include "ctai.labels" . | nindent 4 }}
 spec:
+  {{- if .Values.manageReplicas }}
   replicas: {{ .Values.replicaCount }}
+  {{- end }}
   selector:
     matchLabels:
       {{- include "ctai.selectorLabels" . | nindent 6 }}
