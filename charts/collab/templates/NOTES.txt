@@ -1,7 +1,36 @@
 Application URL:
+{{- $gw := .Values.gateway | default dict }}
 {{- if .Values.ingress.enabled }}
   {{- $host := (urlParse .Values.codetogether.url).host }}
   http{{ if $.Values.ingress.tls }}s{{ end }}://{{ $host }}{{ .path }}
+{{- else if $gw.enabled }}
+  https://{{ (urlParse .Values.codetogether.url).host }}/
+{{- end }}
+
+{{- if $gw.enabled }}
+
+Gateway API:
+  {{- $parents := list }}
+  {{- range $gw.parentRefs }}
+  {{- $p := .name }}
+  {{- with .namespace }}{{ $p = printf "%s (namespace %s)" $p . }}{{ end }}
+  {{- with .sectionName }}{{ $p = printf "%s listener %s" $p . }}{{ end }}
+  {{- $parents = append $parents $p }}
+  {{- end }}
+  {{- if eq (include "codetogether.listenerSetEnabled" .) "true" }}
+  {{- $lsParent := $gw.listenerSet.parentRef }}
+  ListenerSet {{ include "codetogether.fullname" . }} adds an HTTPS listener to Gateway {{ $lsParent.name }}{{ with $lsParent.namespace }} (namespace {{ . }}){{ end }}.
+  Check it was accepted: kubectl get listenerset {{ include "codetogether.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.conditions}'
+  {{- if not $parents }}
+  {{- $parents = list (printf "ListenerSet %s listener %s" (include "codetogether.fullname" .) ($gw.listenerSet.listenerName | default "https")) }}
+  {{- end }}
+  {{- end }}
+  HTTPRoute {{ include "codetogether.fullname" . }} attaches to: {{ join ", " $parents }}
+  Check it was accepted: kubectl get httproute {{ include "codetogether.fullname" . }} -n {{ .Release.Namespace }} -o jsonpath='{.status.parents[*].conditions}'
+{{- if .Values.ingress.enabled }}
+  WARNING: ingress.enabled is also true, so both an Ingress and an HTTPRoute
+  serve this host. Set ingress.enabled=false once the Gateway path works.
+{{- end }}
 {{- end }}
 
 {{- if or .Values.av.enabled .Values.av.serverIP .Values.av.stunServers.enabled .Values.av.jitsiUrl }}

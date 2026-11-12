@@ -202,6 +202,21 @@ tolerations: []
 affinity: {}
 replicaCount: 1
 
+# Rollout strategy. The default stops the old pod before it starts the new one
+# (a short outage on a single replica), instead of the Kubernetes default
+# (maxSurge 25%, which rounds up to one extra pod). Pods of one release share an
+# embedded Hazelcast cluster, and a pod only joins a cluster of its own
+# Hazelcast minor version: when a release changes that version, an old pod still
+# running makes the new pod fail to join and restart in a loop, so a surge
+# rollout never completes. With more than one replica, upgrade across a
+# Hazelcast version with Recreate (see "Upgrade" in README.md):
+#   --set deploymentStrategy.type=Recreate --set deploymentStrategy.rollingUpdate=null
+deploymentStrategy:
+  type: RollingUpdate
+  rollingUpdate:
+    maxSurge: 0
+    maxUnavailable: 1
+
 extraEnvVars: []
 extraVolumes: []
 extraVolumeMounts: []
