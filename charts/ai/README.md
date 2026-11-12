@@ -374,6 +374,58 @@ If login fails after returning from Google or another identity provider with
 and that the registered OAuth redirect URI exactly matches
 `{service_fqdn}/api/v1/auth/sso/provider/callback`.
 
+### What the container image contains
+
+The image is built on [Wolfi](https://github.com/wolfi-dev), a minimal Linux
+distribution, and runs as the non-root user `ctai` (uid and gid `2200`).
+
+- Shell and tools: `bash`, BusyBox `sh` (`/bin/sh`), `curl`, `ps`, `top`,
+  `ping`, `netstat`, `vi`, `less`, and the GNU core utilities. `ss`, `ip`,
+  `openssl` and `dig` are not included.
+- Java: OpenJDK 25 with its tools (`jcmd`, `jstack`, `jmap`, `jfr`,
+  `keytool`). `JAVA_HOME` is `/usr/lib/jvm/default-jvm`, and the JDK's trust
+  store is `/etc/ssl/certs/java/cacerts`.
+- Packages: the package manager is `apk`. It needs root, so it cannot install
+  anything in the running container. An image built `FROM` this one installs
+  packages with `apk add` as root before switching back to `USER 2200`.
+
+### Inspect a running pod
+
+`kubectl exec` is enough for the tools above:
+
+```bash
+kubectl exec -it -n codetogether-ai deploy/codetogether-ai -c codetogether-ai -- bash
+```
+
+For a tool the image does not have, attach an ephemeral debug container. It
+shares the application's process namespace and network, so it sees the Java
+process, its files under `/proc/<pid>/root` and `localhost`, and nothing
+restarts. Use kubectl 1.32 or later, and any image your cluster can pull:
+
+```bash
+POD=$(kubectl get pod -n codetogether-ai -l app.kubernetes.io/name=codetogether-ai -o name | head -1)
+kubectl debug -it -n codetogether-ai "$POD" \
+  --image=<a debugging image> \
+  --target=codetogether-ai --profile=general -c debug -- sh
+```
+
+If the namespace enforces the Pod Security `restricted` profile, which does not
+allow a root debug container, use the CodeTogether AI image itself as the debug
+image and run it as the application's user. The image names its user (`ctai`),
+so the numeric uid has to be given:
+
+```bash
+echo '{"securityContext":{"runAsUser":2200,"runAsGroup":2200}}' > uid2200.json
+IMAGE=$(kubectl get "$POD" -n codetogether-ai -o jsonpath='{.spec.containers[0].image}')
+kubectl debug -it -n codetogether-ai "$POD" --image="$IMAGE" \
+  --target=codetogether-ai --profile=restricted --custom=uid2200.json \
+  -c debug-app -- bash
+```
+
+An ephemeral container stays in the pod's spec until the pod is replaced, and
+each one needs a new name (`-c`). The process environment and the mounted
+properties file contain secrets: do not paste them into tickets or chat.
+
 ## Upgrade
 
 ```bash
