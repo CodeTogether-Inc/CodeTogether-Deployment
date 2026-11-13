@@ -311,6 +311,9 @@ The following table lists the primary configurable parameters and defaults.
 | `readinessProbe.path` | Readiness endpoint on port 1080 | `/healthz` |
 | `livenessProbe.path` | Liveness endpoint on port 8080 | `/actuator/health` |
 | `startupProbe.enabled` | Enable startup probe | `true` |
+| `securityContext.readOnlyRootFilesystem` | Run with a read-only root filesystem; the container writes only to `writableDirectories`. See [Read-only root filesystem](#read-only-root-filesystem) | `true` |
+| `writableDirectories.<name>.enabled` | Mount an `emptyDir` on that directory (`runtime`, `www`, `logs`, `tmp`, `systemTmp`); `false` to mount your own volume there | `true` |
+| `writableDirectories.<name>.sizeLimit` | Optional `emptyDir` size limit (for example `2Gi`); the pod is evicted when it is exceeded | `""` |
 
 `image.tag` controls which container image the Deployment pulls at install or
 upgrade time. `appVersion` in `Chart.yaml` is chart metadata only; it does not
@@ -425,6 +428,67 @@ kubectl debug -it -n codetogether-ai "$POD" --image="$IMAGE" \
 An ephemeral container stays in the pod's spec until the pod is replaced, and
 each one needs a new name (`-c`). The process environment and the mounted
 properties file contain secrets: do not paste them into tickets or chat.
+
+### Read-only root filesystem
+
+From chart 0.2.5 the container runs with `readOnlyRootFilesystem: true`: the
+image's binaries, scripts and configuration cannot be changed from inside the
+pod. It writes only to these directories, each an `emptyDir` that lives as long
+as the pod (`writableDirectories`):
+
+| Name | Path | What |
+|---|---|---|
+| `runtime` | `/opt/ctai/runtime` | Artifacts unpacked at start with the server URL injected into the IDE plugins (about 200 MB), and the YAML generated from the properties file (`config/ctai-configuration.yml`) |
+| `www` | `/opt/ctai/www` | nginx's document root: the portal and metric lineage |
+| `logs` | `/opt/ctai/logs` | `server.log`, the nginx logs, heap dumps (the newest is kept) |
+| `tmp` | `/opt/ctai/tmp` | nginx's pid file and temp files |
+| `systemTmp` | `/tmp` | JVM and Tomcat temp files |
+
+A container restart keeps them, and reuses the unpacked artifacts; a new pod
+starts empty. To keep logs on a volume of your own, turn that directory over to
+it:
+
+```yaml
+writableDirectories:
+  logs:
+    enabled: false
+extraVolumes:
+  - name: ctai-logs
+    persistentVolumeClaim:
+      claimName: ctai-logs
+extraVolumeMounts:
+  - name: ctai-logs
+    mountPath: /opt/ctai/logs
+```
+
+The chart refuses:
+- a volume in `extraVolumeMounts` on a path a writable directory already mounts;
+- a disabled writable directory with no volume of yours on its path, which would be read-only;
+- two writable directories on one path;
+- `readOnlyRootFilesystem` as a string (`"true"` or `"false"`): it must be a boolean.
+
+Paths are compared after cleaning, so `/opt/ctai/logs/` is `/opt/ctai/logs`.
+
+**When the previous layout is used.** With the previous layout there are no
+`writableDirectories`, and the container writes to its own layer. The chart
+uses it:
+- when `securityContext.readOnlyRootFilesystem` is `false`. Set that if a
+  pre-start hook (`/opt/ctai/hooks/pre-start.d`) writes outside these
+  directories.
+- when `image.tag` (or `appVersion`, when the tag is empty) names an image
+  older than the first one that supports a read-only root filesystem. Older
+  images crash-loop under it. `helm install` prints a warning when this
+  happens. A tag that is not a version, such as `latest`, or an `image.digest`,
+  is taken as supporting it.
+- after `helm upgrade --reuse-values` from a chart before 0.2.5, whose values
+  have no `readOnlyRootFilesystem`. Add
+  `--set securityContext.readOnlyRootFilesystem=true` to turn it on.
+
+**Upgrading from 0.2.4 with a volume of your own on one of these paths** (for
+example a PVC on `/opt/ctai/logs` in `extraVolumeMounts`): `helm upgrade` stops
+with "extraVolumeMounts mounts /opt/ctai/logs, which writableDirectories.logs
+already mounts". Add `--set writableDirectories.logs.enabled=false` (or the
+same in your values file) and run it again; your volume keeps that path.
 
 ## Upgrade
 

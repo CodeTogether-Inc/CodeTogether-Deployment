@@ -67,3 +67,12 @@ Gateway API:
   serve this host. Set ingress.enabled=false once the Gateway path works.
 {{- end }}
 {{- end }}
+{{- if and (eq (include "ctai.readOnlyRootFilesystemRequested" .) "true") (eq (include "ctai.imageTooOldForReadOnlyRoot" .) "true") }}
+
+WARNING: image {{ .Values.image.tag | default .Chart.AppVersion }} is older than {{ include "ctai.readOnlyRootFilesystemMinImage" . }}, the first image that
+runs with a read-only root filesystem, so this release runs with the previous
+layout (a writable root filesystem). Use a newer image to get it.
+{{- else if not (eq (include "ctai.readOnlyRootFilesystem" .) "true") }}
+
+Read-only root filesystem: off (securityContext.readOnlyRootFilesystem is not true).
+{{- end }}
