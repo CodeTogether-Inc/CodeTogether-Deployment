@@ -166,6 +166,52 @@ securityContext:
   runAsUser: 2200
   runAsGroup: 2200
   allowPrivilegeEscalation: false
+  # The image's own files are read-only; the directories it writes are the
+  # writableDirectories below. false restores the previous layout (no
+  # writableDirectories, the container writes to its own layer), for a pre-start
+  # hook that writes elsewhere. Images older than the first one that supports it
+  # (see "Read-only root filesystem" in README.md) always get the previous layout
+  # when image.tag names a version.
+  readOnlyRootFilesystem: true
+
+# The directories the container writes, each an emptyDir mounted over the image's
+# empty directory, so the root filesystem can be read-only. Mounted only when
+# securityContext.readOnlyRootFilesystem is in effect. They live as long as the pod:
+# a container restart keeps them (and reuses the unpacked artifacts), a new pod
+# starts empty. Set enabled: false on one to mount your own volume there instead
+# (a PVC on logs, for example) through extraVolumes and extraVolumeMounts; the
+# chart refuses two volumes on the same path, and a disabled directory with no
+# volume of yours on it. sizeLimit (for example 2Gi) caps one: the kubelet evicts
+# the pod when it is exceeded, so leave it empty unless the node's ephemeral
+# storage needs protecting.
+writableDirectories:
+  # Artifacts unpacked from artifacts.zip at start, with the server URL injected
+  # into the IDE plugins (about 200 MB), and the YAML generated from the
+  # properties file.
+  runtime:
+    enabled: true
+    mountPath: /opt/ctai/runtime
+    sizeLimit: ""
+  # nginx's document root: the portal and metric lineage, unpacked at start.
+  www:
+    enabled: true
+    mountPath: /opt/ctai/www
+    sizeLimit: ""
+  # server.log, the nginx logs and heap dumps (only the newest is kept).
+  logs:
+    enabled: true
+    mountPath: /opt/ctai/logs
+    sizeLimit: ""
+  # nginx's pid file and request-body and proxy temp files.
+  tmp:
+    enabled: true
+    mountPath: /opt/ctai/tmp
+    sizeLimit: ""
+  # The JVM's and Tomcat's temp files.
+  systemTmp:
+    enabled: true
+    mountPath: /tmp
+    sizeLimit: ""
 
 resources: {}
 

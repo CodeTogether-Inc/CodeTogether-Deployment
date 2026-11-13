@@ -113,6 +113,58 @@ jobs:
             --set imageCredentials.username=test \
             --set imageCredentials.password=test \
             --set gateway=null
+          # Read-only root filesystem: an emptyDir on each writable directory by
+          # default; the previous layout for ro=false, an image older than the first
+          # one that supports it, and --reuse-values from a chart before 0.2.5.
+          ai_ro() {
+            helm template test ./charts/ai \
+              --set-file ctaiPropertiesFile=./charts/ai/ctai-configuration.properties.template \
+              --set service.fqdn=https://example.codetogether.io \
+              --set imageCredentials.username=test \
+              --set imageCredentials.password=test \
+              --show-only templates/deployment.yaml "$@"
+          }
+          ro_min="$(sed -n '/define "ctai.readOnlyRootFilesystemMinImage"/{n;p}' ./charts/ai/templates/_helpers.tpl)"
+          if ! [[ "$ro_min" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Set ctai.readOnlyRootFilesystemMinImage to the first release that runs read-only (got $ro_min)" >&2; exit 1
+          fi
+          app_version="$(sed -n 's/^appVersion: "\(.*\)"$/\1/p' ./charts/ai/Chart.yaml)"
+          if [ "$(printf '%s\n%s\n' "$ro_min" "$app_version" | sort -V | head -1)" != "$ro_min" ]; then
+            echo "appVersion $app_version is older than ctai.readOnlyRootFilesystemMinImage $ro_min" >&2; exit 1
+          fi
+          out="$(ai_ro)"
+          grep -q 'readOnlyRootFilesystem: true' <<<"$out"
+          [ "$(grep -c 'name: writable-' <<<"$out")" = 10 ]
+          for args in "--set securityContext.readOnlyRootFilesystem=false" \
+                      "--set image.tag=1.0.0" \
+                      "--set image.tag=1.0.0-hotfix" \
+                      "--set securityContext.readOnlyRootFilesystem=null --set writableDirectories=null"; do
+            # shellcheck disable=SC2086
+            out="$(ai_ro $args)"
+            grep -q 'readOnlyRootFilesystem: false' <<<"$out"
+            if grep -q 'name: writable-' <<<"$out"; then echo "writable volumes with $args" >&2; exit 1; fi
+          done
+          # A customer volume instead of one writable directory, and the refusals.
+          out="$(ai_ro --set writableDirectories.logs.enabled=false \
+            --set 'extraVolumes[0].name=logs' --set 'extraVolumes[0].persistentVolumeClaim.claimName=logs' \
+            --set 'extraVolumeMounts[0].name=logs' --set 'extraVolumeMounts[0].mountPath=/opt/ctai/logs/')"
+          grep -q 'claimName: logs' <<<"$out"
+          if grep -q 'name: writable-logs' <<<"$out"; then echo "writable-logs mounted while disabled" >&2; exit 1; fi
+          [ "$(grep -c 'name: writable-' <<<"$out")" = 8 ]
+          ai_ro_fails() {
+            local pattern="$1"; shift
+            if ai_ro "$@" > /tmp/ro.out 2>&1; then echo "rendered: $*" >&2; exit 1; fi
+            grep -q "$pattern" /tmp/ro.out || { cat /tmp/ro.out >&2; exit 1; }
+          }
+          ai_ro_fails 'which writableDirectories.logs already mounts' \
+            --set 'extraVolumes[0].name=logs' --set 'extraVolumes[0].emptyDir.medium=Memory' \
+            --set 'extraVolumeMounts[0].name=logs' --set 'extraVolumeMounts[0].mountPath=/opt/ctai/logs/'
+          ai_ro_fails 'writableDirectories.systemTmp is disabled but nothing is mounted on /tmp' \
+            --set writableDirectories.systemTmp.enabled=false
+          ai_ro_fails 'both mount /opt/ctai/www' --set writableDirectories.runtime.mountPath=/opt/ctai/www
+          ai_ro_fails 'must be an absolute path' --set writableDirectories.www.mountPath=opt/ctai/www
+          ai_ro_fails 'must be true or false' --set-string securityContext.readOnlyRootFilesystem=false
+          ai_ro_fails 'writableDirectories.logs must be a map' --set writableDirectories.logs=false
           # Rollout strategy: the default, what --reuse-values from a chart
           # before 0.2.4 leaves (no deploymentStrategy), and a Recreate override.
           ai_strategy() {

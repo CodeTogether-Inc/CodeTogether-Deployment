@@ -216,6 +216,194 @@ Fail helm template when properties contain unfilled <placeholder> values or URL 
 {{- end -}}
 {{- end -}}
 {{- $_ := include "ctai.serviceFqdn" . -}}
+{{- $_ = include "ctai.validateWritableDirectories" . -}}
+{{- end }}
+
+{{/*
+The first image version whose start-ctai runs on a read-only root filesystem.
+Older images remove /opt/ctai/www (a mount point here) and write next to the
+properties file, so they crash-loop under it.
+*/}}
+{{- define "ctai.readOnlyRootFilesystemMinImage" -}}
+1.2.0-SET-AT-RELEASE
+{{- end }}
+
+{{/*
+"true" when the container runs with a read-only root filesystem:
+securityContext.readOnlyRootFilesystem is true and the image is not older than
+ctai.readOnlyRootFilesystemMinImage. The image's version is image.tag, or the
+chart's appVersion when the tag is empty; a tag that is not a version (latest) or
+a digest is taken as supporting it. --reuse-values from a chart before 0.2.5 has
+no readOnlyRootFilesystem, so it keeps the previous layout.
+*/}}
+{{- define "ctai.readOnlyRootFilesystem" -}}
+{{- if and (eq (include "ctai.readOnlyRootFilesystemRequested" .) "true") (eq (include "ctai.imageTooOldForReadOnlyRoot" .) "false") -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end }}
+
+{{/*
+"true" when securityContext.readOnlyRootFilesystem is true (validateWritableDirectories
+refuses anything but a boolean).
+*/}}
+{{- define "ctai.readOnlyRootFilesystemRequested" -}}
+{{- if eq ((.Values.securityContext | default dict).readOnlyRootFilesystem) true -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end }}
+
+{{/*
+"true" when the image is a version older than ctai.readOnlyRootFilesystemMinImage.
+The version is the tag's leading x.y.z, so 1.2.8000-hotfix counts as 1.2.8000.
+*/}}
+{{- define "ctai.imageTooOldForReadOnlyRoot" -}}
+{{- $image := .Values.image | default dict -}}
+{{- $tag := toString ($image.tag | default .Chart.AppVersion) -}}
+{{- $version := regexFind "^[0-9]+\\.[0-9]+\\.[0-9]+" (trimPrefix "v" $tag) -}}
+{{- if and (not $image.digest) $version (semverCompare (printf "< %s" (include "ctai.readOnlyRootFilesystemMinImage" .)) $version) -}}
+true
+{{- else -}}
+false
+{{- end -}}
+{{- end }}
+
+{{/*
+writableDirectories with the chart defaults underneath, as YAML: --reuse-values
+from a chart before 0.2.5 has none.
+*/}}
+{{- define "ctai.writableDirectories" -}}
+{{- $defaults := dict
+  "runtime" (dict "enabled" true "mountPath" "/opt/ctai/runtime" "sizeLimit" "")
+  "www" (dict "enabled" true "mountPath" "/opt/ctai/www" "sizeLimit" "")
+  "logs" (dict "enabled" true "mountPath" "/opt/ctai/logs" "sizeLimit" "")
+  "tmp" (dict "enabled" true "mountPath" "/opt/ctai/tmp" "sizeLimit" "")
+  "systemTmp" (dict "enabled" true "mountPath" "/tmp" "sizeLimit" "") -}}
+{{- toYaml (mergeOverwrite $defaults (deepCopy (.Values.writableDirectories | default dict))) -}}
+{{- end }}
+
+{{/*
+writableDirectories: every enabled entry needs an absolute mountPath, no two
+volumes may be mounted on the same path (Kubernetes rejects the pod, or compares
+the paths as strings and lets one volume hide the other, and neither error names
+the chart value nor the fix), and a disabled entry needs a volume of the
+customer's in extraVolumeMounts, since the path is read-only otherwise. Paths are
+compared after path.Clean, so /opt/ctai/logs/ is /opt/ctai/logs.
+*/}}
+{{- define "ctai.validateWritableDirectories" -}}
+{{- $ro := (.Values.securityContext | default dict).readOnlyRootFilesystem -}}
+{{- if and (not (kindIs "invalid" $ro)) (not (kindIs "bool" $ro)) -}}
+{{- fail (printf "securityContext.readOnlyRootFilesystem must be true or false, got %q (a string): set it without quotes, or with --set rather than --set-string" (toString $ro)) -}}
+{{- end -}}
+{{- if eq (include "ctai.readOnlyRootFilesystem" .) "true" -}}
+{{- $seen := dict -}}
+{{- $extra := dict -}}
+{{- range .Values.extraVolumeMounts -}}
+{{- $_ := set $extra (clean (toString .mountPath)) true -}}
+{{- end -}}
+{{- $volumeNames := dict -}}
+{{- range $name, $dir := (include "ctai.writableDirectories" . | fromYaml) -}}
+{{- if not (kindIs "map" $dir) -}}
+{{- fail (printf "writableDirectories.%s must be a map (enabled, mountPath, sizeLimit), got %v: to mount your own volume there, set writableDirectories.%s.enabled=false" $name $dir $name) -}}
+{{- end -}}
+{{- $volumeName := printf "writable-%s" ($name | kebabcase) -}}
+{{- if hasKey $volumeNames $volumeName -}}
+{{- fail (printf "writableDirectories.%s and writableDirectories.%s both make the volume name %s: rename one" (get $volumeNames $volumeName) $name $volumeName) -}}
+{{- end -}}
+{{- $_ := set $volumeNames $volumeName $name -}}
+{{- $path := toString $dir.mountPath -}}
+{{- if not (hasPrefix "/" $path) -}}
+{{- fail (printf "writableDirectories.%s.mountPath must be an absolute path, got %q" $name $path) -}}
+{{- end -}}
+{{- $path = clean $path -}}
+{{- if include "ctai.writableDirectoryEnabled" $dir -}}
+{{- if hasKey $seen $path -}}
+{{- fail (printf "writableDirectories.%s and writableDirectories.%s both mount %s" (get $seen $path) $name $path) -}}
+{{- end -}}
+{{- $_ := set $seen $path $name -}}
+{{- else if not (hasKey $extra $path) -}}
+{{- fail (printf "writableDirectories.%s is disabled but nothing is mounted on %s, which is read-only then: mount your own volume there with extraVolumes and extraVolumeMounts, or set securityContext.readOnlyRootFilesystem=false" $name $path) -}}
+{{- end -}}
+{{- end -}}
+{{- range .Values.extraVolumeMounts -}}
+{{- $path := clean (toString .mountPath) -}}
+{{- if hasKey $seen $path -}}
+{{- fail (printf "extraVolumeMounts mounts %s, which writableDirectories.%s already mounts: set writableDirectories.%s.enabled=false to use your own volume there" .mountPath (get $seen $path) (get $seen $path)) -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+{{- end }}
+
+{{/*
+"true" (or empty) for a writableDirectories entry: enabled, or no enabled key.
+*/}}
+{{- define "ctai.writableDirectoryEnabled" -}}
+{{- if or (not (hasKey . "enabled")) (eq .enabled true) -}}
+true
+{{- end -}}
+{{- end }}
+
+{{/*
+The container's securityContext, with readOnlyRootFilesystem as
+ctai.readOnlyRootFilesystem resolves it.
+*/}}
+{{- define "ctai.containerSecurityContext" -}}
+{{- $ctx := deepCopy (.Values.securityContext | default dict) -}}
+{{- $_ := set $ctx "readOnlyRootFilesystem" (eq (include "ctai.readOnlyRootFilesystem" .) "true") -}}
+{{- toYaml $ctx -}}
+{{- end }}
+
+{{/*
+The container's volumeMounts: the properties file, the writableDirectories (only
+with a read-only root filesystem), then extraVolumeMounts. Empty when there are none.
+*/}}
+{{- define "ctai.volumeMounts" -}}
+{{- if eq (include "ctai.propertiesEnabled" .) "true" }}
+- name: ctai-properties
+  mountPath: {{ include "ctai.propertiesFilePath" . }}
+  subPath: {{ .Values.properties.fileName }}
+  readOnly: true
+{{- end }}
+{{- if eq (include "ctai.readOnlyRootFilesystem" .) "true" }}
+{{- range $name, $dir := (include "ctai.writableDirectories" . | fromYaml) }}
+{{- if include "ctai.writableDirectoryEnabled" $dir }}
+- name: writable-{{ $name | kebabcase }}
+  mountPath: {{ $dir.mountPath }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.extraVolumeMounts }}
+{{ toYaml . }}
+{{- end }}
+{{- end }}
+
+{{/*
+The pod's volumes, matching ctai.volumeMounts. Empty when there are none.
+*/}}
+{{- define "ctai.volumes" -}}
+{{- if eq (include "ctai.propertiesEnabled" .) "true" }}
+- name: ctai-properties
+  secret:
+    secretName: {{ include "ctai.propertiesSecretName" . }}
+{{- end }}
+{{- if eq (include "ctai.readOnlyRootFilesystem" .) "true" }}
+{{- range $name, $dir := (include "ctai.writableDirectories" . | fromYaml) }}
+{{- if include "ctai.writableDirectoryEnabled" $dir }}
+- name: writable-{{ $name | kebabcase }}
+  emptyDir:
+    {{- if $dir.sizeLimit }}
+    sizeLimit: {{ $dir.sizeLimit }}
+    {{- else }} {}
+    {{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- with .Values.extraVolumes }}
+{{ toYaml . }}
+{{- end }}
 {{- end }}
 
 {{/*
