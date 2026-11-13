@@ -264,11 +264,15 @@ The version is the tag's leading x.y.z, so 1.2.8000-hotfix counts as 1.2.8000.
 {{- $image := .Values.image | default dict -}}
 {{- $tag := toString ($image.tag | default .Chart.AppVersion) -}}
 {{- $version := regexFind "^[0-9]+\\.[0-9]+\\.[0-9]+" (trimPrefix "v" $tag) -}}
-{{- if and (not $image.digest) $version (semverCompare (printf "< %s" (include "ctai.readOnlyRootFilesystemMinImage" .)) $version) -}}
-true
-{{- else -}}
-false
+{{- /* Nested ifs, not and: Helm before 3.10 evaluates every argument of and,
+       and semverCompare fails on an empty version. */ -}}
+{{- $tooOld := false -}}
+{{- if and (not $image.digest) $version -}}
+{{- if semverCompare (printf "< %s" (include "ctai.readOnlyRootFilesystemMinImage" .)) $version -}}
+{{- $tooOld = true -}}
 {{- end -}}
+{{- end -}}
+{{- $tooOld -}}
 {{- end }}
 
 {{/*
