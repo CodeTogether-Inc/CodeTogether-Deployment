@@ -290,7 +290,8 @@ from a chart before 0.2.5 has none.
 {{- end }}
 
 {{/*
-writableDirectories: every enabled entry needs an absolute mountPath, no two
+writableDirectories: every enabled entry needs an absolute mountPath and a
+volume name (writable-<name>) that no extraVolumes entry uses, no two
 volumes may be mounted on the same path (Kubernetes rejects the pod, or compares
 the paths as strings and lets one volume hide the other, and neither error names
 the chart value nor the fix), and a disabled entry needs a volume of the
@@ -309,6 +310,10 @@ compared after path.Clean, so /opt/ctai/logs/ is /opt/ctai/logs.
 {{- $_ := set $extra (clean (toString .mountPath)) true -}}
 {{- end -}}
 {{- $volumeNames := dict -}}
+{{- $extraVolumeNames := dict -}}
+{{- range .Values.extraVolumes -}}
+{{- $_ := set $extraVolumeNames (toString .name) true -}}
+{{- end -}}
 {{- range $name, $dir := (include "ctai.writableDirectories" . | fromYaml) -}}
 {{- if not (kindIs "map" $dir) -}}
 {{- fail (printf "writableDirectories.%s must be a map (enabled, mountPath, sizeLimit), got %v: to mount your own volume there, set writableDirectories.%s.enabled=false" $name $dir $name) -}}
@@ -324,6 +329,9 @@ compared after path.Clean, so /opt/ctai/logs/ is /opt/ctai/logs.
 {{- end -}}
 {{- $path = clean $path -}}
 {{- if include "ctai.writableDirectoryEnabled" $dir -}}
+{{- if hasKey $extraVolumeNames $volumeName -}}
+{{- fail (printf "extraVolumes has a volume named %s, the name of the volume writableDirectories.%s makes: rename yours (and its extraVolumeMounts entry)" $volumeName $name) -}}
+{{- end -}}
 {{- if hasKey $seen $path -}}
 {{- fail (printf "writableDirectories.%s and writableDirectories.%s both mount %s" (get $seen $path) $name $path) -}}
 {{- end -}}

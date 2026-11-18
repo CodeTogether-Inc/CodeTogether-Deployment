@@ -465,6 +465,8 @@ The chart refuses:
 - a volume in `extraVolumeMounts` on a path a writable directory already mounts;
 - a disabled writable directory with no volume of yours on its path, which would be read-only;
 - two writable directories on one path;
+- a volume in `extraVolumes` named like the volume of an enabled writable
+  directory (`writable-logs`, `writable-system-tmp`, …): rename yours;
 - `readOnlyRootFilesystem` as a string (`"true"` or `"false"`): it must be a boolean.
 
 Paths are compared after cleaning, so `/opt/ctai/logs/` is `/opt/ctai/logs`.

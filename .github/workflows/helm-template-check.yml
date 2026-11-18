@@ -159,6 +159,9 @@ jobs:
           ai_ro_fails 'which writableDirectories.logs already mounts' \
             --set 'extraVolumes[0].name=logs' --set 'extraVolumes[0].emptyDir.medium=Memory' \
             --set 'extraVolumeMounts[0].name=logs' --set 'extraVolumeMounts[0].mountPath=/opt/ctai/logs/'
+          ai_ro_fails 'extraVolumes has a volume named writable-logs' \
+            --set 'extraVolumes[0].name=writable-logs' --set 'extraVolumes[0].emptyDir.medium=Memory' \
+            --set 'extraVolumeMounts[0].name=writable-logs' --set 'extraVolumeMounts[0].mountPath=/data'
           ai_ro_fails 'writableDirectories.systemTmp is disabled but nothing is mounted on /tmp' \
             --set writableDirectories.systemTmp.enabled=false
           ai_ro_fails 'both mount /opt/ctai/www' --set writableDirectories.runtime.mountPath=/opt/ctai/www
