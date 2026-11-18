@@ -476,7 +476,7 @@ uses it:
   pre-start hook (`/opt/ctai/hooks/pre-start.d`) writes outside these
   directories.
 - when `image.tag` (or `appVersion`, when the tag is empty) names an image
-  older than the first one that supports a read-only root filesystem. Older
+  older than 1.2.8793, the first one that supports a read-only root filesystem. Older
   images crash-loop under it. `helm install` prints a warning when this
   happens. A tag that is not a version, such as `latest`, or an `image.digest`,
   is taken as supporting it.

@@ -225,7 +225,7 @@ Older images remove /opt/ctai/www (a mount point here) and write next to the
 properties file, so they crash-loop under it.
 */}}
 {{- define "ctai.readOnlyRootFilesystemMinImage" -}}
-1.2.0-SET-AT-RELEASE
+1.2.8793
 {{- end }}
 
 {{/*
