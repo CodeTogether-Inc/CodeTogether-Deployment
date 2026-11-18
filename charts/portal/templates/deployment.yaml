@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app: {{ .Release.Name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+    spec:
+      imagePullSecrets:
+        {{- toYaml .Values.imagePullSecrets | nindent 8 }}
+      containers:
+        - name: {{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: [ "yarn", "run", "start:backend" ]
+          args: [ "--hostname=0.0.0.0", "--port=3000" ]
+          ports:
+            - containerPort: 3000
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }} 
+          envFrom:
+            - secretRef:
+                name: portal-secrets
+          readinessProbe:
+            httpGet:
+              path: /saas-admin
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
+          livenessProbe:
+            httpGet:
+              path: /saas-admin
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 5
+            successThreshold: 1
+          startupProbe:
+            httpGet:
+              path: /saas-admin
+              port: 3000
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            failureThreshold: 20
+            successThreshold: 1
+          volumeMounts:
+            - name: kubeconfig
+              mountPath: /root/.kube/config
+              subPath: kube-config
+      volumes:
+      - name: kubeconfig
+        configMap:
+          name: portal-kubeconfig
+          defaultMode: 0600
+          
