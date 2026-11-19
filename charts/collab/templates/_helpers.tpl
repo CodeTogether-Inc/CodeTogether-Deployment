@@ -95,3 +95,41 @@ Get Proxy secret name
   {{- end }}
 {{- end }}
 {{- end }}
+
+{{/*
+Gateway API hostname: the codetogether.url host without a port (Gateway API
+hostnames can't carry one).
+*/}}
+{{- define "codetogether.routeHostname" -}}
+{{- $host := regexReplaceAll ":[0-9]+$" (urlParse (toString .Values.codetogether.url)).host "" -}}
+{{- if not $host -}}
+{{- fail "gateway.enabled=true requires codetogether.url to be a full URL with a host, for example https://codetogether.example.com." -}}
+{{- end -}}
+{{- $host -}}
+{{- end }}
+
+{{/*
+"true" when the chart renders a ListenerSet. Read `gateway` defensively: a
+`helm upgrade --reuse-values` from a chart without it keeps the old values and
+skips the new defaults.
+*/}}
+{{- define "codetogether.listenerSetEnabled" -}}
+{{- $gw := .Values.gateway | default dict -}}
+{{- if and $gw.enabled ($gw.listenerSet | default dict).enabled -}}true{{- end -}}
+{{- end }}
+
+{{/*
+HTTPRoute parentRefs: gateway.parentRefs when set; otherwise the chart's
+ListenerSet and its listener.
+*/}}
+{{- define "codetogether.routeParentRefs" -}}
+{{- $gw := .Values.gateway | default dict -}}
+{{- if $gw.parentRefs -}}
+{{- toYaml $gw.parentRefs -}}
+{{- else if eq (include "codetogether.listenerSetEnabled" .) "true" -}}
+- group: gateway.networking.k8s.io
+  kind: ListenerSet
+  name: {{ include "codetogether.fullname" . }}
+  sectionName: {{ ($gw.listenerSet | default dict).listenerName | default "https" }}
+{{- end -}}
+{{- end }}
