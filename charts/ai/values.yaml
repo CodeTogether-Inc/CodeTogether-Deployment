@@ -74,6 +74,11 @@ ingress:
     # hop is the binding constraint. Additional ingress annotations
     # (e.g. external-dns hostname) merge with this default.
     nginx.ingress.kubernetes.io/proxy-body-size: "16m"
+    # F5 NGINX Ingress Controller (nginx/kubernetes-ingress) ignores the
+    # annotation above. With that controller, add instead (see README.md
+    # "F5 NGINX Ingress Controller"):
+    #   nginx.org/client-max-body-size: "16m"
+    #   nginx.org/websocket-services: <release>-codetogether-ai   # the Service name
   # className: codetogether-nginx
   tls:
     secretName: codetogether-ai-tls
