@@ -163,6 +163,28 @@ explicitly:
 If you set `ingress.className=codetogether-nginx`, the chart also creates a
 matching `IngressClass`.
 
+### F5 NGINX Ingress Controller
+
+The default annotation `nginx.ingress.kubernetes.io/proxy-body-size: "16m"` is
+read by `kubernetes/ingress-nginx`, which was retired upstream in March 2026.
+The F5 NGINX Ingress Controller (`nginx/kubernetes-ingress`) ignores it, and
+without a replacement tracker uploads over 1 MB are rejected with `413`. It also
+upgrades WebSocket connections only for the Services it is told about. Set its
+own annotations and its IngressClass:
+
+```yaml
+ingress:
+  className: nginx          # the class your NGINX Ingress Controller serves
+  annotations:
+    nginx.org/client-max-body-size: "16m"
+    nginx.org/websocket-services: <release>-codetogether-ai   # the chart's Service
+```
+
+`kubectl get svc -n <namespace>` shows the Service name. NGINX Ingress serves
+HTTPS only for an Ingress with a `tls` section, which this chart renders by
+default (`ingress.tls.secretName`). Gateway API (below) is the other way off
+ingress-nginx.
+
 ### Gateway API (NGINX Gateway Fabric)
 
 Clusters that route with Gateway API instead of an Ingress controller (for
